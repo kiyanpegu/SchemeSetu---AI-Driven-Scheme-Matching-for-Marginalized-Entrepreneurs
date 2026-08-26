@@ -1,6 +1,6 @@
 # SchemeSetu - AI-Driven Scheme Matching for Marginalized Entrepreneurs
 
-**Smart India Hackathon 2024 / 2025**  
+**Smart India Hackathon 2026 
 **Problem Statement ID:** 26092  
 **Organization:** Ministry of Social Justice and Empowerment (MoSJE)  
 **Theme:** Smart Automation  
