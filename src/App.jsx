@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
-import { Landmark, Calculator, MapPin, Search, BrainCircuit, ShieldCheck, Users, ChevronRight, ChevronLeft, MessageCircle, X, Send, Globe } from 'lucide-react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { useState } from 'react';
+import { Routes, Route, Link, useNavigate, useLocation, useParams } from 'react-router-dom';
+import { schemes as allSchemesData } from './data/schemes';
+import { Landmark, Calculator, MapPin, Search, BrainCircuit, ShieldCheck, ChevronRight, ChevronLeft, MessageCircle, Globe } from 'lucide-react';
+import { MapContainer, TileLayer, Marker, Popup, ZoomControl } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import { GoogleGenAI } from '@google/genai';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -81,7 +81,46 @@ const translations = {
     male: "Male",
     female: "Female",
     other: "Other",
-    state: "State"
+    state: "State",
+    purchaseEq: "Purchase Equipment",
+    workingCap: "Working Capital",
+    continueBtn: "Continue",
+    step: "STEP",
+    of: "OF",
+    tellUs: "Tell us what you need",
+    smartMatchBoxTitle: "Smart Matching",
+    smartMatchBoxDesc: "Your answers help us find the exact scheme you qualify for. We cross-reference over 400 local and federal grants based on these parameters.",
+    matchString: "MATCH",
+    whyMatch: "WHY IT'S A MATCH",
+    maxLoanAmt: "MAX LOAN AMOUNT",
+    interestRate: "INTEREST RATE",
+    viewDetailsApply: "View Details & Apply",
+    findPartnerBtn: "Find Partner",
+    emiCalcTitle: "Estimated EMI Calculator",
+    emiCalcDesc: "Quickly see how different amounts affect your monthly payments based on typical scheme rates.",
+    years: "Years",
+    adjustCalc: "Adjust Calculator",
+    homeTitle: "Find the Right Financial Scheme for Your Business",
+    howItWorks: "How It Works",
+    hwNeeds: "Your Needs",
+    hwNeedsDesc: "Tell us about your business profile.",
+    hwMatch: "Smart Matching",
+    hwMatchDesc: "AI cross-references hundreds of schemes.",
+    hwBest: "Best Scheme",
+    hwBestDesc: "Review tailored financing options.",
+    hwPartner: "Nearest Partner",
+    hwPartnerDesc: "Connect with local application centers.",
+    exploreSchemes: "Explore Schemes",
+    exploreTitle: "Explore Government Schemes",
+    exploreSub: "Browse through all available financial assistance programs for marginalized communities.",
+    schemeDetailsTitle: "Scheme Details",
+    eligibilityCriteria: "Eligibility Criteria",
+    keyBenefits: "Key Benefits",
+    targetAudience: "Target Audience",
+    noMatchTitle: "No Direct Matches Found",
+    noMatchDesc: "Your profile doesn't strictly match the available specialized schemes. Consider browsing all schemes or adjusting your loan amount.",
+    notEligibleTitle: "Eligibility Requirements Not Met",
+    editProfileBtn: "Edit Profile"
   },
   hi: {
     schemeEdu: "शिक्षा ऋण योजना",
@@ -111,8 +150,8 @@ const translations = {
     edu1: "10वीं से नीचे",
     edu2: "10वीं / 12वीं पास",
     edu3: "स्नातक / स्नातकोत्तर",
-    resultsTitle: "आपके एआई मिलान",
-    resultsSub: "आपकी आवश्यकताओं के आधार पर, यहाँ सर्वश्रेष्ठ NSFDC योजनाएँ हैं।",
+    resultsTitle: "आपके अनुशंसित योजनाएँ",
+    resultsSub: "आपकी आवश्यकताओं के आधार पर, यहाँ सर्वश्रेष्ठ योजनाएँ हैं।",
     matchText: "98% मिलान",
     mcfTitle: "माइक्रो क्रेडिट फाइनेंस (MCF)",
     mcfDesc: "छोटे आय-सृजन गतिविधियों के लिए बिल्कुल सही।",
@@ -148,7 +187,46 @@ const translations = {
     male: "पुरुष",
     female: "महिला",
     other: "अन्य",
-    state: "राज्य"
+    state: "राज्य",
+    purchaseEq: "उपकरण खरीदें",
+    workingCap: "कार्यशील पूंजी",
+    continueBtn: "जारी रखें",
+    step: "चरण",
+    of: "/",
+    tellUs: "हमें बताएं कि आपको क्या चाहिए",
+    smartMatchBoxTitle: "स्मार्ट मिलान",
+    smartMatchBoxDesc: "आपके उत्तर हमें उस सटीक योजना को खोजने में मदद करते हैं जिसके लिए आप योग्य हैं। हम इन मापदंडों के आधार पर 400 से अधिक स्थानीय और संघीय अनुदानों को क्रॉस-रेफरेंस करते हैं।",
+    matchString: "मिलान",
+    whyMatch: "यह एक मिलान क्यों है",
+    maxLoanAmt: "अधिकतम ऋण राशि",
+    interestRate: "ब्याज दर",
+    viewDetailsApply: "विवरण देखें और आवेदन करें",
+    findPartnerBtn: "पार्टनर खोजें",
+    emiCalcTitle: "अनुमानित ईएमआई कैलकुलेटर",
+    emiCalcDesc: "जल्दी से देखें कि विभिन्न राशियाँ विशिष्ट योजना दरों के आधार पर आपके मासिक भुगतान को कैसे प्रभावित करती हैं।",
+    years: "वर्ष",
+    adjustCalc: "कैलकुलेटर समायोजित करें",
+    homeTitle: "अपने व्यवसाय के लिए सही वित्तीय योजना खोजें",
+    howItWorks: "यह कैसे काम करता है",
+    hwNeeds: "आपकी ज़रूरतें",
+    hwNeedsDesc: "हमें अपने व्यावसायिक प्रोफ़ाइल के बारे में बताएं।",
+    hwMatch: "स्मार्ट मिलान",
+    hwMatchDesc: "एआई सैकड़ों योजनाओं का क्रॉस-रेफरेंस करता है।",
+    hwBest: "सर्वश्रेष्ठ योजना",
+    hwBestDesc: "अनुकूलित वित्तपोषण विकल्पों की समीक्षा करें।",
+    hwPartner: "निकटतम पार्टनर",
+    hwPartnerDesc: "स्थानीय आवेदन केंद्रों से जुड़ें।",
+    exploreSchemes: "योजनाओं का अन्वेषण करें",
+    exploreTitle: "सरकारी योजनाओं का अन्वेषण करें",
+    exploreSub: "हाशिए पर रहने वाले समुदायों के लिए उपलब्ध सभी वित्तीय सहायता कार्यक्रमों को ब्राउज़ करें।",
+    schemeDetailsTitle: "योजना का विवरण",
+    eligibilityCriteria: "पात्रता मापदंड",
+    keyBenefits: "प्रमुख लाभ",
+    targetAudience: "लक्षित दर्शक",
+    noMatchTitle: "कोई सीधा मिलान नहीं मिला",
+    noMatchDesc: "आपकी प्रोफ़ाइल उपलब्ध विशेष योजनाओं से पूरी तरह मेल नहीं खाती। सभी योजनाओं को ब्राउज़ करने या अपनी ऋण राशि को समायोजित करने पर विचार करें।",
+    notEligibleTitle: "पात्रता आवश्यकताएँ पूरी नहीं हुईं",
+    editProfileBtn: "प्रोफ़ाइल संपादित करें"
   },
   as: {
     schemeEdu: "শিক্ষা ঋণ আঁচনি",
@@ -178,8 +256,8 @@ const translations = {
     edu1: "দশম শ্ৰেণীৰ তলত",
     edu2: "দশম / দ্বাদশ উত্তীৰ্ণ",
     edu3: "স্নাতক / স্নাতকোত্তৰ",
-    resultsTitle: "আপোনাৰ এআই মেচ",
-    resultsSub: "আপোনাৰ প্ৰয়োজনৰ ভিত্তিত, ইয়াত শ্ৰেষ্ঠ NSFDC আঁচনিসমূহ দিয়া হ'ল।",
+    resultsTitle: "আপোনাৰ পৰামৰ্শপ্ৰাপ্ত আঁচনিসমূহ",
+    resultsSub: "আপোনাৰ প্ৰয়োজনৰ ভিত্তিত, ইয়াত শ্ৰেষ্ঠ আঁচনিসমূহ দিয়া হ'ল।",
     matchText: "৯৮% মেচ",
     mcfTitle: "মাইক্ৰ' ক্ৰেডিট ফাইনেঞ্চ (MCF)",
     mcfDesc: "সৰু আয়-উপাৰ্জনমূলক কাৰ্যকলাপৰ বাবে নিখুঁত।",
@@ -215,29 +293,68 @@ const translations = {
     male: "পুৰুষ",
     female: "মহিলা",
     other: "অন্য",
-    state: "ৰাজ্য"
+    state: "ৰাজ্য",
+    purchaseEq: "সঁজুলি ক্ৰয় কৰক",
+    workingCap: "কাৰ্যকৰী মূলধন",
+    continueBtn: "অব্যাহত ৰাখক",
+    step: "পদক্ষেপ",
+    of: "/",
+    tellUs: "আপোনাক কি প্ৰয়োজন আমাক জনাওক",
+    smartMatchBoxTitle: "স্মাৰ্ট মেচিং",
+    smartMatchBoxDesc: "আপোনাৰ উত্তৰসমূহে আপুনি যোগ্য হোৱা সঠিক আঁচনিখন বিচাৰি উলিওৱাত আমাক সহায় কৰে। আমি এই পেৰামিটাৰসমূহৰ ওপৰত ভিত্তি কৰি ৪০০ ৰো অধিক স্থানীয় আৰু ফেডাৰেল অনুদান ক্ৰছ-ৰেফাৰেন্স কৰো।",
+    matchString: "মেচ",
+    whyMatch: "এয়া কিয় এটা মেচ",
+    maxLoanAmt: "সৰ্বোচ্চ ঋণৰ পৰিমাণ",
+    interestRate: "সুদৰ হাৰ",
+    viewDetailsApply: "বিৱৰণ চাওক আৰু আবেদন কৰক",
+    findPartnerBtn: "অংশীদাৰ বিচাৰক",
+    emiCalcTitle: "আনুমানিক ইএমআই কেলকুলেটৰ",
+    emiCalcDesc: "সাধাৰণ আঁচনিৰ হাৰৰ ওপৰত ভিত্তি কৰি বিভিন্ন পৰিমাণে আপোনাৰ মাহেকীয়া পৰিশোধত কেনেদৰে প্ৰভাৱ পেলায় সেয়া সোনকালে চাওক।",
+    years: "বছৰ",
+    adjustCalc: "কেলকুলেটৰ সামঞ্জস্য কৰক",
+    homeTitle: "আপোনাৰ ব্যৱসায়ৰ বাবে সঠিক বিত্তীয় আঁচনি বিচাৰক",
+    howItWorks: "ই কেনেদৰে কাম কৰে",
+    hwNeeds: "আপোনাৰ প্ৰয়োজনসমূহ",
+    hwNeedsDesc: "আপোনাৰ ব্যৱসায়িক প্ৰফাইলৰ বিষয়ে আমাক জনাওক।",
+    hwMatch: "স্মাৰ্ট মেচিং",
+    hwMatchDesc: "এআইয়ে শ শ আঁচনিৰ ক্ৰছ-ৰেফাৰেন্স কৰে।",
+    hwBest: "শ্ৰেষ্ঠ আঁচনি",
+    hwBestDesc: "অনুকূলিত বিত্তীয় বিকল্পসমূহ পৰ্যালোচনা কৰক।",
+    hwPartner: "নিকটতম অংশীদাৰ",
+    hwPartnerDesc: "স্থানীয় আবেদন কেন্দ্ৰসমূহৰ সৈতে সংযোগ কৰক।",
+    exploreSchemes: "আঁচনিসমূহ অন্বেষণ কৰক",
+    exploreTitle: "চৰকাৰী আঁচনিসমূহ অন্বেষণ কৰক",
+    exploreSub: "প্ৰান্তীয় সম্প্ৰদায়সমূহৰ বাবে উপলব্ধ সকলো বিত্তীয় সাহায্য কাৰ্যসূচী ব্ৰাউজ কৰক।",
+    schemeDetailsTitle: "আঁচনিৰ বিৱৰণ",
+    eligibilityCriteria: "যোগ্যতাৰ মাপকাঠী",
+    keyBenefits: "প্ৰধান লাভালাভ",
+    targetAudience: "লক্ষ্য দৰ্শক",
+    noMatchTitle: "কোনো পোনপটীয়া মেচ পোৱা নগ'ল",
+    noMatchDesc: "আপোনাৰ প্ৰফাইল উপলব্ধ বিশেষ আঁচনিসমূহৰ সৈতে সম্পূৰ্ণৰূপে মিলি নাযায়। সকলো আঁচনি ব্ৰাউজ কৰা বা আপোনাৰ ঋণৰ পৰিমাণ সামঞ্জস্য কৰাৰ কথা বিবেচনা কৰক।",
+    notEligibleTitle: "যোগ্যতাৰ প্ৰয়োজনীয়তা পূৰণ হোৱা নাই",
+    editProfileBtn: "প্ৰফাইল সম্পাদনা কৰক"
   }
 };
 
 // --- INITIAL LANGUAGE MODAL ---
 const LanguageModal = ({ setLang }) => (
-  <div className="fixed inset-0 bg-blue-900/90 backdrop-blur-md z-[100] flex items-center justify-center p-4">
-    <div className="bg-white rounded-3xl p-8 max-w-md w-full text-center shadow-2xl animate-in zoom-in duration-500">
-      <div className="w-16 h-16 bg-blue-50 text-brand-blue rounded-full flex items-center justify-center mx-auto mb-4">
+  <div className="fixed inset-0 bg-surface/90 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-in fade-in duration-300">
+    <div className="card-ambient max-w-md w-full text-center border border-surface-container">
+      <div className="w-16 h-16 bg-surface-container-highest text-primary rounded-full flex items-center justify-center mx-auto mb-6">
         <Globe size={32} />
       </div>
-      <h2 className="text-3xl font-extrabold text-brand-blue mb-2">Welcome to SchemeSetu</h2>
-      <p className="text-gray-600 mb-8">Please select your preferred language to continue</p>
+      <h2 className="headline-lg text-primary mb-2">Welcome to SchemeSetu</h2>
+      <p className="body-lg text-on-surface-variant mb-8">Please select your preferred language to continue</p>
       
       <div className="flex flex-col gap-4">
-        <button onClick={() => setLang('en')} className="p-4 rounded-xl border-2 border-gray-200 hover:border-brand-blue hover:bg-blue-50 font-bold text-xl text-gray-800 transition-all flex justify-between items-center group">
-          <span>🇺🇸 English</span> <ChevronRight className="text-gray-400 group-hover:text-brand-blue" />
+        <button onClick={() => setLang('en')} className="p-4 rounded-xl border border-surface-container hover:border-secondary hover:bg-surface-container-lowest font-semibold text-lg text-on-surface transition-all flex justify-between items-center group">
+          <div className="flex items-center gap-3"><span className="text-2xl">🇺🇸</span> English</div> <ChevronRight className="text-outline group-hover:text-secondary" />
         </button>
-        <button onClick={() => setLang('hi')} className="p-4 rounded-xl border-2 border-gray-200 hover:border-brand-blue hover:bg-blue-50 font-bold text-xl text-gray-800 transition-all flex justify-between items-center group">
-          <span>🇮🇳 हिन्दी</span> <ChevronRight className="text-gray-400 group-hover:text-brand-blue" />
+        <button onClick={() => setLang('hi')} className="p-4 rounded-xl border border-surface-container hover:border-secondary hover:bg-surface-container-lowest font-semibold text-lg text-on-surface transition-all flex justify-between items-center group">
+          <div className="flex items-center gap-3"><span className="text-2xl">🇮🇳</span> हिन्दी</div> <ChevronRight className="text-outline group-hover:text-secondary" />
         </button>
-        <button onClick={() => setLang('as')} className="p-4 rounded-xl border-2 border-gray-200 hover:border-brand-blue hover:bg-blue-50 font-bold text-xl text-gray-800 transition-all flex justify-between items-center group">
-          <span>🦏 অসমীয়া</span> <ChevronRight className="text-gray-400 group-hover:text-brand-blue" />
+        <button onClick={() => setLang('as')} className="p-4 rounded-xl border border-surface-container hover:border-secondary hover:bg-surface-container-lowest font-semibold text-lg text-on-surface transition-all flex justify-between items-center group">
+          <div className="flex items-center gap-3"><span className="text-2xl">🦏</span> অসমীয়া</div> <ChevronRight className="text-outline group-hover:text-secondary" />
         </button>
       </div>
     </div>
@@ -248,24 +365,93 @@ const LanguageModal = ({ setLang }) => (
 const Home = ({ lang }) => {
   const t = translations[lang];
   return (
-    <div className="flex flex-col items-center justify-center min-h-[85vh] text-center px-4 animate-in fade-in duration-700">
-      <div className="bg-white/60 backdrop-blur-sm p-2 pr-6 rounded-full inline-flex items-center gap-3 mb-8 border border-blue-100 shadow-sm">
-        <span className="bg-brand-blue text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">SIH 2026</span>
-        <span className="text-sm font-medium text-gray-700">Built by Team MISFITS</span>
+    <section className="relative pt-12 pb-24 px-4 overflow-hidden animate-in fade-in duration-700 w-full">
+      <div className="absolute inset-0 z-[-1] opacity-30 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at 100% 0%, rgba(214, 227, 255, 0.5) 0%, transparent 50%), radial-gradient(circle at 0% 100%, rgba(216, 226, 255, 0.4) 0%, transparent 50%)' }}></div>
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        
+        {/* Hero Text */}
+        <div className="lg:col-span-6 flex flex-col gap-6 z-10 text-left">
+          <div className="inline-flex items-center gap-2 bg-secondary-fixed text-secondary px-3 py-1.5 rounded-full w-max text-xs font-semibold tracking-wide uppercase shadow-sm">
+            <BrainCircuit size={16} />
+            {t.smartMatchBoxTitle}
+          </div>
+          
+          <h1 className="text-4xl md:text-5xl font-extrabold text-primary leading-tight tracking-tight">
+            {t.homeTitle}
+          </h1>
+          
+          <p className="text-lg text-on-surface-variant max-w-2xl leading-relaxed">
+            {t.subtitle}
+          </p>
+          
+          <div className="flex flex-col sm:flex-row gap-4 mb-12">
+            <Link to="/find" className="bg-primary text-on-primary font-bold px-6 py-3 rounded-lg shadow-sm hover:shadow-md hover:bg-opacity-90 transition-all duration-200 flex items-center justify-center">
+              {t.findBtn} <ChevronRight className="ml-2" size={18} />
+            </Link>
+            <Link to="/explore" className="bg-transparent border border-outline-variant text-on-surface font-bold px-6 py-3 rounded-lg hover:bg-surface-container-low transition-colors duration-200 flex items-center justify-center">
+              {t.exploreSchemes}
+            </Link>
+          </div>
+        </div>
+
+        {/* Hero Visual / Journey Graphic */}
+        <div className="lg:col-span-6 relative flex justify-center lg:justify-end">
+          <div className="card-ambient w-full max-w-md rounded-2xl p-8 shadow-ambient relative z-10 border-l-2 border-secondary-container hover:-translate-y-1 transition-all duration-300">
+            <h3 className="text-2xl font-bold text-primary mb-6">{t.howItWorks}</h3>
+            
+            <div className="space-y-6 relative before:absolute before:inset-y-0 before:left-[19px] before:w-[2px] before:bg-surface-variant">
+              
+              {/* Step 1 */}
+              <div className="flex gap-4 relative group cursor-default">
+                <div className="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center z-10 border-2 border-surface-container-lowest shrink-0 text-on-surface-variant group-hover:scale-110 group-hover:bg-primary-container group-hover:text-on-primary transition-all duration-300">
+                  <Search size={20} />
+                </div>
+                <div className="pt-2 group-hover:translate-x-1 transition-transform duration-300">
+                  <h4 className="font-bold text-primary">{t.hwNeeds}</h4>
+                  <p className="text-sm text-on-surface-variant mt-1">{t.hwNeedsDesc}</p>
+                </div>
+              </div>
+              
+              {/* Step 2 */}
+              <div className="flex gap-4 relative group cursor-default">
+                <div className="w-10 h-10 rounded-full bg-secondary-fixed flex items-center justify-center z-10 border-2 border-surface-container-lowest shrink-0 text-secondary relative group-hover:scale-110 transition-all duration-300">
+                  <div className="absolute inset-0 border-2 border-secondary rounded-full animate-ping opacity-20"></div>
+                  <BrainCircuit size={20} />
+                </div>
+                <div className="pt-2 group-hover:translate-x-1 transition-transform duration-300">
+                  <h4 className="font-bold text-secondary">{t.hwMatch}</h4>
+                  <p className="text-sm text-on-surface-variant mt-1">{t.hwMatchDesc}</p>
+                </div>
+              </div>
+              
+              {/* Step 3 */}
+              <div className="flex gap-4 relative group cursor-default">
+                <div className="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center z-10 border-2 border-surface-container-lowest shrink-0 text-on-surface-variant group-hover:scale-110 group-hover:bg-primary-container group-hover:text-on-primary transition-all duration-300">
+                  <ShieldCheck size={20} />
+                </div>
+                <div className="pt-2 group-hover:translate-x-1 transition-transform duration-300">
+                  <h4 className="font-bold text-primary">{t.hwBest}</h4>
+                  <p className="text-sm text-on-surface-variant mt-1">{t.hwBestDesc}</p>
+                </div>
+              </div>
+
+              {/* Step 4 */}
+              <div className="flex gap-4 relative group cursor-default">
+                <div className="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center z-10 border-2 border-surface-container-lowest shrink-0 text-on-surface-variant group-hover:scale-110 group-hover:bg-primary-container group-hover:text-on-primary transition-all duration-300">
+                  <MapPin size={20} />
+                </div>
+                <div className="pt-2 group-hover:translate-x-1 transition-transform duration-300">
+                  <h4 className="font-bold text-primary">{t.hwPartner}</h4>
+                  <p className="text-sm text-on-surface-variant mt-1">{t.hwPartnerDesc}</p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
       </div>
-      <h1 className="text-6xl md:text-7xl font-extrabold mb-6 tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-blue-500 drop-shadow-sm">
-        SchemeSetu
-      </h1>
-      <p className="text-xl md:text-2xl text-gray-600 mb-10 max-w-3xl leading-relaxed">{t.subtitle}</p>
-      <div className="flex flex-wrap justify-center gap-4 mb-16">
-        <Link to="/find" className="bg-gradient-to-r from-brand-orange to-orange-400 hover:from-orange-500 hover:to-orange-400 text-white font-bold py-4 px-8 rounded-xl shadow-lg hover:-translate-y-1 flex items-center transition-all duration-300 text-lg">
-          <Search className="mr-3" size={24} /> {t.findBtn}
-        </Link>
-        <Link to="/calculator" className="bg-white hover:bg-gray-50 text-brand-blue font-bold py-4 px-8 rounded-xl shadow-md border-2 border-transparent hover:border-blue-100 flex items-center hover:-translate-y-1 transition-all duration-300 text-lg">
-          <Calculator className="mr-3" size={24} /> {t.emiBtn}
-        </Link>
-      </div>
-    </div>
+    </section>
   );
 };
 
@@ -280,14 +466,12 @@ const CalculatorPage = ({ lang }) => {
   const p = Number(loanAmount);
   const r = Number(interestRate) / 12 / 100;
   const emiMonths = (Number(tenureYears) * 12) - Number(moratorium);
-  let emi = 0, totalPayable = 0, totalInterest = 0;
+  let emi = 0;
   
   if (p > 0 && r > 0 && emiMonths > 0) {
     const accruedInterest = p * r * Number(moratorium);
     const adjustedPrincipal = p + accruedInterest;
     emi = (adjustedPrincipal * r * Math.pow(1 + r, emiMonths)) / (Math.pow(1 + r, emiMonths) - 1);
-    totalPayable = emi * emiMonths;
-    totalInterest = totalPayable - p;
   }
 
     const formatCurrency = (amount) => new Intl.NumberFormat(lang + '-IN', { 
@@ -298,37 +482,37 @@ const CalculatorPage = ({ lang }) => {
   }).format(amount);
 
   return (
-    <div className="max-w-5xl mx-auto py-8 animate-in slide-in-from-bottom-4 duration-500 px-4">
+    <div className="max-w-5xl mx-auto py-8 animate-in fade-in duration-500 px-4">
       <div className="text-center mb-10">
-        <h2 className="text-4xl font-extrabold text-brand-blue">{t.calcTitle}</h2>
-        <p className="text-gray-600 mt-2 text-lg">{t.calcSub}</p>
+        <h2 className="headline-lg text-primary">{t.calcTitle}</h2>
+        <p className="body-lg text-on-surface-variant mt-2">{t.calcSub}</p>
       </div>
-      <div className="bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col md:flex-row border border-gray-100">
-        <div className="p-8 md:w-3/5 bg-white space-y-8">
+      <div className="card-ambient p-0 overflow-hidden flex flex-col md:flex-row border border-surface-container">
+        <div className="p-8 md:w-3/5 bg-surface-container-lowest space-y-8">
           <div>
-            <div className="flex justify-between mb-2"><label className="font-semibold text-gray-700">{t.loanAmt}</label><span className="font-bold text-brand-blue bg-blue-50 px-3 py-1 rounded-md">{formatCurrency(loanAmount)}</span></div>
-            <input type="range" min="10000" max="5000000" step="10000" value={loanAmount} onChange={(e) => setLoanAmount(e.target.value)} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-brand-orange" />
+            <div className="flex justify-between mb-2"><label className="label-md text-on-surface">{t.loanAmt}</label><span className="font-bold text-primary bg-surface-container px-3 py-1 rounded-md">{formatCurrency(loanAmount)}</span></div>
+            <input type="range" min="10000" max="5000000" step="10000" value={loanAmount} onChange={(e) => setLoanAmount(e.target.value)} className="w-full h-2 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-secondary" />
           </div>
           <div>
-            <div className="flex justify-between mb-2"><label className="font-semibold text-gray-700">{t.intRate}</label><span className="font-bold text-brand-blue bg-blue-50 px-3 py-1 rounded-md">{interestRate}%</span></div>
-            <input type="range" min="4" max="15" step="0.5" value={interestRate} onChange={(e) => setInterestRate(e.target.value)} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-brand-orange" />
+            <div className="flex justify-between mb-2"><label className="label-md text-on-surface">{t.intRate}</label><span className="font-bold text-primary bg-surface-container px-3 py-1 rounded-md">{interestRate}%</span></div>
+            <input type="range" min="4" max="15" step="0.5" value={interestRate} onChange={(e) => setInterestRate(e.target.value)} className="w-full h-2 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-secondary" />
           </div>
           <div>
-            <div className="flex justify-between mb-2"><label className="font-semibold text-gray-700">{t.tenure}</label><span className="font-bold text-brand-blue bg-blue-50 px-3 py-1 rounded-md">{tenureYears} Yrs</span></div>
-            <input type="range" min="1" max="15" step="1" value={tenureYears} onChange={(e) => setTenureYears(e.target.value)} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-brand-orange" />
+            <div className="flex justify-between mb-2"><label className="label-md text-on-surface">{t.tenure}</label><span className="font-bold text-primary bg-surface-container px-3 py-1 rounded-md">{tenureYears} {t.years || (lang === 'hi' ? 'वर्ष' : lang === 'as' ? 'বছৰ' : 'Yrs')}</span></div>
+            <input type="range" min="1" max="15" step="1" value={tenureYears} onChange={(e) => setTenureYears(e.target.value)} className="w-full h-2 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-secondary" />
           </div>
-          <div className="bg-orange-50 p-4 rounded-xl border border-orange-100">
+          <div className="bg-secondary-fixed p-4 rounded-xl border border-secondary-fixed-dim">
             <div className="flex justify-between mb-2">
-              <label className="font-semibold text-brand-orange">{t.moratorium}</label>
-              <span className="font-bold text-white bg-brand-orange px-3 py-1 rounded-md">{moratorium} M</span>
+              <label className="label-md text-on-secondary-fixed-variant">{t.moratorium}</label>
+              <span className="font-bold text-on-secondary bg-secondary px-3 py-1 rounded-md">{moratorium} {lang === 'hi' ? 'महीने' : lang === 'as' ? 'মাহ' : 'Months'}</span>
             </div>
-            <input type="range" min="0" max="12" step="3" value={moratorium} onChange={(e) => setMoratorium(e.target.value)} className="w-full h-2 bg-orange-200 rounded-lg appearance-none cursor-pointer accent-brand-orange" />
+            <input type="range" min="0" max="12" step="3" value={moratorium} onChange={(e) => setMoratorium(e.target.value)} className="w-full h-2 bg-secondary-fixed-dim rounded-lg appearance-none cursor-pointer accent-secondary" />
           </div>
         </div>
-        <div className="p-8 md:w-2/5 bg-gradient-to-br from-brand-blue to-blue-800 text-white flex flex-col justify-center">
+        <div className="p-8 md:w-2/5 bg-primary-container text-on-primary-container flex flex-col justify-center">
           <div className="text-center mb-8">
-            <p className="text-blue-200 mb-1 font-medium">{t.monthlyEmi}</p>
-            <h3 className="text-5xl font-bold text-white drop-shadow-md">{formatCurrency(emi)}</h3>
+            <p className="body-md mb-1">{t.monthlyEmi}</p>
+            <h3 className="display-lg text-on-primary drop-shadow-md">{formatCurrency(emi)}</h3>
           </div>
         </div>
       </div>
@@ -336,6 +520,7 @@ const CalculatorPage = ({ lang }) => {
   );
 };
 
+// --- MULTI-STEP SCHEME FINDER ---
 // --- MULTI-STEP SCHEME FINDER ---
 // --- MULTI-STEP SCHEME FINDER ---
 // --- MULTI-STEP SCHEME FINDER ---
@@ -361,400 +546,688 @@ const FindScheme = ({ lang }) => {
   });
 
   return (
-    <div className="max-w-2xl mx-auto py-8">
-      <div className="text-center mb-8">
-        <h2 className="text-4xl font-extrabold text-brand-blue">{t.findTitle}</h2>
-        <p className="text-gray-600 mt-2">{t.findSub}</p>
-      </div>
-      <div className="bg-white p-8 rounded-3xl shadow-lg border border-gray-100">
-        
-        {/* Progress Bar (Now 7 steps) */}
-        <div className="w-full bg-gray-200 rounded-full h-2.5 mb-8">
-          <div className="bg-brand-orange h-2.5 rounded-full transition-all duration-500" style={{ width: `${(step / 7) * 100}%` }}></div>
-        </div>
-        
-        <div className="min-h-[280px]">
-          {/* STEP 1: PURPOSE */}
-          {step === 1 && (
-            <div className="animate-in fade-in duration-300">
-              <h3 className="text-xl font-bold text-gray-800 mb-6">{t.qPurpose}</h3>
-              <div className="grid grid-cols-2 gap-4">
-                {[{ id: 'startBiz', label: t.startBiz }, { id: 'expBiz', label: t.expBiz }, { id: 'edu', label: t.edu }, { id: 'artisan', label: t.artisan }].map(opt => (
-                  <button key={opt.id} onClick={() => setFormData({...formData, purpose: opt.id})} 
-                    className={`p-4 rounded-xl border-2 text-left font-semibold transition-all ${formData.purpose === opt.id ? 'border-brand-orange bg-orange-50 text-brand-orange' : 'border-gray-200 text-gray-600 hover:border-blue-200 hover:bg-blue-50'}`}>
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* STEP 2: AGE & GENDER */}
-          {step === 2 && (
-            <div className="animate-in fade-in duration-300">
-              <h3 className="text-xl font-bold text-gray-800 mb-6">{t.qAge}</h3>
-              <div className="mb-4 text-center text-4xl font-bold text-brand-blue">{formData.age}</div>
-              <input type="range" min="18" max="65" step="1" value={formData.age} onChange={(e) => setFormData({...formData, age: e.target.value})} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-brand-orange mb-8" />
-              
-              <label className="block text-sm font-semibold text-gray-700 mb-2">{t.gender}</label>
-              <div className="flex gap-4">
-                {[{ id: 'male', label: t.male }, { id: 'female', label: t.female }, { id: 'other', label: t.other }].map(g => (
-                  <button key={g.id} onClick={() => setFormData({...formData, gender: g.id})} 
-                    className={`flex-1 p-3 rounded-lg border-2 font-semibold transition-all ${formData.gender === g.id ? 'border-brand-orange bg-orange-50 text-brand-orange' : 'border-gray-200 text-gray-600 hover:border-blue-200'}`}>
-                    {g.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* STEP 3: LOCATION */}
-          {step === 3 && (
-            <div className="animate-in fade-in duration-300">
-              <h3 className="text-xl font-bold text-gray-800 mb-6">{t.qLoc}</h3>
-              
-              <label className="block text-sm font-semibold text-gray-700 mb-2">{t.state}</label>
-              <select value={formData.state} onChange={(e) => setFormData({...formData, state: e.target.value})} className="w-full p-4 rounded-lg border-2 border-gray-200 font-semibold text-gray-700 focus:outline-none focus:border-brand-blue mb-6">
-                <option value="Assam">Assam</option>
-                <option value="Delhi">Delhi</option>
-                <option value="Maharashtra">Maharashtra</option>
-              </select>
-
-              <div className="flex gap-4">
-                {[{ id: 'rural', label: t.rural }, { id: 'urban', label: t.urban }].map(a => (
-                  <button key={a.id} onClick={() => setFormData({...formData, area: a.id})} 
-                    className={`flex-1 p-3 rounded-lg border-2 font-semibold transition-all ${formData.area === a.id ? 'border-brand-orange bg-orange-50 text-brand-orange' : 'border-gray-200 text-gray-600 hover:border-blue-200'}`}>
-                    {a.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* STEP 4: AMOUNT */}
-          {step === 4 && (
-            <div className="animate-in fade-in duration-300">
-              <h3 className="text-xl font-bold text-gray-800 mb-6">{t.qAmt}</h3>
-              <div className="mb-4 text-center text-4xl font-bold text-brand-blue">
-                ₹ {new Intl.NumberFormat(lang + '-IN', { numberingSystem: lang === 'hi' ? 'deva' : lang === 'as' ? 'beng' : 'latn' }).format(formData.amount)}
-              </div>
-              <input type="range" min="10000" max="5000000" step="10000" value={formData.amount} onChange={(e) => setFormData({...formData, amount: e.target.value})} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-brand-orange mb-8" />
-            </div>
-          )}
-
-          {/* STEP 5: INCOME */}
-          {step === 5 && (
-            <div className="animate-in fade-in duration-300">
-              <h3 className="text-xl font-bold text-gray-800 mb-6">{t.qInc}</h3>
-              <div className="mb-4 text-center text-4xl font-bold text-brand-blue">
-                ₹ {new Intl.NumberFormat(lang + '-IN', { numberingSystem: lang === 'hi' ? 'deva' : lang === 'as' ? 'beng' : 'latn' }).format(formData.income)}
-              </div>
-              <input type="range" min="50000" max="500000" step="10000" value={formData.income} onChange={(e) => setFormData({...formData, income: e.target.value})} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-brand-orange mb-8" />
-            </div>
-          )}
-
-          {/* STEP 6: EDUCATION & SKILL */}
-          {step === 6 && (
-            <div className="animate-in fade-in duration-300">
-              <label className="block text-lg font-bold text-gray-800 mb-2">{t.eduLabel}</label>
-              <select value={formData.education} onChange={(e) => setFormData({...formData, education: e.target.value})} className="w-full p-4 rounded-lg border-2 border-gray-200 font-semibold text-gray-700 mb-6 focus:outline-none focus:border-brand-blue">
-                <option value="edu1">{t.edu1}</option>
-                <option value="edu2">{t.edu2}</option>
-                <option value="edu3">{t.edu3}</option>
-              </select>
-
-              <label className="block text-lg font-bold text-gray-800 mb-2">{t.qSkill}</label>
-              <div className="flex flex-col gap-3">
-                {[{ id: 'unskilled', label: t.unskilled }, { id: 'skilled', label: t.skilled }, { id: 'professional', label: t.professional }].map(s => (
-                  <button key={s.id} onClick={() => setFormData({...formData, skill: s.id})} 
-                    className={`w-full p-3 rounded-lg border-2 text-left font-semibold transition-all ${formData.skill === s.id ? 'border-brand-orange bg-orange-50 text-brand-orange' : 'border-gray-200 text-gray-600 hover:border-blue-200'}`}>
-                    {s.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* STEP 7: DOCUMENTS / ELIGIBILITY */}
-          {step === 7 && (
-            <div className="animate-in fade-in duration-300">
-              <h3 className="text-xl font-bold text-gray-800 mb-6">{t.qDocs}</h3>
-              
-              <label className="block text-sm font-semibold text-gray-700 mb-2">{t.hasCaste}</label>
-              <div className="flex gap-4 mb-6">
-                {[{ id: 'yes', label: t.yes }, { id: 'no', label: t.no }].map(ans => (
-                  <button key={ans.id} onClick={() => setFormData({...formData, hasCaste: ans.id})} 
-                    className={`flex-1 p-3 rounded-lg border-2 font-semibold transition-all ${formData.hasCaste === ans.id ? 'border-brand-orange bg-orange-50 text-brand-orange' : 'border-gray-200 text-gray-600 hover:border-blue-200'}`}>
-                    {ans.label}
-                  </button>
-                ))}
-              </div>
-
-              <label className="block text-sm font-semibold text-gray-700 mb-2">{t.isDisabled}</label>
-              <div className="flex gap-4">
-                {[{ id: 'yes', label: t.yes }, { id: 'no', label: t.no }].map(ans => (
-                  <button key={ans.id} onClick={() => setFormData({...formData, isDisabled: ans.id})} 
-                    className={`flex-1 p-3 rounded-lg border-2 font-semibold transition-all ${formData.isDisabled === ans.id ? 'border-brand-orange bg-orange-50 text-brand-orange' : 'border-gray-200 text-gray-600 hover:border-blue-200'}`}>
-                    {ans.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Navigation Buttons */}
-        <div className="flex justify-between mt-8 pt-6 border-t border-gray-100">
-          <button onClick={() => setStep(step - 1)} disabled={step === 1} className={`flex items-center px-6 py-3 rounded-xl font-bold transition-all ${step === 1 ? 'opacity-0' : 'text-gray-500 hover:bg-gray-100'}`}>
-            <ChevronLeft size={20} className="mr-1" /> {t.backBtn}
+    <div className="w-full max-w-7xl mx-auto py-8 px-4 h-full flex flex-col items-center">
+      
+      {/* Progress Header */}
+      <div className="w-full max-w-3xl mb-8">
+        <div className="flex justify-between items-center mb-2 relative">
+          <button 
+            onClick={() => step > 1 ? setStep(step - 1) : navigate(-1)} 
+            className="absolute -left-16 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors flex items-center font-semibold text-sm hidden md:flex"
+            title="Go Back"
+          >
+            <ChevronLeft size={20} /> {t.backBtn}
           </button>
-          {step < 7 ? (
-            <button onClick={() => setStep(step + 1)} disabled={step === 1 && !formData.purpose} className="flex items-center px-8 py-3 bg-brand-blue hover:bg-blue-700 text-white rounded-xl font-bold shadow-md disabled:opacity-50 transition-all">
-              {t.nextBtn} <ChevronRight size={20} className="ml-1" />
-            </button>
-          ) : (
-            <button onClick={() => navigate('/results', { state: { formData } })} className="flex items-center px-8 py-3 bg-brand-orange hover:bg-orange-600 text-white rounded-xl font-bold shadow-md transition-all hover:scale-105">
-  {t.matchBtn} <BrainCircuit size={20} className="ml-2" />
-</button>
-          )}
+          <span className="text-sm font-medium text-on-surface-variant uppercase tracking-wider">{t.step} {step} {t.of} 7</span>
+          <span className="text-sm font-medium text-secondary">{t.tellUs}</span>
         </div>
+        <div className="h-2 w-full bg-surface-container-high rounded-full overflow-hidden">
+          <div className="h-full bg-gradient-to-r from-primary-container to-secondary rounded-full transition-all duration-500" style={{ width: `${(step / 7) * 100}%` }}></div>
+        </div>
+      </div>
+
+      <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        {/* Main Questions Area */}
+        <div className="lg:col-span-8 flex flex-col gap-6">
+          <div className="min-h-[400px]">
+              {/* STEP 1: PURPOSE */}
+              {step === 1 && (
+                <div className="animate-in fade-in duration-300">
+                  <h3 className="text-3xl font-bold text-on-surface mb-8">{t.qPurpose}</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {[
+                      { id: 'startBiz', label: t.startBiz, icon: <Landmark size={24} /> },
+                      { id: 'expBiz', label: t.expBiz, icon: <BrainCircuit size={24} /> },
+                      { id: 'purchaseEq', label: t.purchaseEq, icon: <MapPin size={24} /> },
+                      { id: 'workingCap', label: t.workingCap, icon: <ShieldCheck size={24} /> },
+                      { id: 'edu', label: t.edu, icon: <Calculator size={24} /> }
+                    ].map(opt => (
+                      <button key={opt.id} onClick={() => setFormData({...formData, purpose: opt.id})} 
+                        className={`p-6 rounded-xl border flex flex-col items-start gap-4 transition-all text-left ${formData.purpose === opt.id ? 'border-secondary bg-surface text-on-surface shadow-sm ring-1 ring-secondary' : 'border-surface-container text-on-surface hover:border-outline-variant hover:bg-surface-container-lowest bg-surface-container-lowest shadow-sm'}`}>
+                        <div className={`p-2 rounded-lg ${formData.purpose === opt.id ? 'bg-secondary-fixed text-secondary' : 'bg-surface-container text-on-surface-variant'}`}>
+                          {opt.icon}
+                        </div>
+                        <span className="font-semibold text-lg">{opt.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* STEP 2: AGE & GENDER */}
+              {step === 2 && (
+                <div className="animate-in fade-in duration-300">
+                  <h3 className="text-3xl font-bold text-on-surface mb-8">{t.qAge}</h3>
+                  <div className="mb-4 text-center display-lg text-primary">{formData.age}</div>
+                  <input type="range" min="18" max="65" step="1" value={formData.age} onChange={(e) => setFormData({...formData, age: e.target.value})} className="w-full h-2 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-secondary mb-12" />
+                  
+                  <h3 className="text-3xl font-bold text-on-surface mb-8">{t.gender}</h3>
+                  <div className="grid grid-cols-3 gap-4">
+                    {[{ id: 'male', label: t.male }, { id: 'female', label: t.female }, { id: 'other', label: t.other }].map(g => (
+                      <button key={g.id} onClick={() => setFormData({...formData, gender: g.id})} 
+                        className={`p-4 rounded-xl border flex justify-center items-center font-semibold transition-all ${formData.gender === g.id ? 'border-secondary bg-surface text-on-surface shadow-sm ring-1 ring-secondary' : 'border-surface-container text-on-surface hover:border-outline-variant hover:bg-surface-container-lowest bg-surface-container-lowest shadow-sm'}`}>
+                        {g.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* STEP 3: LOCATION */}
+              {step === 3 && (
+                <div className="animate-in fade-in duration-300">
+                  <h3 className="text-3xl font-bold text-on-surface mb-8">{t.qLoc}</h3>
+                  
+                  <label className="block label-md text-on-surface mb-2">{t.state}</label>
+                  <select value={formData.state} onChange={(e) => setFormData({...formData, state: e.target.value})} className="form-input w-full p-4 text-on-surface mb-8 bg-surface-container-lowest shadow-sm">
+                    <option value="Assam">{lang === 'hi' ? 'असम' : lang === 'as' ? 'অসম' : 'Assam'}</option>
+                    <option value="Delhi">{lang === 'hi' ? 'दिल्ली' : lang === 'as' ? 'দিল্লী' : 'Delhi'}</option>
+                    <option value="Maharashtra">{lang === 'hi' ? 'महाराष्ट्र' : lang === 'as' ? 'মহাৰাষ্ট্ৰ' : 'Maharashtra'}</option>
+                  </select>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    {[{ id: 'rural', label: t.rural }, { id: 'urban', label: t.urban }].map(a => (
+                      <button key={a.id} onClick={() => setFormData({...formData, area: a.id})} 
+                        className={`p-6 rounded-xl border flex justify-center items-center font-semibold text-lg transition-all ${formData.area === a.id ? 'border-secondary bg-surface text-on-surface shadow-sm ring-1 ring-secondary' : 'border-surface-container text-on-surface hover:border-outline-variant hover:bg-surface-container-lowest bg-surface-container-lowest shadow-sm'}`}>
+                        {a.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* STEP 4: AMOUNT */}
+              {step === 4 && (
+                <div className="animate-in fade-in duration-300">
+                  <h3 className="text-3xl font-bold text-on-surface mb-8">{t.qAmt}</h3>
+                  <div className="mb-4 text-center display-lg text-primary">
+                    ₹ {new Intl.NumberFormat(lang + '-IN', { numberingSystem: lang === 'hi' ? 'deva' : lang === 'as' ? 'beng' : 'latn' }).format(formData.amount)}
+                  </div>
+                  <input type="range" min="10000" max="5000000" step="10000" value={formData.amount} onChange={(e) => setFormData({...formData, amount: e.target.value})} className="w-full h-2 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-secondary mb-8" />
+                </div>
+              )}
+
+              {/* STEP 5: INCOME */}
+              {step === 5 && (
+                <div className="animate-in fade-in duration-300">
+                  <h3 className="text-3xl font-bold text-on-surface mb-8">{t.qInc}</h3>
+                  <div className="mb-4 text-center display-lg text-primary">
+                    ₹ {new Intl.NumberFormat(lang + '-IN', { numberingSystem: lang === 'hi' ? 'deva' : lang === 'as' ? 'beng' : 'latn' }).format(formData.income)}
+                  </div>
+                  <input type="range" min="50000" max="500000" step="10000" value={formData.income} onChange={(e) => setFormData({...formData, income: e.target.value})} className="w-full h-2 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-secondary mb-8" />
+                </div>
+              )}
+
+              {/* STEP 6: EDUCATION & SKILL */}
+              {step === 6 && (
+                <div className="animate-in fade-in duration-300">
+                  <h3 className="text-3xl font-bold text-on-surface mb-8">{t.eduLabel}</h3>
+                  <select value={formData.education} onChange={(e) => setFormData({...formData, education: e.target.value})} className="form-input w-full p-4 text-on-surface mb-8 bg-surface-container-lowest shadow-sm">
+                    <option value="edu1">{t.edu1}</option>
+                    <option value="edu2">{t.edu2}</option>
+                    <option value="edu3">{t.edu3}</option>
+                  </select>
+
+                  {formData.purpose !== 'edu' && (
+                    <>
+                      <h3 className="text-3xl font-bold text-on-surface mb-8">{t.qSkill}</h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        {[{ id: 'unskilled', label: t.unskilled }, { id: 'skilled', label: t.skilled }, { id: 'professional', label: t.professional }].map(s => (
+                          <button key={s.id} onClick={() => setFormData({...formData, skill: s.id})} 
+                            className={`p-4 rounded-xl border flex justify-center items-center font-semibold text-center transition-all ${formData.skill === s.id ? 'border-secondary bg-surface text-on-surface shadow-sm ring-1 ring-secondary' : 'border-surface-container text-on-surface hover:border-outline-variant hover:bg-surface-container-lowest bg-surface-container-lowest shadow-sm'}`}>
+                            {s.label}
+                          </button>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+
+              {/* STEP 7: DOCUMENTS / ELIGIBILITY */}
+              {step === 7 && (
+                <div className="animate-in fade-in duration-300">
+                  <h3 className="text-3xl font-bold text-on-surface mb-8">{t.qDocs}</h3>
+                  
+                  <label className="block text-lg font-bold text-on-surface mb-4">{t.hasCaste}</label>
+                  <div className="grid grid-cols-2 gap-4 mb-8">
+                    {[{ id: 'yes', label: t.yes }, { id: 'no', label: t.no }].map(ans => (
+                      <button key={ans.id} onClick={() => setFormData({...formData, hasCaste: ans.id})} 
+                        className={`p-4 rounded-xl border font-semibold text-center transition-all ${formData.hasCaste === ans.id ? 'border-secondary bg-surface text-on-surface shadow-sm ring-1 ring-secondary' : 'border-surface-container text-on-surface hover:border-outline-variant hover:bg-surface-container-lowest bg-surface-container-lowest shadow-sm'}`}>
+                        {ans.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  <label className="block text-lg font-bold text-on-surface mb-4">{t.isDisabled}</label>
+                  <div className="grid grid-cols-2 gap-4">
+                    {[{ id: 'yes', label: t.yes }, { id: 'no', label: t.no }].map(ans => (
+                      <button key={ans.id} onClick={() => setFormData({...formData, isDisabled: ans.id})} 
+                        className={`p-4 rounded-xl border font-semibold text-center transition-all ${formData.isDisabled === ans.id ? 'border-secondary bg-surface text-on-surface shadow-sm ring-1 ring-secondary' : 'border-surface-container text-on-surface hover:border-outline-variant hover:bg-surface-container-lowest bg-surface-container-lowest shadow-sm'}`}>
+                        {ans.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+          {/* Navigation Buttons */}
+          <div className="flex justify-end items-center w-full mt-6">
+            {step < 7 ? (
+              <button onClick={() => setStep(step + 1)} disabled={step === 1 && !formData.purpose} className="px-6 py-3 rounded-lg bg-primary-container text-white font-medium hover:bg-primary transition-colors flex items-center gap-2 shadow-sm hover:shadow-md disabled:opacity-50">
+                {t.continueBtn}
+                <ChevronRight size={20} />
+              </button>
+            ) : (
+              <button onClick={() => navigate('/results', { state: { formData } })} className="px-6 py-3 rounded-lg bg-primary-container text-white font-medium hover:bg-primary transition-colors flex items-center gap-2 shadow-sm hover:shadow-md">
+                {t.matchBtn}
+                <ChevronRight size={20} />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Sidebar / Helper */}
+        <div className="lg:col-span-4 mt-8 lg:mt-0">
+          <div className="bg-surface-container-lowest rounded-xl p-6 shadow-ambient border-l-4 border-secondary sticky top-24">
+            <div className="flex items-start gap-4">
+              <div className="mt-1 w-8 h-8 rounded-full bg-secondary-fixed flex items-center justify-center text-secondary shrink-0">
+                <BrainCircuit size={18} />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-primary mb-2">{t.smartMatchBoxTitle}</h3>
+                <p className="text-sm text-on-surface-variant leading-relaxed">
+                  {t.smartMatchBoxDesc}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   );
 };
 
 
-// --- RESULTS PAGE & EMBEDDED AI CHATBOT ---
+// --- RESULTS PAGE ---
 const ResultsPage = ({ lang }) => {
   const t = translations[lang];
   const location = useLocation();
-  const data = location.state?.formData; // The answers from the form
+  const formData = location.state?.formData;
+  const navigate = useNavigate();
 
-  // Run the rule-based engine first
-  let matchedScheme = { title: t.mcfTitle, desc: t.mcfDesc };
-  let matchPercentage = "98% MATCH";
+  // SMART MATCHING ENGINE (AI / Rules-based)
+  let engineMatches = [];
   let isEligible = true;
+  let ineligibilityReason = "";
 
-  if (data) {
-    if (data.hasCaste === 'no' || Number(data.income) > 500000) {
-      matchedScheme = { title: t.schemeNone, desc: t.descNone };
-      matchPercentage = "0% MATCH";
+  if (formData) {
+    if (formData.hasCaste === 'no') {
       isEligible = false;
-    } else if (data.purpose === 'edu') {
-      matchedScheme = { title: t.schemeEdu, desc: t.descEdu };
-    } else if (data.purpose === 'artisan' || data.skill === 'skilled') {
-      matchedScheme = { title: t.schemeSSY, desc: t.descSSY };
-    } else if (data.gender === 'female' && Number(data.amount) <= 140000) {
-      matchedScheme = { title: t.schemeMSY, desc: t.descMSY };
-    } else if (Number(data.amount) <= 140000) {
-      matchedScheme = { title: t.mcfTitle, desc: t.mcfDesc };
-    } else {
-      matchedScheme = { title: t.schemeTerm, desc: t.descTerm };
+      ineligibilityReason = "NSFDC schemes strictly require a valid Scheduled Caste (SC) certificate. Based on your input, you do not meet this mandatory criteria.";
+    } else if (Number(formData.income) > 300000) {
+      isEligible = false;
+      ineligibilityReason = "Your family income exceeds the ₹3.00 Lakh limit for NSFDC schemes. These schemes are strictly targeted at marginalized entrepreneurs.";
+    }
+
+    if (isEligible) {
+      allSchemesData.forEach(scheme => {
+        let score = 0;
+        let reasons = [];
+        
+        if (scheme.id === 'nsfdc-credit-line' && formData.purpose !== 'edu') {
+          score += 70;
+          reasons.push("Your project aligns with business expansion/startup.");
+          if (Number(formData.amount) > 140000) { score += 25; reasons.push("Requested amount fits higher term loan limits."); }
+        }
+        
+        if (scheme.id === 'mahila-samriddhi' && formData.purpose !== 'edu' && formData.gender === 'female') {
+          score += 90;
+          reasons.push("Perfect match: Specialized scheme for female entrepreneurs.");
+          if (Number(formData.amount) <= 140000) { score += 8; reasons.push("Amount fits micro-finance limits."); }
+        }
+
+        if (scheme.id === 'shilpi-samriddhi' && formData.purpose !== 'edu' && formData.skill === 'skilled') {
+          score += 90;
+          reasons.push("Perfect match: Specifically designed for skilled artisans.");
+          if (Number(formData.amount) <= 140000) { score += 8; reasons.push("Amount fits micro-finance limits."); }
+        }
+
+        if (scheme.id === 'nsfdc-education' && formData.purpose === 'edu') {
+          score += 98;
+          reasons.push("Direct match for educational funding.");
+        }
+
+        if (scheme.id === 'mudra-shishu' && formData.purpose !== 'edu' && Number(formData.amount) <= 50000) {
+          score += 80;
+          reasons.push("Amount is small enough for a quick MUDRA Shishu micro-loan (zero collateral).");
+        }
+
+        if (score > 0) {
+          // parse interest number for the calculator (e.g. "4% p.a." -> 4)
+          const intMatch = scheme.interest.match(/(\d+)/);
+          const intVal = intMatch ? Number(intMatch[1]) : 4;
+          
+          engineMatches.push({
+            ...scheme,
+            matchScore: score,
+            match: `${score}%`,
+            desc: scheme.shortDesc,
+            why: reasons.join(" "),
+            amount: scheme.maxAmount,
+            calcInterest: intVal
+          });
+        }
+      });
+      engineMatches.sort((a, b) => b.matchScore - a.matchScore);
     }
   }
 
-  // AI Chatbot State
-  const [messages, setMessages] = useState([
-    { 
-      role: 'model', 
-      text: data 
-        ? `I matched you with the ${matchedScheme.title}! However, there are 4 other schemes you might qualify for depending on your exact business. Tell me a bit more about what you want to do, and I'll find the absolute perfect one.`
-        : `Hi! I'm the SchemeSetu AI. Tell me what you need funding for, and I'll find the perfect government scheme for you.`
-    }
-  ]);
-  const [input, setInput] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
-  const chatEndRef = React.useRef(null);
+  const matchedSchemes = engineMatches;
+  const topScheme = matchedSchemes[0];
 
-  React.useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  // Mini EMI Calculator State
+  const [loanAmt, setLoanAmt] = useState(formData?.amount || '300000');
+  const [tenure, setTenure] = useState('5');
 
-    const handleSend = async () => {
-    console.log("1. Button clicked!");
-    if (!input.trim()) return;
-    const userText = input;
-    
-    setMessages(prev => [...prev, { role: 'user', text: userText }]);
-    setInput('');
-    setIsTyping(true);
-    console.log("2. State updated, starting try block...");
-
-      try {
-      console.log("3. Initializing AI Key...");
-      const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY }); 
-      
-      const prompt = `You are a helpful AI assistant for marginalized entrepreneurs in India looking for NSFDC schemes. 
-      The user previously inputted these details in a form: ${JSON.stringify(data || {})}.
-      The system recommended: ${matchedScheme?.title}.
-      The user just said: "${userText}".
-      Keep your answer short, friendly, under 3 sentences, and ask a follow up question to help them.`;
-      
-      console.log("4. Sending bulletproof request...");
-      
-      // USING THE STABLE GENERATE CONTENT METHOD
-      const response = await ai.models.generateContent({
-        model: "gemini-3.5-flash-lite",
-        contents: prompt,
-      });
-      
-      console.log("5. Got response!");
-      setMessages(prev => [...prev, { role: 'model', text: response.text }]);
-      console.log("6. Finished updating chat!");
-      
-    } catch (err) {
-      console.error("7. ERROR CAUGHT:", err);
-      setMessages(prev => [...prev, { role: 'model', text: "I'm having a little trouble connecting." }]);
-    } finally {
-      console.log("8. Turning off 'AI is thinking' animation...");
-      setIsTyping(false); 
-    }
-  };
+  const p = Number(loanAmt);
+  const r = (topScheme?.calcInterest || 4) / 12 / 100;
+  const emiMonths = Number(tenure) * 12;
+  const emi = (p > 0 && emiMonths > 0) ? (p * r * Math.pow(1 + r, emiMonths)) / (Math.pow(1 + r, emiMonths) - 1) : 0;
 
   return (
-    <div className="max-w-7xl mx-auto py-8 animate-in fade-in duration-500">
-      <div className="flex flex-col lg:flex-row gap-8">
+    <main className="flex-grow w-full max-w-7xl mx-auto px-4 py-12 animate-in fade-in duration-500">
+      {/* Header Section */}
+      <div className="mb-12 flex flex-col gap-2">
+        <h1 className="text-4xl md:text-5xl font-bold text-primary">{t.resultsTitle}</h1>
+        {isEligible && matchedSchemes.length > 0 ? (
+          <p className="text-lg text-on-surface-variant">{t.resultsSub}</p>
+        ) : (
+          <p className="text-lg text-red-600">{t.noMatchDesc}</p>
+        )}
+      </div>
+      
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         
-        {/* LEFT SIDE: The Rule-Based Match */}
-        <div className="w-full lg:w-1/3 flex flex-col gap-6">
-          <h2 className="text-3xl font-extrabold text-brand-blue">{t.resultsTitle}</h2>
-          <p className="text-gray-600">{t.resultsSub}</p>
-          
-          <div className={`bg-white p-6 rounded-3xl border-2 ${isEligible ? 'border-brand-orange' : 'border-red-500'} shadow-xl relative overflow-hidden`}>
-            <div className={`absolute top-0 right-0 ${isEligible ? 'bg-brand-orange' : 'bg-red-500'} text-white text-xs font-bold px-4 py-1.5 rounded-bl-xl`}>
-              {matchPercentage}
-            </div>
-            <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-4 ${isEligible ? 'bg-orange-50 text-brand-orange' : 'bg-red-50 text-red-500'}`}>
-              {isEligible ? <ShieldCheck size={24} /> : <X size={24} />}
-            </div>
-            <h3 className={`text-2xl font-bold ${isEligible ? 'text-brand-blue' : 'text-red-600'} mb-3`}>
-              {matchedScheme.title}
-            </h3>
-            <p className="text-gray-600 mb-6 leading-relaxed">{matchedScheme.desc}</p>
-            
-            {isEligible && (
-              <Link to="/partners" className="w-full block text-center bg-brand-blue text-white font-bold py-3 px-4 rounded-xl hover:bg-blue-800 transition-all shadow-md">
-                {t.navLocate}
-              </Link>
-            )}
-          </div>
+        {/* Left Side: Recommended Schemes */}
+        <div className="lg:col-span-8 flex flex-col gap-6">
+          {!isEligible ? (
+             <div className="p-8 bg-red-50 text-red-900 rounded-xl border border-red-200">
+               <h3 className="text-2xl font-bold mb-4 text-red-800">{t.notEligibleTitle}</h3>
+               <p className="text-lg mb-6">{ineligibilityReason}</p>
+               <button onClick={() => navigate('/find')} className="btn-primary">{t.editProfileBtn}</button>
+             </div>
+          ) : matchedSchemes.length === 0 ? (
+             <div className="p-8 bg-surface-container rounded-xl border border-outline-variant">
+               <h3 className="text-2xl font-bold mb-4">{t.noMatchTitle}</h3>
+               <p className="text-lg mb-6">{t.noMatchDesc}</p>
+               <div className="flex gap-4">
+                 <button onClick={() => navigate('/find')} className="btn-primary">{t.editProfileBtn}</button>
+                 <button onClick={() => navigate('/explore')} className="btn-ghost">{t.exploreSchemes}</button>
+               </div>
+             </div>
+          ) : (
+            matchedSchemes.map((s, idx) => (
+              <div key={idx} className={`card-ambient border bg-surface-container-lowest ${idx === 0 ? 'border-secondary shadow-md' : 'border-surface-container'}`}>
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h3 className="headline-md text-on-surface">{s.name}</h3>
+                    <p className="text-on-surface-variant text-sm mt-1">{s.desc}</p>
+                  </div>
+                  <div className={`px-3 py-1 rounded-full text-xs font-bold border ${idx === 0 ? 'bg-secondary-fixed text-secondary border-secondary/30' : 'bg-surface-container text-on-surface border-outline'}`}>
+                    <BrainCircuit size={12} className="inline mr-1" /> {s.matchScore}% {t.matchString}
+                  </div>
+                </div>
+
+                {/* detailed match reason for top match */}
+                {idx === 0 && s.why && (
+                  <div className="mb-6 p-4 bg-surface-container-lowest border border-outline-variant rounded-lg">
+                    <p className="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">{t.whyMatch}</p>
+                    <p className="text-sm text-on-surface flex items-start gap-2">
+                      <ShieldCheck size={16} className="text-status-eligible flex-shrink-0 mt-0.5" /> 
+                      {s.why}
+                    </p>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+                  <div className="bg-surface-container-lowest p-3 rounded-lg border border-surface-container">
+                    <p className="text-xs text-on-surface-variant mb-1 uppercase">{t.maxLoanAmt}</p>
+                    <p className="font-bold text-on-surface">{s.amount}</p>
+                  </div>
+                  <div className="bg-surface-container-lowest p-3 rounded-lg border border-surface-container">
+                    <p className="text-xs text-on-surface-variant mb-1 uppercase">Interest Rate</p>
+                    <p className="font-bold text-on-surface">{s.interest || 'Varies'}</p>
+                  </div>
+                  {s.emi && (
+                    <div className="bg-surface-container-lowest p-3 rounded-lg border border-surface-container">
+                      <p className="text-xs text-on-surface-variant mb-1 uppercase">Est. EMI</p>
+                      <p className="font-bold text-on-surface">{s.emi}</p>
+                    </div>
+                  )}
+                  <div className="bg-surface-container-lowest p-3 rounded-lg border border-surface-container">
+                    <p className="text-xs text-on-surface-variant mb-1 uppercase">{t.interestRate}</p>
+                    <p className="font-bold text-on-surface">{s.interest}</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  {idx === 0 ? (
+                    <>
+                      <button onClick={() => s.id && navigate(`/scheme/${s.id}`)} className="btn-primary flex-1 py-2.5">{t.viewDetailsApply}</button>
+                      <button onClick={() => navigate('/partners', { state: { topSchemeId: s.id } })} className="btn-ghost flex-1 py-2.5 bg-surface-container hover:bg-surface-container-high border border-outline-variant">
+                        <MapPin size={16} className="mr-2 inline" /> {t.findPartnerBtn}
+                      </button>
+                    </>
+                  ) : (
+                    <button onClick={() => s.id && navigate(`/scheme/${s.id}`)} className="text-secondary font-bold hover:underline flex items-center ml-auto">
+                      {t.viewDetailsApply} <ChevronRight size={16} />
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))
+          )}
         </div>
 
-        {/* RIGHT SIDE: The AI Chat Interface */}
-        <div className="w-full lg:w-2/3 bg-white rounded-3xl shadow-2xl border border-blue-100 flex flex-col h-[600px] overflow-hidden">
-          <div className="bg-gradient-to-r from-brand-blue to-blue-800 p-6 text-white flex justify-between items-center shadow-md z-10">
-            <div>
-              <h3 className="font-bold text-xl flex items-center"><BrainCircuit className="mr-3" size={28}/> SchemeSetu AI Advisor</h3>
-              <p className="text-blue-200 text-sm mt-1">Smarter than filters. Ask me anything.</p>
+        {/* Right Side: Calculator & Guidance */}
+        <aside className="lg:col-span-4 flex flex-col gap-6 mt-6 lg:mt-0">
+          
+          {/* Dark EMI Calculator Card */}
+          <div className="bg-primary text-on-primary rounded-xl p-6 shadow-sm relative overflow-hidden">
+            <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '20px 20px' }}></div>
+            <div className="relative z-10 flex flex-col gap-4">
+              <div className="flex items-center gap-2">
+                <Calculator size={24} className="text-secondary-fixed" />
+                <h3 className="text-lg font-bold">{t.emiCalcTitle || "Estimated EMI Calculator"}</h3>
+              </div>
+              <p className="text-sm text-primary-container-light opacity-80 leading-relaxed">
+                {t.emiCalcDesc || "Quickly see how different amounts affect your monthly payments based on typical scheme rates."}
+              </p>
+
+              <div className="bg-surface/10 rounded-lg p-4 mt-2">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-xs text-primary-container-light uppercase tracking-wider">{t.loanAmt || "Loan Amount"}</span>
+                  <span className="font-bold">₹{new Intl.NumberFormat(lang + '-IN').format(loanAmt)}</span>
+                </div>
+                <input type="range" min="50000" max="5000000" step="10000" value={loanAmt} onChange={(e) => setLoanAmt(e.target.value)} className="w-full h-2 bg-white/20 rounded-lg appearance-none cursor-pointer accent-secondary-fixed" />
+              </div>
+              
+              <div className="bg-surface/10 rounded-lg p-4">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-xs text-primary-container-light uppercase tracking-wider">{t.tenure || "Tenure"}</span>
+                  <span className="font-bold">{tenure} {t.years || "Years"}</span>
+                </div>
+                <input type="range" min="1" max="15" step="1" value={tenure} onChange={(e) => setTenure(e.target.value)} className="w-full h-2 bg-white/20 rounded-lg appearance-none cursor-pointer accent-secondary-fixed" />
+              </div>
+
+              <div className="mt-2 flex justify-between items-end border-t border-white/20 pt-4">
+                <span className="text-sm opacity-90">{t.monthlyEmi || "Monthly EMI"}</span>
+                <span className="text-3xl font-bold tracking-tight">₹{new Intl.NumberFormat(lang + '-IN', { maximumFractionDigits: 0 }).format(emi)}</span>
+              </div>
+
+              <button onClick={() => navigate('/calculator')} className="w-full bg-secondary text-white py-3 rounded-lg font-bold hover:bg-opacity-90 transition-colors mt-2 text-center">
+                {t.adjustCalc || "Adjust Calculator"}
+              </button>
             </div>
           </div>
-          
-          <div className="flex-grow p-6 overflow-y-auto bg-gray-50 flex flex-col gap-4">
-            {messages.map((m, i) => (
-              <div key={i} className={`max-w-[85%] p-4 rounded-2xl shadow-sm ${m.role === 'model' ? 'bg-white border border-gray-200 text-gray-800 self-start rounded-tl-sm' : 'bg-brand-blue text-white self-end rounded-tr-sm'}`}>
-                {m.text}
-              </div>
-            ))}
-            {isTyping && (
-              <div className="text-gray-500 text-sm italic bg-white w-fit px-4 py-2 rounded-full border border-gray-200 animate-pulse">
-                AI is thinking...
-              </div>
-            )}
-            <div ref={chatEndRef} />
-          </div>
-          
-          <div className="p-4 bg-white border-t border-gray-100 flex gap-3">
-            <input 
-              type="text" 
-              value={input} 
-              onChange={e => setInput(e.target.value)} 
-              onKeyPress={e => e.key === 'Enter' && handleSend()} 
-              placeholder="Type your message here..." 
-              className="flex-grow bg-gray-100 p-4 rounded-xl outline-none focus:ring-2 focus:ring-brand-blue transition-all" 
-            />
-            <button onClick={handleSend} disabled={isTyping} className="bg-brand-orange hover:bg-orange-600 disabled:bg-gray-400 text-white px-6 rounded-xl transition-all hover:scale-105 shadow-md flex items-center justify-center">
-              <Send size={24}/>
+
+          {/* Support Callout */}
+          <div className="bg-surface-container-lowest rounded-xl p-6 shadow-ambient flex flex-col gap-3 border border-outline-variant/30">
+            <div className="flex items-center gap-2 text-primary">
+              <MessageCircle size={24} />
+              <h3 className="text-lg font-bold">Need Guidance?</h3>
+            </div>
+            <p className="text-sm text-on-surface-variant leading-relaxed">Navigating schemes can be complex. Connect with an official partner for free assistance.</p>
+            <button onClick={() => navigate('/partners')} className="text-secondary font-bold text-sm mt-2 flex items-center gap-1 hover:underline">
+              {t.findPartnerBtn || "Find a local partner"} <ChevronRight size={16} />
             </button>
           </div>
-        </div>
+        </aside>
+      </div>
+    </main>
+  );
+};
 
+// --- EXPLORE SCHEMES PAGE ---
+const ExploreSchemes = ({ lang }) => {
+  const t = translations[lang];
+  return (
+    <div className="max-w-7xl mx-auto py-8 px-4 animate-in fade-in duration-500">
+      <div className="mb-8 flex flex-col gap-2">
+        <h1 className="text-4xl md:text-5xl font-bold text-primary">{t.exploreTitle}</h1>
+        <p className="text-lg text-on-surface-variant max-w-2xl">{t.exploreSub}</p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {allSchemesData.map((scheme) => (
+          <div key={scheme.id} className="card-ambient border border-surface-container bg-surface-container-lowest rounded-xl p-6 flex flex-col hover:-translate-y-1 hover:shadow-md transition-all duration-300">
+            <div className="mb-4">
+              <span className="inline-block px-3 py-1 bg-secondary-fixed text-secondary text-xs font-bold rounded-full mb-3">
+                {scheme.target}
+              </span>
+              <h3 className="text-xl font-bold text-on-surface mb-2 leading-tight">{scheme.name}</h3>
+              <p className="text-sm text-on-surface-variant line-clamp-2">{scheme.shortDesc}</p>
+            </div>
+            
+            <div className="mt-auto pt-4 border-t border-surface-container grid grid-cols-2 gap-4 mb-6">
+              <div>
+                <p className="text-xs text-on-surface-variant uppercase tracking-wider mb-1">{t.maxLoanAmt}</p>
+                <p className="font-bold text-primary">{scheme.maxAmount}</p>
+              </div>
+              <div>
+                <p className="text-xs text-on-surface-variant uppercase tracking-wider mb-1">{t.interestRate}</p>
+                <p className="font-bold text-primary">{scheme.interest}</p>
+              </div>
+            </div>
+
+            <Link to={`/scheme/${scheme.id}`} className="w-full bg-primary-container text-primary font-bold py-2.5 rounded-lg text-center hover:bg-primary hover:text-white transition-colors flex items-center justify-center gap-2">
+              {t.viewDetailsApply} <ChevronRight size={16} />
+            </Link>
+          </div>
+        ))}
       </div>
     </div>
   );
 };
 
-// --- PARTNERS MAP PAGE ---
-// --- PARTNERS MAP PAGE ---
-const PartnersPage = ({ lang }) => {
+const SchemeDetails = ({ lang }) => {
   const t = translations[lang];
-  const [searchTerm, setSearchTerm] = useState('');
-  const [userLoc, setUserLoc] = useState(null);
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const scheme = allSchemesData.find(s => s.id === id);
 
-  // MOCK DATA: Notice how Bank #2 has eligible: false because of high NPA!
-  const dummyPartners = [
-    { id: 1, name: "Assam Financial Corp", type: "SCA", city: "Guwahati", lat: 26.1445, lng: 91.7362, eligible: true, npa: "2.1%" },
-    { id: 2, name: "Guwahati Co-op Bank", type: "Bank", city: "Guwahati", lat: 26.1800, lng: 91.7500, eligible: false, npa: "18.4%" },
-    { id: 3, name: "Nagaon Rural Bank", type: "RRB", city: "Nagaon", lat: 26.3480, lng: 92.6840, eligible: true, npa: "4.5%" }
-  ];
-
-  const filteredPartners = dummyPartners.filter(p => p.city.toLowerCase().includes(searchTerm.toLowerCase()));
-
-  // Get User's real GPS Location
-  const handleLocate = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((pos) => {
-        setUserLoc([pos.coords.latitude, pos.coords.longitude]);
-      }, () => alert("Location access denied. Please enable location permissions."));
-    } else {
-      alert("Geolocation is not supported by your browser.");
-    }
-  };
+  if (!scheme) {
+    return (
+      <div className="text-center py-20">
+        <h2 className="text-2xl font-bold text-on-surface">Scheme not found</h2>
+        <button onClick={() => navigate('/explore')} className="mt-4 text-secondary hover:underline">Back to Explore</button>
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-6xl mx-auto py-4 h-[80vh] flex flex-col animate-in fade-in duration-500">
-      <div className="text-center mb-6">
-        <h2 className="text-4xl font-extrabold text-brand-blue">{t.mapTitle}</h2>
-        <p className="text-gray-600 mt-2 text-lg">{t.mapSub}</p>
+    <div className="max-w-4xl mx-auto py-8 px-4 animate-in slide-in-from-bottom-4 duration-500">
+      
+      <button onClick={() => navigate('/explore')} className="flex items-center text-sm font-bold text-on-surface-variant hover:text-primary mb-6 transition-colors">
+        <ChevronLeft size={16} className="mr-1" /> {t.backBtn}
+      </button>
+
+      <div className="card-ambient bg-surface-container-lowest border border-surface-container rounded-2xl overflow-hidden shadow-sm">
+        <div className="bg-primary p-8 text-on-primary">
+          <span className="inline-block px-3 py-1 bg-white/20 text-white text-xs font-bold rounded-full mb-4">
+            {scheme.target}
+          </span>
+          <h1 className="text-3xl md:text-4xl font-bold mb-4">{scheme.name}</h1>
+          <p className="text-primary-container-light text-lg leading-relaxed max-w-2xl">{scheme.shortDesc}</p>
+        </div>
+
+        <div className="p-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+            <div className="bg-surface-container p-4 rounded-xl border border-outline-variant/30">
+              <p className="text-xs text-on-surface-variant uppercase tracking-wider mb-1">{t.maxLoanAmt}</p>
+              <p className="text-xl font-bold text-primary">{scheme.maxAmount}</p>
+            </div>
+            <div className="bg-surface-container p-4 rounded-xl border border-outline-variant/30">
+              <p className="text-xs text-on-surface-variant uppercase tracking-wider mb-1">{t.interestRate}</p>
+              <p className="text-xl font-bold text-primary">{scheme.interest}</p>
+            </div>
+            <div className="bg-surface-container p-4 rounded-xl border border-outline-variant/30 flex items-center justify-center">
+               <button onClick={() => navigate('/calculator')} className="text-secondary font-bold hover:underline flex items-center gap-1">
+                 <Calculator size={16} /> {t.emiBtn}
+               </button>
+            </div>
+          </div>
+
+          <div className="space-y-8">
+            <section>
+              <h3 className="text-xl font-bold text-on-surface mb-4 flex items-center gap-2">
+                <ShieldCheck className="text-secondary" /> {t.eligibilityCriteria}
+              </h3>
+              <ul className="space-y-3">
+                {scheme.eligibility.map((item, i) => (
+                  <li key={i} className="flex items-start gap-3 text-on-surface">
+                    <div className="w-2 h-2 rounded-full bg-secondary mt-2 shrink-0"></div>
+                    <span className="leading-relaxed">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+
+            <section>
+              <h3 className="text-xl font-bold text-on-surface mb-4 flex items-center gap-2">
+                <Landmark className="text-secondary" /> {t.keyBenefits}
+              </h3>
+              <ul className="space-y-3">
+                {scheme.benefits.map((item, i) => (
+                  <li key={i} className="flex items-start gap-3 text-on-surface">
+                    <div className="w-2 h-2 rounded-full bg-secondary mt-2 shrink-0"></div>
+                    <span className="leading-relaxed">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          </div>
+
+          <div className="mt-10 pt-8 border-t border-surface-container flex flex-col sm:flex-row gap-4 items-center justify-between">
+             <p className="text-sm text-on-surface-variant">{lang === 'hi' ? 'क्या आप आगे बढ़ने के लिए तैयार हैं?' : lang === 'as' ? 'আপুনি আগবাঢ়িবলৈ সাজুনে?' : 'Ready to move forward?'}</p>
+             <button onClick={() => navigate('/partners')} className="w-full sm:w-auto bg-secondary text-white font-bold px-8 py-3 rounded-lg hover:bg-opacity-90 transition-all flex items-center justify-center gap-2 shadow-sm">
+               {t.findPartnerBtn} <MapPin size={18} />
+             </button>
+          </div>
+        </div>
       </div>
-      <div className="flex flex-col md:flex-row gap-6 h-full">
+    </div>
+  );
+};
+
+
+// --- PARTNERS MAP PAGE ---
+const PartnersPage = ({ lang }) => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [userLoc, setUserLoc] = useState(null);
+  const [eligibleOnly, setEligibleOnly] = useState(true);
+
+  // MOCK DATA
+  const dummyPartners = [
+    { id: 1, name: "State Bank of India", type: "SC Special Branch", dist: "1.2km", lat: 26.1445, lng: 91.7362, eligible: true, badge: "Accepts NSFDC Schemes" },
+    { id: 2, name: "Regional Rural Bank", type: "Rural Credit Dept", dist: "3.5km", lat: 26.1800, lng: 91.7500, eligible: false, badge: "General Loans Only" },
+    { id: 3, name: "State Channelizing Agency", type: "Main Office", dist: "4.1km", lat: 26.3480, lng: 92.6840, eligible: true, badge: "Accepts NSFDC Schemes" }
+  ];
+
+  const filteredPartners = dummyPartners
+    .filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()) || p.type.toLowerCase().includes(searchTerm.toLowerCase()))
+    .filter(p => eligibleOnly ? p.eligible : true);
+
+  return (
+    <div className="max-w-7xl mx-auto h-[85vh] flex flex-col animate-in fade-in duration-500">
+      <div className="mb-6 flex justify-between items-end">
+        <div>
+          <h2 className="headline-lg text-primary">{lang === 'hi' ? 'पार्टनर लोकेटर' : lang === 'as' ? 'অংশীদাৰ লকেটৰ' : 'Partner Locator'}</h2>
+          <p className="body-lg text-on-surface-variant mt-1">{lang === 'hi' ? 'अपने आस-पास अधिकृत वित्तीय संस्थान खोजें।' : lang === 'as' ? 'আপোনাৰ ওচৰৰ কৰ্তৃত্বপ্ৰাপ্ত বিত্তীয় প্ৰতিষ্ঠান বিচাৰক।' : 'Find authorized financial institutions near you.'}</p>
+        </div>
+      </div>
+      
+      <div className="flex flex-col md:flex-row h-full rounded-2xl shadow-ambient overflow-hidden border border-surface-container bg-surface">
         
         {/* Left Side: Smart Partner List */}
-        <div className="w-full md:w-1/3 bg-white rounded-2xl shadow-md flex flex-col overflow-hidden h-full border border-gray-100">
-          <div className="p-4 border-b bg-gray-50 flex flex-col gap-4">
-            <button onClick={handleLocate} className="w-full bg-blue-50 hover:bg-brand-blue text-brand-blue hover:text-white font-bold py-3 rounded-xl flex items-center justify-center transition-all border border-blue-100 shadow-sm">
-              <MapPin size={18} className="mr-2" /> Find My Location
-            </button>
-            <div className="relative">
-              <Search className="absolute left-3 top-3.5 text-gray-400" size={18} />
-              <input type="text" placeholder={t.search} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-brand-blue focus:ring-1 focus:ring-brand-blue" />
+        <div className="w-full md:w-[400px] flex flex-col bg-surface border-r border-surface-container z-10">
+          
+          <div className="p-4 border-b border-surface-container bg-surface-container-lowest space-y-4">
+            <div className="flex justify-between items-center">
+              <span className="font-semibold text-on-surface text-sm flex items-center gap-2">
+                <ShieldCheck size={16} className="text-secondary" /> {lang === 'hi' ? 'मेरी योजना के लिए पात्र' : lang === 'as' ? 'মোৰ আঁচনিৰ বাবে যোগ্য' : 'Eligible for my scheme'}
+              </span>
+              <button 
+                onClick={() => setEligibleOnly(!eligibleOnly)}
+                className={`w-12 h-6 rounded-full transition-colors relative flex items-center ${eligibleOnly ? 'bg-secondary' : 'bg-surface-container-high'}`}
+              >
+                <div className={`w-4 h-4 rounded-full bg-white absolute transition-transform ${eligibleOnly ? 'translate-x-7' : 'translate-x-1'}`}></div>
+              </button>
             </div>
           </div>
           
-          <div className="overflow-y-auto flex-grow p-4 space-y-4">
+          <div className="overflow-y-auto flex-grow p-4 space-y-4 bg-surface-container-lowest/50">
+            <h3 className="text-xs font-bold text-on-surface-variant tracking-wider uppercase mb-2">
+              {filteredPartners.length} {lang === 'hi' ? 'आपके पास पात्र पार्टनर मिले' : lang === 'as' ? 'আপোনাৰ ওচৰত যোগ্য অংশীদাৰ পোৱা গৈছে' : 'ELIGIBLE PARTNERS FOUND NEAR YOU'}
+            </h3>
+            
             {filteredPartners.map(p => (
-              <div key={p.id} className={`p-4 rounded-xl border-2 transition-all shadow-sm ${p.eligible ? 'border-green-100 bg-green-50/50' : 'border-red-100 bg-red-50/50 opacity-80'}`}>
-                <h4 className="font-bold text-gray-800">{p.name}</h4>
-                <p className="text-sm text-gray-600 mb-3 font-medium">{p.type} • {p.city}</p>
-                {p.eligible ? (
-                  <span className="bg-green-100 text-green-700 text-xs font-bold px-2.5 py-1.5 rounded-md border border-green-200">✅ Eligible for Routing</span>
-                ) : (
-                  <span className="bg-red-100 text-red-700 text-xs font-bold px-2.5 py-1.5 rounded-md border border-red-200">❌ Blocked (NPA: {p.npa})</span>
-                )}
+              <div key={p.id} className="p-4 rounded-xl border border-surface-container bg-surface shadow-sm hover:border-outline-variant transition-colors">
+                <div className="flex justify-between items-start mb-1">
+                  <h4 className="font-bold text-on-surface text-lg">{p.name}</h4>
+                  <span className="bg-surface-container px-2 py-0.5 rounded text-xs font-medium text-on-surface-variant flex items-center gap-1">
+                    <MapPin size={10} /> {p.dist}
+                  </span>
+                </div>
+                <p className="text-sm text-on-surface-variant mb-3">{p.type}</p>
+                
+                <div className="mb-4">
+                  <span className={`inline-flex items-center text-xs font-bold px-2 py-1 rounded-md ${p.eligible ? 'bg-secondary-fixed text-secondary' : 'bg-surface-container-high text-on-surface-variant'}`}>
+                    {p.eligible ? <ShieldCheck size={12} className="mr-1" /> : null}
+                    {p.badge}
+                  </span>
+                </div>
+
+                <div className="flex gap-3">
+                  <button className="btn-primary flex-1 py-2 text-sm">{lang === 'hi' ? 'अभी आवेदन करें' : lang === 'as' ? 'এতিয়াই আবেদন কৰক' : 'Apply Now'}</button>
+                  <button className="btn-ghost flex-1 py-2 text-sm border border-outline-variant hover:bg-surface-container">{lang === 'hi' ? 'दिशा-निर्देश प्राप्त करें' : lang === 'as' ? 'দিশ নিৰ্দেশনা পাওক' : 'Get Directions'}</button>
+                </div>
               </div>
             ))}
           </div>
         </div>
 
         {/* Right Side: Map */}
-        <div className="w-full md:w-2/3 bg-gray-200 rounded-2xl shadow-md overflow-hidden h-[50vh] md:h-full z-0 relative border border-gray-200">
+        <div className="w-full flex-grow bg-surface-container-lowest relative z-0">
+          <div className="absolute top-4 left-4 right-4 z-[400] flex gap-2">
+            <div className="relative flex-grow shadow-md">
+              <Search className="absolute left-3 top-3 text-on-surface-variant" size={18} />
+              <input 
+                type="text" 
+                placeholder={lang === 'hi' ? 'स्थान या नाम से खोजें' : lang === 'as' ? 'স্থান বা নাম অনুসৰি বিচাৰক' : 'Search by Location or Name'}
+                value={searchTerm} 
+                onChange={(e) => setSearchTerm(e.target.value)} 
+                className="w-full pl-10 pr-4 py-2.5 bg-surface rounded-lg border-none focus:ring-2 focus:ring-secondary text-sm font-medium" 
+              />
+            </div>
+            <button className="bg-surface px-4 py-2.5 rounded-lg shadow-md text-sm font-bold text-on-surface-variant flex items-center border-none">
+              {lang === 'hi' ? 'उद्योग' : lang === 'as' ? 'উদ্যোগ' : 'Industry'} <ChevronRight size={14} className="ml-1 rotate-90" />
+            </button>
+          </div>
+
           {/* We use a 'key' here so the map instantly recenters if the user clicks Find My Location */}
-          <MapContainer key={userLoc ? userLoc.join(',') : 'default'} center={userLoc || [26.2006, 92.9376]} zoom={userLoc ? 9 : 7} style={{ height: '100%', width: '100%' }}>
+          <MapContainer key={userLoc ? userLoc.join(',') : 'default'} center={userLoc || [26.2006, 92.9376]} zoom={userLoc ? 9 : 7} style={{ height: '100%', width: '100%', zIndex: 0 }} zoomControl={false}>
+            <ZoomControl position="bottomright" />
             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
             
             {/* Blue pin for User's real location */}
             {userLoc && (
               <Marker position={userLoc}>
-                <Popup><strong>📍 You are here!</strong></Popup>
+                <Popup><strong>{lang === 'hi' ? '📍 आप यहाँ हैं!' : lang === 'as' ? '📍 আপুনি ইয়াতে আছে!' : '📍 You are here!'}</strong></Popup>
               </Marker>
             )}
 
@@ -763,8 +1236,8 @@ const PartnersPage = ({ lang }) => {
               <Marker key={p.id} position={[p.lat, p.lng]}>
                 <Popup>
                   <strong className="text-sm">{p.name}</strong><br/>
-                  <span className="text-xs text-gray-600">{p.type} • {p.city}</span><br/><br/>
-                  {p.eligible ? '✅ Accepting Applications' : `❌ Not Eligible (NPA: ${p.npa})`}
+                  <span className="text-xs text-gray-600">{p.type} • {p.dist}</span><br/><br/>
+                  {p.eligible ? (lang === 'hi' ? '✅ आवेदन स्वीकार कर रहे हैं' : lang === 'as' ? '✅ আবেদন গ্ৰহণ কৰি আছে' : '✅ Accepting Applications') : (lang === 'hi' ? '❌ केवल सामान्य ऋण' : lang === 'as' ? '❌ কেৱল সাধাৰণ ঋণ' : '❌ General Loans Only')}
                 </Popup>
               </Marker>
             ))}
@@ -786,23 +1259,24 @@ function App() {
   const t = translations[lang];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50 flex flex-col font-sans selection:bg-brand-orange selection:text-white">
-      <nav className="bg-white/80 backdrop-blur-md shadow-sm border-b border-gray-100 sticky top-0 z-50 transition-all">
+    <div className="min-h-screen bg-background flex flex-col font-sans selection:bg-secondary selection:text-on-secondary">
+      <nav className="bg-surface/80 backdrop-blur-md shadow-sm border-b border-surface-container sticky top-0 z-50 transition-all">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-20">
             <div className="flex items-center">
-              <Link to="/" className="flex items-center text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-blue-600 font-extrabold text-3xl tracking-tight">
-                <Landmark className="mr-2 text-brand-blue" size={32} />
+              <Link to="/" className="flex items-center text-primary font-extrabold text-3xl tracking-tight">
+                <Landmark className="mr-2 text-primary" size={32} />
                 SchemeSetu
               </Link>
             </div>
             <div className="flex items-center space-x-2 sm:space-x-6">
-              <Link to="/find" className="hidden sm:block text-gray-600 font-semibold">{t.navFind}</Link>
-              <Link to="/calculator" className="hidden sm:block text-gray-600 font-semibold">{t.emiBtn}</Link>
-              <Link to="/partners" className="hidden sm:flex text-brand-blue bg-blue-50 font-semibold items-center px-4 py-2 rounded-lg"><MapPin className="mr-1.5" size={18} /> {t.navLocate}</Link>
+              <Link to="/" className="hidden sm:block text-on-surface font-semibold hover:text-secondary">{lang === 'hi' ? 'होम' : lang === 'as' ? 'হোম' : 'Home'}</Link>
+              <Link to="/find" className="hidden sm:block text-on-surface font-semibold hover:text-secondary">{t.navFind}</Link>
+              <Link to="/calculator" className="hidden sm:block text-on-surface font-semibold hover:text-secondary">{t.emiBtn}</Link>
+              <Link to="/partners" className="hidden sm:flex text-on-secondary-fixed bg-secondary-fixed font-semibold items-center px-4 py-2 rounded-lg hover:bg-secondary-fixed-dim transition-colors"><MapPin className="mr-1.5" size={18} /> {t.navLocate}</Link>
               
               {/* Dropdown to change language later */}
-              <select value={lang} onChange={(e) => setLang(e.target.value)} className="ml-4 bg-gray-50 border border-gray-200 text-gray-700 font-bold py-2 px-3 rounded-lg focus:outline-none">
+              <select value={lang} onChange={(e) => setLang(e.target.value)} className="ml-4 bg-surface border border-surface-container text-on-surface font-bold py-2 px-3 rounded-lg focus:outline-none focus:border-secondary">
                 <option value="en">🇺🇸 English</option>
                 <option value="hi">🇮🇳 हिन्दी</option>
                 <option value="as">🦏 অসমীয়া</option>
@@ -815,6 +1289,8 @@ function App() {
       <main className="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Routes>
           <Route path="/" element={<Home lang={lang} />} />
+          <Route path="/explore" element={<ExploreSchemes lang={lang} />} />
+          <Route path="/scheme/:id" element={<SchemeDetails lang={lang} />} />
           <Route path="/find" element={<FindScheme lang={lang} />} />
           <Route path="/results" element={<ResultsPage lang={lang} />} />
           <Route path="/calculator" element={<CalculatorPage lang={lang} />} />
