@@ -5,6 +5,7 @@ import { partners } from './data/partners';
 import { Landmark, Calculator, MapPin, Search, BrainCircuit, ShieldCheck, ChevronRight, ChevronLeft, MessageCircle, Globe, Bot, X, Send } from 'lucide-react';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { MapContainer, TileLayer, Marker, Popup, ZoomControl } from 'react-leaflet';
+import { Analytics } from '@vercel/analytics/react';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
@@ -1613,6 +1614,7 @@ function App() {
       </main>
       
       <AIChatbot lang={lang} />
+      <Analytics />
     </div>
   );
 }
