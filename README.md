@@ -1,72 +1,125 @@
-# SchemeSetu - AI-Driven Scheme Matching for Marginalized Entrepreneurs
+# SchemeSetu
 
-**Smart India Hackathon 2026 
-**Problem Statement ID:** 26092  
-**Organization:** Ministry of Social Justice and Empowerment (MoSJE)  
-**Theme:** Smart Automation  
-**Category:** Software  
+A web app that helps marginalized entrepreneurs figure out which government-backed financial scheme fits their situation and where they actually need to apply.
 
-## 📖 Overview
+## About
 
-SchemeSetu is an intelligent, multi-lingual, web-based platform designed to bridge the gap between marginalized entrepreneurs (Scheduled Castes, Scheduled Tribes, Women, etc.) and vital government financial schemes.
+We built SchemeSetu for the Smart India Hackathon to solve a practical problem. There are plenty of government financial schemes for marginalized entrepreneurs (like those from MoSJE and NSFDC), but they often go underutilized. The main issues are lack of awareness, complicated eligibility rules, and confusion about which local bank branch actually processes the applications.
 
-Many government schemes provided by the MoSJE, NSFDC, and others are underutilized because the target demographic often lacks awareness, struggles to understand complex eligibility criteria, or doesn't know where to apply. SchemeSetu solves this by using a **Dynamic AI Matching Engine** to pair users with the exact financial schemes they are eligible for, and then geographically mapping them to the nearest authorized channel partners (SCAs / PSBs) to complete their application.
+We wanted to build something simple. A user can enter basic details about their financial situation, immediately see what schemes they qualify for, figure out how much the loan might cost them, and find the nearest authorized bank branch to start the process.
 
-## 🚀 Key Features
+## What It Does
 
-* **Intelligent Scheme Matching:** A robust, rule-based engine that evaluates user criteria (family income, caste, age, gender, business purpose, loan amount) against strict scheme parameters.
-* **Comprehensive Government Database:** Integrated with detailed, verifiable data on schemes like NSFDC Term Loan, Mahila Samriddhi Yojana, VCF-SC, PMMY, and more.
-* **Geospatial Partner Locator:** Interactive map filtering nearest State Channelizing Agencies (SCAs) and Public Sector Banks (PSBs) authorized to process the user's matched schemes.
-* **Multi-Lingual Support:** Fully translated UI in English, Hindi, and Assamese to cater to rural and marginalized communities.
-* **AI Chatbot Assistant:** Powered by the Gemini API, an interactive chatbot that answers queries about financial literacy, business planning, and scheme details in plain language.
-* **Provenance & Verification:** Full transparency with direct links to official government portals and verification timestamps, ensuring users are not misled by fabricated data.
-* **Dynamic EMI Calculator:** Built-in financial planning tool tailored to the specific interest rates and moratorium periods of the recommended schemes.
+The main flow works like this:
 
-## 🛠️ Technology Stack
+1. **Language Selection:** The user picks their preferred language (English, Hindi, or Assamese).
+2. **Basic Profiling:** They fill out a quick form with their caste, family income, age, and the loan amount they need.
+3. **Eligibility Matching:** The app filters out schemes they don't qualify for and recommends the ones that fit.
+4. **Financial Planning:** Users can calculate estimated EMIs based on the specific interest rates of their matched schemes.
+5. **Partner Routing:** A locator map shows them the nearest authorized bank or State Channelizing Agency (SCA) to physically apply at, along with Google Maps directions.
 
-* **Frontend:** React.js, Vite
-* **Styling:** Tailwind CSS, Lucide Icons
-* **Maps Integration:** React Leaflet / Leaflet.js
-* **AI Integration:** Google Generative AI (Gemini) SDK
-* **State Management:** React Hooks, Session Storage
-* **Routing:** React Router DOM
+## Key Features
 
-## ⚙️ How to Run Locally
+- Rule-based eligibility matching
+- Scheme-specific EMI calculator
+- Interactive authorized partner (bank) locator
+- Multi-lingual UI (English, Hindi, Assamese)
+- AI Chatbot for answering basic scheme-related queries
+- Direct links to official government portals
 
-1. **Clone the repository:**
+## How It Works
+
+Right now, SchemeSetu is a frontend-only application. 
+
+The eligibility matching runs entirely in the browser using React state. We built static datasets for both the schemes (`schemes.js`) and the channel partners (`partners.js`) based on NSFDC and MoSJE guidelines. 
+
+When a user submits their profile, the app evaluates their inputs against the dataset rules (like checking if their income is below the `annual_family_income_limit` and if their age fits the bracket) to return valid matches.
+
+## Tech Stack
+
+- **Frontend:** React.js, Vite
+- **Styling:** Tailwind CSS
+- **Icons:** Lucide React
+- **AI Chatbot:** Google Gemini API (`@google/genai`)
+- **Routing:** React Router DOM
+- **State:** React Hooks and Session Storage
+
+*(Note: There is no backend server or database in this prototype. All data is handled locally via JS files).*
+
+## Data & Sources
+
+Because this app deals with government financial schemes, we tried to be as accurate as possible with the data. The information in `schemes.js` was transcribed from the NSFDC and MoSJE official portals. 
+
+Each scheme detail page includes a "Data Source" section with a link pointing back to the official government page, so users can verify the information themselves.
+
+## Application Process
+
+The app doesn't collect or submit loan applications itself. Instead, it acts as a bridge:
+- If a scheme has an official online application portal, we provide the direct link.
+- If it requires an offline application, we map the user to the nearest authorized Public Sector Bank (PSB) or State Channelizing Agency (SCA) and list the documents they need to bring.
+
+## Project Structure
+
+- `src/App.jsx`: The main application file containing the routing, matching logic, and most UI components.
+- `src/data/schemes.js`: The dataset containing scheme rules, interest rates, and eligibility criteria.
+- `src/data/partners.js`: The dataset of physical bank branches and SCAs.
+- `src/index.css`: Tailwind imports and global styles.
+
+## Running Locally
+
+### Prerequisites
+- Node.js installed
+
+### Installation
+1. Clone the repository:
    ```bash
    git clone <your-repo-url>
    cd SchemeSetu/schemesetu
    ```
-
-2. **Install dependencies:**
+2. Install dependencies:
    ```bash
    npm install
    ```
 
-3. **Set up Environment Variables:**
-   Create a `.env` file in the root directory (`schemesetu/.env`) and add your Gemini API Key for the chatbot:
+### Environment Setup
+3. Create a `.env` file in the root directory (you can copy `.env.example`).
+4. Add your Gemini API key (needed for the chatbot):
    ```env
-   VITE_GEMINI_API_KEY=your_gemini_api_key_here
+   VITE_GEMINI_API_KEY=your_api_key_here
    ```
 
-4. **Start the development server:**
+### Running the App
+5. Start the Vite development server:
    ```bash
    npm run dev
    ```
+6. Open `http://localhost:5173` in your browser.
 
-5. **Open the App:**
-   Visit `http://localhost:5173` in your browser.
+## Environment Variables
 
-## 🗺️ Application Flow
+- `VITE_GEMINI_API_KEY` (Optional, but required for the chatbot to work)
 
-1. **Language Selection:** User selects their preferred language (persisted via session storage).
-2. **Profile Creation:** User enters their demographic and financial details.
-3. **AI Matching:** The engine processes the data and outputs a ranked list of eligible schemes with match percentages and explicit reasons for the match.
-4. **Scheme Details:** User reviews the scheme parameters (subsidy, interest, max loan).
-5. **Application Route:** The platform directs the user to either the official online portal or the nearest authorized physical branch (Partner Locator).
-6. **Navigation:** User clicks "Get Directions" to open Google Maps natively to the chosen branch.
+## Current Status
 
-## 📜 License
+This is our SIH development prototype. The frontend, matching engine, UI translation, and data models are fully implemented.
 
-This project was developed for the Smart India Hackathon.
+## SIH Context
+
+Built for the Smart India Hackathon.
+**Problem Statement:** 26092 - AI-Driven Scheme Matching for Marginalized Entrepreneurs (Ministry of Social Justice and Empowerment).
+
+## Roadmap
+
+**Implemented:**
+- Core matching engine and static data models
+- Multi-lingual UI implementation
+- Partner locator and scheme-specific EMI calculator
+- Gemini-powered chatbot for basic financial queries
+
+**Planned:**
+- Move static datasets to a real backend (Node.js/PostgreSQL)
+- Add document OCR to automatically fill the profile form from an uploaded caste/income certificate
+
+## Disclaimer
+
+The platform is intended to help users discover and understand potentially relevant schemes. Final eligibility, approval, financial terms, and application acceptance are determined by the respective government authority or channelizing agency and are subject to their current rules.
