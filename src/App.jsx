@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Routes, Route, Link, useNavigate, useLocation, useParams } from 'react-router-dom';
 import { schemes as allSchemesData } from './data/schemes';
-import { Landmark, Calculator, MapPin, Search, BrainCircuit, ShieldCheck, ChevronRight, ChevronLeft, MessageCircle, Globe } from 'lucide-react';
+import { partners } from './data/partners';
+import { Landmark, Calculator, MapPin, Search, BrainCircuit, ShieldCheck, ChevronRight, ChevronLeft, MessageCircle, Globe, Bot, X, Send } from 'lucide-react';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import { MapContainer, TileLayer, Marker, Popup, ZoomControl } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -54,7 +56,7 @@ const translations = {
     emiBtn: "EMI Calculator",
     navFind: "Find Scheme",
     navLocate: "Locate Partner",
-    calcTitle: "Advanced Loan EMI Calculator",
+    calcTitle: "Loan EMI Calculator",
     calcSub: "Includes NSFDC Moratorium (Grace Period) Calculations",
     loanAmt: "Loan Amount",
     intRate: "Interest Rate (p.a.)",
@@ -160,7 +162,7 @@ const translations = {
     emiBtn: "ईएमआई कैलकुलेटर",
     navFind: "योजना खोजें",
     navLocate: "पार्टनर खोजें",
-    calcTitle: "उन्नत ऋण ईएमआई कैलकुलेटर",
+    calcTitle: "ऋण ईएमआई कैलकुलेटर",
     calcSub: "NSFDC मोरेटोरियम (रियायती अवधि) गणना शामिल है",
     loanAmt: "ऋण राशि",
     intRate: "ब्याज दर (प्रति वर्ष)",
@@ -266,7 +268,7 @@ const translations = {
     emiBtn: "ইএমআই কেলকুলেটৰ",
     navFind: "আঁচনি বিচাৰক",
     navLocate: "অংশীদাৰ বিচাৰক",
-    calcTitle: "উন্নত ঋণ ইএমআই কেলকুলেটৰ",
+    calcTitle: "ঋণ ইএমআই কেলকুলেটৰ",
     calcSub: "NSFDC মৰেটৰিয়াম (গ্ৰেছ পিৰিয়ড) গণনা অন্তৰ্ভুক্ত",
     loanAmt: "ঋণৰ পৰিমাণ",
     intRate: "সুদৰ হাৰ",
@@ -501,12 +503,12 @@ const CalculatorPage = ({ lang }) => {
             <div className="flex justify-between mb-2"><label className="label-md text-on-surface">{t.tenure}</label><span className="font-bold text-primary bg-surface-container px-3 py-1 rounded-md">{tenureYears} {t.years || (lang === 'hi' ? 'वर्ष' : lang === 'as' ? 'বছৰ' : 'Yrs')}</span></div>
             <input type="range" min="1" max="15" step="1" value={tenureYears} onChange={(e) => setTenureYears(e.target.value)} className="w-full h-2 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-secondary" />
           </div>
-          <div className="bg-secondary-fixed p-4 rounded-xl border border-secondary-fixed-dim">
+          <div>
             <div className="flex justify-between mb-2">
-              <label className="label-md text-on-secondary-fixed-variant">{t.moratorium}</label>
-              <span className="font-bold text-on-secondary bg-secondary px-3 py-1 rounded-md">{moratorium} {lang === 'hi' ? 'महीने' : lang === 'as' ? 'মাহ' : 'Months'}</span>
+              <label className="label-md text-on-surface">{t.moratorium}</label>
+              <span className="font-bold text-primary bg-surface-container px-3 py-1 rounded-md">{moratorium} {lang === 'hi' ? 'महीने' : lang === 'as' ? 'মাহ' : 'Months'}</span>
             </div>
-            <input type="range" min="0" max="12" step="3" value={moratorium} onChange={(e) => setMoratorium(e.target.value)} className="w-full h-2 bg-secondary-fixed-dim rounded-lg appearance-none cursor-pointer accent-secondary" />
+            <input type="range" min="0" max="12" step="3" value={moratorium} onChange={(e) => setMoratorium(e.target.value)} className="w-full h-2 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-secondary" />
           </div>
         </div>
         <div className="p-8 md:w-2/5 bg-primary-container text-on-primary-container flex flex-col justify-center">
@@ -774,56 +776,82 @@ const ResultsPage = ({ lang }) => {
     }
 
     if (isEligible) {
-      allSchemesData.forEach(scheme => {
-        let score = 0;
-        let reasons = [];
-        
-        if (scheme.id === 'nsfdc-credit-line' && formData.purpose !== 'edu') {
-          score += 70;
-          reasons.push("Your project aligns with business expansion/startup.");
-          if (Number(formData.amount) > 140000) { score += 25; reasons.push("Requested amount fits higher term loan limits."); }
-        }
-        
-        if (scheme.id === 'mahila-samriddhi' && formData.purpose !== 'edu' && formData.gender === 'female') {
-          score += 90;
-          reasons.push("Perfect match: Specialized scheme for female entrepreneurs.");
-          if (Number(formData.amount) <= 140000) { score += 8; reasons.push("Amount fits micro-finance limits."); }
-        }
-
-        if (scheme.id === 'shilpi-samriddhi' && formData.purpose !== 'edu' && formData.skill === 'skilled') {
-          score += 90;
-          reasons.push("Perfect match: Specifically designed for skilled artisans.");
-          if (Number(formData.amount) <= 140000) { score += 8; reasons.push("Amount fits micro-finance limits."); }
-        }
-
-        if (scheme.id === 'nsfdc-education' && formData.purpose === 'edu') {
-          score += 98;
-          reasons.push("Direct match for educational funding.");
-        }
-
-        if (scheme.id === 'mudra-shishu' && formData.purpose !== 'edu' && Number(formData.amount) <= 50000) {
-          score += 80;
-          reasons.push("Amount is small enough for a quick MUDRA Shishu micro-loan (zero collateral).");
-        }
-
-        if (score > 0) {
-          // parse interest number for the calculator (e.g. "4% p.a." -> 4)
-          const intMatch = scheme.interest.match(/(\d+)/);
-          const intVal = intMatch ? Number(intMatch[1]) : 4;
+        allSchemesData.forEach(scheme => {
+          let score = 0;
+          let reasons = [];
           
-          engineMatches.push({
-            ...scheme,
-            matchScore: score,
-            match: `${score}%`,
-            desc: scheme.shortDesc,
-            why: reasons.join(" "),
-            amount: scheme.maxAmount,
-            calcInterest: intVal
-          });
-        }
-      });
-      engineMatches.sort((a, b) => b.matchScore - a.matchScore);
-    }
+          let isMatch = true;
+          const userAmt = Number(formData.amount);
+          const userInc = Number(formData.income);
+          const userAge = Number(formData.age);
+          const purpose = formData.purpose;
+
+          // Purpose Matching
+          if (purpose === 'edu' && !scheme.education_eligibility) {
+             isMatch = false;
+          }
+          if (purpose !== 'edu' && !scheme.business_eligibility) {
+             isMatch = false;
+          }
+
+          // Income Matching
+          if (scheme.annual_family_income_limit && userInc > scheme.annual_family_income_limit) {
+             isMatch = false; 
+          }
+
+          if (isMatch) {
+             score += 50; // base match
+             reasons.push("Meets base eligibility criteria.");
+
+             // Amount matching
+             if (scheme.loan_amount_max && userAmt <= scheme.loan_amount_max) {
+                 score += 15;
+                 reasons.push(`Amount (₹${userAmt}) is within the scheme limit of ₹${scheme.loan_amount_max}.`);
+             } else if (scheme.loan_amount_max) {
+                 reasons.push(`Note: Requested amount exceeds scheme limit of ₹${scheme.loan_amount_max}.`);
+             }
+             
+             if (scheme.loan_amount_min && userAmt >= scheme.loan_amount_min) {
+                 score += 5;
+             }
+
+             // Gender specific targeting
+             if (scheme.beneficiary_category?.includes('Women') || scheme.target_groups?.includes('Women')) {
+                 if (formData.gender === 'female') {
+                     score += 25;
+                     reasons.push("Specialized scheme for female entrepreneurs.");
+                 } else {
+                     // Scheme is strictly for women, disqualify men
+                     isMatch = false;
+                 }
+             }
+
+             // Age targeting
+             if (scheme.minimum_age && userAge >= scheme.minimum_age && scheme.maximum_age && userAge <= scheme.maximum_age) {
+                 score += 5;
+             }
+          }
+          
+          if (isMatch && score > 0) {
+            // Cap score at 99
+            score = Math.min(score, 99);
+            
+            // use verified interest rate if available
+            let intVal = scheme.interest_rate_min || 4;
+            
+            engineMatches.push({
+              ...scheme,
+              matchScore: score,
+              match: `${score}%`,
+              desc: scheme.shortDesc,
+              why: reasons.join(" "),
+              amount: scheme.maxAmount,
+              calcInterest: intVal
+            });
+          }
+        });
+        engineMatches.sort((a, b) => b.matchScore - a.matchScore);
+      }
   }
 
   const matchedSchemes = engineMatches;
@@ -858,29 +886,35 @@ const ResultsPage = ({ lang }) => {
              <div className="p-8 bg-red-50 text-red-900 rounded-xl border border-red-200">
                <h3 className="text-2xl font-bold mb-4 text-red-800">{t.notEligibleTitle}</h3>
                <p className="text-lg mb-6">{ineligibilityReason}</p>
-               <button onClick={() => navigate('/find')} className="btn-primary">{t.editProfileBtn}</button>
+               <button onClick={() => navigate('/find')} className="btn-primary px-6 py-2.5 font-bold">{t.editProfileBtn}</button>
              </div>
           ) : matchedSchemes.length === 0 ? (
              <div className="p-8 bg-surface-container rounded-xl border border-outline-variant">
                <h3 className="text-2xl font-bold mb-4">{t.noMatchTitle}</h3>
                <p className="text-lg mb-6">{t.noMatchDesc}</p>
-               <div className="flex gap-4">
-                 <button onClick={() => navigate('/find')} className="btn-primary">{t.editProfileBtn}</button>
-                 <button onClick={() => navigate('/explore')} className="btn-ghost">{t.exploreSchemes}</button>
+               <div className="flex gap-4 mt-2">
+                 <button onClick={() => navigate('/find')} className="btn-primary px-6 py-2.5 font-bold">{t.editProfileBtn}</button>
+                 <button onClick={() => navigate('/explore')} className="btn-ghost px-6 py-2.5 font-bold">{t.exploreSchemes}</button>
                </div>
              </div>
           ) : (
             matchedSchemes.map((s, idx) => (
               <div key={idx} className={`card-ambient border bg-surface-container-lowest ${idx === 0 ? 'border-secondary shadow-md' : 'border-surface-container'}`}>
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h3 className="headline-md text-on-surface">{s.name}</h3>
-                    <p className="text-on-surface-variant text-sm mt-1">{s.desc}</p>
+                  <div className="flex justify-between items-start mb-4">
+                    <div>
+                      <h3 className="headline-md text-on-surface">{s.name}</h3>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {s.online_application_available && (
+                           <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-bold rounded-md">Online Application</span>
+                        )}
+                        <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-bold rounded-md">{s.implementing_agency}</span>
+                      </div>
+                      <p className="text-on-surface-variant text-sm mt-2">{s.desc}</p>
+                    </div>
+                    <div className={`px-3 py-1 rounded-full text-xs font-bold border ${idx === 0 ? 'bg-secondary-fixed text-secondary border-secondary/30' : 'bg-surface-container text-on-surface border-outline'}`}>
+                      <BrainCircuit size={12} className="inline mr-1" /> {s.matchScore}% {t.matchString}
+                    </div>
                   </div>
-                  <div className={`px-3 py-1 rounded-full text-xs font-bold border ${idx === 0 ? 'bg-secondary-fixed text-secondary border-secondary/30' : 'bg-surface-container text-on-surface border-outline'}`}>
-                    <BrainCircuit size={12} className="inline mr-1" /> {s.matchScore}% {t.matchString}
-                  </div>
-                </div>
 
                 {/* detailed match reason for top match */}
                 {idx === 0 && s.why && (
@@ -917,10 +951,16 @@ const ResultsPage = ({ lang }) => {
                 <div className="flex gap-4">
                   {idx === 0 ? (
                     <>
-                      <button onClick={() => s.id && navigate(`/scheme/${s.id}`)} className="btn-primary flex-1 py-2.5">{t.viewDetailsApply}</button>
-                      <button onClick={() => navigate('/partners', { state: { topSchemeId: s.id } })} className="btn-ghost flex-1 py-2.5 bg-surface-container hover:bg-surface-container-high border border-outline-variant">
-                        <MapPin size={16} className="mr-2 inline" /> {t.findPartnerBtn}
-                      </button>
+                      <button onClick={() => s.id && navigate(`/scheme/${s.id}`)} className="btn-primary flex-1 py-2.5 font-bold">{t.viewDetailsApply}</button>
+                      {s.online_application_available ? (
+                         <a href={s.official_application_portal} target="_blank" rel="noopener noreferrer" className="btn-ghost flex-1 py-2.5 bg-green-50 hover:bg-green-100 text-green-800 border border-green-200 text-center font-bold">
+                           Apply Online Portal
+                         </a>
+                      ) : (
+                         <button onClick={() => navigate('/partners', { state: { topSchemeId: s.id } })} className="btn-ghost flex-1 py-2.5 bg-surface-container hover:bg-surface-container-high border border-outline-variant font-bold">
+                           <MapPin size={16} className="mr-2 inline" /> {t.findPartnerBtn}
+                         </button>
+                      )}
                     </>
                   ) : (
                     <button onClick={() => s.id && navigate(`/scheme/${s.id}`)} className="text-secondary font-bold hover:underline flex items-center ml-auto">
@@ -1006,9 +1046,19 @@ const ExploreSchemes = ({ lang }) => {
         {allSchemesData.map((scheme) => (
           <div key={scheme.id} className="card-ambient border border-surface-container bg-surface-container-lowest rounded-xl p-6 flex flex-col hover:-translate-y-1 hover:shadow-md transition-all duration-300">
             <div className="mb-4">
-              <span className="inline-block px-3 py-1 bg-secondary-fixed text-secondary text-xs font-bold rounded-full mb-3">
-                {scheme.target}
-              </span>
+              <div className="flex flex-wrap gap-2 mb-3">
+                <span className="px-3 py-1 bg-secondary-fixed text-secondary text-xs font-bold rounded-full">
+                  {scheme.target}
+                </span>
+                {scheme.online_application_available && (
+                  <span className="px-3 py-1 bg-green-100 text-green-800 text-xs font-bold rounded-full">
+                    Online Application
+                  </span>
+                )}
+                <span className="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-bold rounded-full">
+                  {scheme.implementing_agency}
+                </span>
+              </div>
               <h3 className="text-xl font-bold text-on-surface mb-2 leading-tight">{scheme.name}</h3>
               <p className="text-sm text-on-surface-variant line-clamp-2">{scheme.shortDesc}</p>
             </div>
@@ -1048,6 +1098,9 @@ const SchemeDetails = ({ lang }) => {
       </div>
     );
   }
+
+  const schemePartners = partners.filter(p => p.supported_schemes?.includes(scheme.id) && p.eligible);
+  const uniquePartnerNames = [...new Set(schemePartners.map(p => p.name))].join(', ');
 
   return (
     <div className="max-w-4xl mx-auto py-8 px-4 animate-in slide-in-from-bottom-4 duration-500">
@@ -1110,6 +1163,36 @@ const SchemeDetails = ({ lang }) => {
                 ))}
               </ul>
             </section>
+
+            <section className="bg-surface-container-highest p-6 rounded-xl border border-outline-variant/30 mt-8">
+              <h3 className="text-lg font-bold text-on-surface mb-4">Application & Provenance</h3>
+              <div className="space-y-4">
+                <div className="flex flex-col gap-1">
+                  <span className="text-sm font-bold text-on-surface-variant uppercase tracking-wider">Application Route</span>
+                  <span className="text-on-surface">{scheme.application_method}</span>
+                </div>
+                {scheme.online_application_available ? (
+                  <div className="flex flex-col gap-1">
+                    <span className="text-sm font-bold text-on-surface-variant uppercase tracking-wider">Official Portal</span>
+                    <a href={scheme.official_application_portal} target="_blank" rel="noopener noreferrer" className="text-secondary hover:underline break-all">
+                      {scheme.official_application_portal}
+                    </a>
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-1">
+                    <span className="text-sm font-bold text-on-surface-variant uppercase tracking-wider">Offline Application</span>
+                    <span className="text-on-surface">Must apply via authorized channel partners: <span className="font-bold">{uniquePartnerNames || scheme.implementing_agency}</span></span>
+                  </div>
+                )}
+                <div className="flex flex-col gap-1 pt-4 border-t border-outline-variant/30">
+                  <span className="text-sm font-bold text-on-surface-variant uppercase tracking-wider">Data Source (Provenance)</span>
+                  <a href={scheme.source_url} target="_blank" rel="noopener noreferrer" className="text-secondary hover:underline break-all">
+                    {scheme.source_url}
+                  </a>
+                  <span className="text-xs text-on-surface-variant mt-1">Status: {scheme.verification_status} | Last Verified: {new Date(scheme.last_verified_at).toLocaleDateString()}</span>
+                </div>
+              </div>
+            </section>
           </div>
 
           <div className="mt-10 pt-8 border-t border-surface-container flex flex-col sm:flex-row gap-4 items-center justify-between">
@@ -1128,26 +1211,22 @@ const SchemeDetails = ({ lang }) => {
 // --- PARTNERS MAP PAGE ---
 const PartnersPage = ({ lang }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [userLoc, setUserLoc] = useState(null);
+  const [userLoc] = useState(null);
   const [eligibleOnly, setEligibleOnly] = useState(true);
+    const [partnerType, setPartnerType] = useState('');
+  const navigate = useNavigate();
 
-  // MOCK DATA
-  const dummyPartners = [
-    { id: 1, name: "State Bank of India", type: "SC Special Branch", dist: "1.2km", lat: 26.1445, lng: 91.7362, eligible: true, badge: "Accepts NSFDC Schemes" },
-    { id: 2, name: "Regional Rural Bank", type: "Rural Credit Dept", dist: "3.5km", lat: 26.1800, lng: 91.7500, eligible: false, badge: "General Loans Only" },
-    { id: 3, name: "State Channelizing Agency", type: "Main Office", dist: "4.1km", lat: 26.3480, lng: 92.6840, eligible: true, badge: "Accepts NSFDC Schemes" }
-  ];
-
-  const filteredPartners = dummyPartners
+  const filteredPartners = partners
     .filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()) || p.type.toLowerCase().includes(searchTerm.toLowerCase()))
-    .filter(p => eligibleOnly ? p.eligible : true);
+    .filter(p => eligibleOnly ? p.eligible : true)
+      .filter(p => partnerType === '' ? true : p.partner_type === partnerType);
 
   return (
     <div className="max-w-7xl mx-auto h-[85vh] flex flex-col animate-in fade-in duration-500">
       <div className="mb-6 flex justify-between items-end">
         <div>
-          <h2 className="headline-lg text-primary">{lang === 'hi' ? 'पार्टनर लोकेटर' : lang === 'as' ? 'অংশীদাৰ লকেটৰ' : 'Partner Locator'}</h2>
-          <p className="body-lg text-on-surface-variant mt-1">{lang === 'hi' ? 'अपने आस-पास अधिकृत वित्तीय संस्थान खोजें।' : lang === 'as' ? 'আপোনাৰ ওচৰৰ কৰ্তৃত্বপ্ৰাপ্ত বিত্তীয় প্ৰতিষ্ঠান বিচাৰক।' : 'Find authorized financial institutions near you.'}</p>
+          <h2 className="headline-lg text-primary">{lang === 'hi' ? 'पार्टनर लोकेटर' : lang === 'as' ? 'অংশীদাৰ লোকেটৰ' : 'Partner Locator'}</h2>
+          <p className="body-lg text-on-surface-variant mt-1">{lang === 'hi' ? 'अपने आस-पास अधिकृत वित्तीय संस्थान खोजें।' : lang === 'as' ? 'আপোনাৰ ওচৰৰ কৰ্তৃত্বপ্ৰাপ্ত বিত্তীয় প্ৰতিষ্ঠানসমূহ বিচাৰক।' : 'Find authorized financial institutions near you.'}</p>
         </div>
       </div>
       
@@ -1159,7 +1238,7 @@ const PartnersPage = ({ lang }) => {
           <div className="p-4 border-b border-surface-container bg-surface-container-lowest space-y-4">
             <div className="flex justify-between items-center">
               <span className="font-semibold text-on-surface text-sm flex items-center gap-2">
-                <ShieldCheck size={16} className="text-secondary" /> {lang === 'hi' ? 'मेरी योजना के लिए पात्र' : lang === 'as' ? 'মোৰ আঁচনিৰ বাবে যোগ্য' : 'Eligible for my scheme'}
+                <ShieldCheck size={16} className="text-secondary" /> {lang === 'hi' ? 'मेरी योजना के लिए योग्य' : lang === 'as' ? 'মোৰ আঁচনিৰ বাবে যোগ্য' : 'Eligible for my scheme'}
               </span>
               <button 
                 onClick={() => setEligibleOnly(!eligibleOnly)}
@@ -1172,7 +1251,7 @@ const PartnersPage = ({ lang }) => {
           
           <div className="overflow-y-auto flex-grow p-4 space-y-4 bg-surface-container-lowest/50">
             <h3 className="text-xs font-bold text-on-surface-variant tracking-wider uppercase mb-2">
-              {filteredPartners.length} {lang === 'hi' ? 'आपके पास पात्र पार्टनर मिले' : lang === 'as' ? 'আপোনাৰ ওচৰত যোগ্য অংশীদাৰ পোৱা গৈছে' : 'ELIGIBLE PARTNERS FOUND NEAR YOU'}
+              {filteredPartners.length} {lang === 'hi' ? 'योग्य पार्टनर आस-पास मिले' : lang === 'as' ? 'ওচৰত পোৱা যোগ্য অংশীদাৰ' : 'ELIGIBLE PARTNERS FOUND NEAR YOU'}
             </h3>
             
             {filteredPartners.map(p => (
@@ -1193,9 +1272,13 @@ const PartnersPage = ({ lang }) => {
                 </div>
 
                 <div className="flex gap-3">
-                  <button className="btn-primary flex-1 py-2 text-sm">{lang === 'hi' ? 'अभी आवेदन करें' : lang === 'as' ? 'এতিয়াই আবেদন কৰক' : 'Apply Now'}</button>
-                  <button className="btn-ghost flex-1 py-2 text-sm border border-outline-variant hover:bg-surface-container">{lang === 'hi' ? 'दिशा-निर्देश प्राप्त करें' : lang === 'as' ? 'দিশ নিৰ্দেশনা পাওক' : 'Get Directions'}</button>
-                </div>
+                    <button onClick={() => alert(lang === 'hi' ? 'कृपया अपनी केवाईसी, जाति प्रमाण पत्र और व्यवसाय योजना के साथ इस शाखा पर जाएं।' : lang === 'as' ? 'অনুগ্ৰহ কৰি আপোনাৰ কেৱাইচি, জাতিগত প্ৰমাণপত্ৰ আৰু ব্যৱসায়িক পৰিকল্পনাৰ সৈতে এই শাখাত উপস্থিত হওক।' : `Please visit ${p.name} branch with your KYC, SC Certificate, and Business Plan to apply offline.`)} className="btn-primary flex-1 py-2 text-sm text-center">
+                      {lang === 'hi' ? 'ऑफ़लाइन आवेदन' : lang === 'as' ? 'অফলাইন আৱেদন' : 'Offline Application'}
+                    </button>
+                    <a href={`https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}`} target="_blank" rel="noopener noreferrer" className="btn-ghost flex-1 py-2 text-sm border border-outline-variant hover:bg-surface-container text-center flex items-center justify-center no-underline">
+                      {lang === 'hi' ? 'दिशा-निर्देश' : lang === 'as' ? 'নিৰ্দেশনা' : 'Get Directions'}
+                    </a>
+                  </div>
               </div>
             ))}
           </div>
@@ -1208,15 +1291,18 @@ const PartnersPage = ({ lang }) => {
               <Search className="absolute left-3 top-3 text-on-surface-variant" size={18} />
               <input 
                 type="text" 
-                placeholder={lang === 'hi' ? 'स्थान या नाम से खोजें' : lang === 'as' ? 'স্থান বা নাম অনুসৰি বিচাৰক' : 'Search by Location or Name'}
+                placeholder={lang === 'hi' ? 'स्थान या नाम से खोजें' : lang === 'as' ? 'স্থান বা নামৰ দ্বাৰা বিচাৰক' : 'Search by Location or Name'}
                 value={searchTerm} 
                 onChange={(e) => setSearchTerm(e.target.value)} 
                 className="w-full pl-10 pr-4 py-2.5 bg-surface rounded-lg border-none focus:ring-2 focus:ring-secondary text-sm font-medium" 
               />
             </div>
-            <button className="bg-surface px-4 py-2.5 rounded-lg shadow-md text-sm font-bold text-on-surface-variant flex items-center border-none">
-              {lang === 'hi' ? 'उद्योग' : lang === 'as' ? 'উদ্যোগ' : 'Industry'} <ChevronRight size={14} className="ml-1 rotate-90" />
-            </button>
+            <select value={partnerType} onChange={(e) => setPartnerType(e.target.value)} className="bg-surface px-4 py-2.5 rounded-lg shadow-md text-sm font-bold text-on-surface-variant flex items-center border-none focus:outline-none focus:ring-2 focus:ring-secondary cursor-pointer">
+                <option value="">{lang === 'hi' ? 'सभी' : lang === 'as' ? 'সকলো' : 'All Banks'}</option>
+                <option value="Public Sector Bank">Public Sector</option>
+                <option value="Private Sector Bank">Private Sector</option>
+                <option value="Regional Rural Bank">Rural Banks</option>
+              </select>
           </div>
 
           {/* We use a 'key' here so the map instantly recenters if the user clicks Find My Location */}
@@ -1232,7 +1318,7 @@ const PartnersPage = ({ lang }) => {
             )}
 
             {/* Pins for Channel Partners */}
-            {dummyPartners.map(p => (
+            {filteredPartners.map(p => (
               <Marker key={p.id} position={[p.lat, p.lng]}>
                 <Popup>
                   <strong className="text-sm">{p.name}</strong><br/>
@@ -1248,9 +1334,232 @@ const PartnersPage = ({ lang }) => {
   );
 };
 
+// --- ABOUT PAGE ---
+const AboutPage = ({ lang }) => {
+  return (
+    <div className="max-w-4xl mx-auto py-12 px-4 animate-in fade-in duration-500">
+      <h2 className="display-md text-primary mb-6 text-center">{lang === 'hi' ? 'हमारे बारे में' : lang === 'as' ? 'আমাৰ বিষয়ে' : 'About SchemeSetu'}</h2>
+      <div className="bg-surface-container-lowest p-8 rounded-2xl shadow-sm border border-surface-container space-y-6">
+        <p className="body-lg text-on-surface">
+          {lang === 'hi' ? 'SchemeSetu एक अभिनव AI-संचालित मंच है जिसे हाशिए पर रहने वाले उद्यमियों और सरकारी वित्तीय योजनाओं के बीच की खाई को पाटने के लिए डिज़ाइन किया गया है।' : lang === 'as' ? 'SchemeSetu হৈছে এক উদ্ভাৱনীমূলক AI-চালিত মঞ্চ যিটো প্ৰান্তীয় উদ্যোগী আৰু চৰকাৰী বিত্তীয় আঁচনিসমূহৰ মাজৰ ব্যৱধান দূৰ কৰিবলৈ নিৰ্মাণ কৰা হৈছে।' : 'SchemeSetu is an innovative AI-driven platform designed to bridge the gap between marginalized entrepreneurs and government financial schemes.'}
+        </p>
+        <p className="body-lg text-on-surface">
+          {lang === 'hi' ? 'सामाजिक न्याय और अधिकारिता मंत्रालय (MoSJE) के तहत, हम ऋण, अनुदान और माइक्रो-क्रेडिट विकल्पों की खोज और आवेदन प्रक्रिया को सरल बनाते हैं, विशेष रूप से एससी समुदायों के लिए।' : lang === 'as' ? 'সামাজিক ন্যায় আৰু সৱলীকৰণ মন্ত্ৰালয় (MoSJE) ৰ অধীনত, আমি বিশেষকৈ অনুসূচিত জাতিৰ সম্প্ৰদায়সমূহৰ বাবে ঋণ, অনুদান আৰু মাইক্ৰ\'-ক্ৰেডিট বিকল্পসমূহৰ সন্ধান আৰু আবেদন প্ৰক্ৰিয়া সৰল কৰোঁ।' : 'Under the Ministry of Social Justice and Empowerment (MoSJE), we simplify the discovery and application process for loans, grants, and micro-credit options, particularly for SC communities.'}
+        </p>
+        <div className="mt-8 pt-8 border-t border-surface-container">
+          <h3 className="headline-sm text-secondary mb-4">{lang === 'hi' ? 'हमारा मिशन' : lang === 'as' ? 'আমাৰ লক্ষ্য' : 'Our Mission'}</h3>
+          <p className="body-md text-on-surface-variant">
+            {lang === 'hi' ? 'स्मार्ट स्वचालन और व्यक्तिगत अनुशंसाओं के माध्यम से सुलभ, पारदर्शी और कुशल वित्तीय सहायता सुनिश्चित करके समुदायों को सशक्त बनाना।' : lang === 'as' ? 'স্মাৰ্ট স্বয়ংক্ৰিয়কৰণ আৰু ব্যক্তিগতকৃত পৰামৰ্শৰ জৰিয়তে সুলভ, স্বচ্ছ আৰু দক্ষ বিত্তীয় সাহায্য নিশ্চিত কৰি সম্প্ৰদায়সমূহক সৱলীকৰণ কৰা।' : 'To empower communities by ensuring accessible, transparent, and efficient financial assistance through smart automation and personalized recommendations.'}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// --- CONTACT PAGE ---
+const ContactPage = ({ lang }) => {
+  return (
+    <div className="max-w-4xl mx-auto py-12 px-4 animate-in fade-in duration-500">
+      <h2 className="display-md text-primary mb-6 text-center">{lang === 'hi' ? 'हमसे संपर्क करें' : lang === 'as' ? 'আমাৰ সৈতে যোগাযোগ কৰক' : 'Reach Out to Us'}</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="bg-surface-container-lowest p-8 rounded-2xl shadow-sm border border-surface-container">
+          <h3 className="headline-sm text-on-surface mb-6">{lang === 'hi' ? 'संपर्क जानकारी' : lang === 'as' ? 'যোগাযোগৰ তথ্য' : 'Contact Information'}</h3>
+          <div className="space-y-6">
+            <div className="flex items-start gap-4">
+              <div className="p-3 bg-primary-container text-on-primary-container rounded-full"><MapPin size={24}/></div>
+              <div>
+                <h4 className="font-bold text-on-surface">{lang === 'hi' ? 'मुख्यालय' : lang === 'as' ? 'মুখ্য কাৰ্যালয়' : 'Headquarters'}</h4>
+                <p className="text-on-surface-variant mt-1">Ministry of Social Justice & Empowerment<br/>Shastri Bhawan, New Delhi - 110001</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-4">
+              <div className="p-3 bg-secondary-container text-on-secondary-container rounded-full"><MessageCircle size={24}/></div>
+              <div>
+                <h4 className="font-bold text-on-surface">{lang === 'hi' ? 'ईमेल और फ़ोन' : lang === 'as' ? 'ইমেইল আৰু ফোন' : 'Email & Phone'}</h4>
+                <p className="text-on-surface-variant mt-1">support@schemesetu.gov.in<br/>+91-11-2338XXXX</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-surface-container-lowest p-8 rounded-2xl shadow-sm border border-surface-container">
+          <h3 className="headline-sm text-on-surface mb-6">{lang === 'hi' ? 'हमें एक संदेश भेजें' : lang === 'as' ? 'আমালৈ বাৰ্তা প্ৰেৰণ কৰক' : 'Send us a message'}</h3>
+          <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); alert(lang === 'hi' ? 'संदेश भेजा गया!' : lang === 'as' ? 'বাৰ্তা প্ৰেৰণ কৰা হ\'ল!' : 'Message Sent!'); }}>
+            <div>
+              <label className="block label-md text-on-surface mb-1">{lang === 'hi' ? 'नाम' : lang === 'as' ? 'নাম' : 'Name'}</label>
+              <input type="text" required className="w-full p-3 rounded-lg border border-outline-variant bg-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none" />
+            </div>
+            <div>
+              <label className="block label-md text-on-surface mb-1">{lang === 'hi' ? 'ईमेल' : lang === 'as' ? 'ইমেইল' : 'Email'}</label>
+              <input type="email" required className="w-full p-3 rounded-lg border border-outline-variant bg-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none" />
+            </div>
+            <div>
+              <label className="block label-md text-on-surface mb-1">{lang === 'hi' ? 'संदेश' : lang === 'as' ? 'বাৰ্তা' : 'Message'}</label>
+              <textarea required rows="4" className="w-full p-3 rounded-lg border border-outline-variant bg-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none"></textarea>
+            </div>
+            <button type="submit" className="w-full btn-primary py-3">{lang === 'hi' ? 'सबमिट करें' : lang === 'as' ? 'জমা দিয়ক' : 'Submit'}</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// --- AI CHATBOT COMPONENT ---
+const AIChatbot = ({ lang }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  useEffect(() => {
+    if (isOpen && messages.length === 0) {
+      setTimeout(() => {
+        setMessages([{
+          role: 'model',
+          content: lang === 'hi' 
+            ? 'नमस्ते! मैं SchemeSetu AI हूँ। मैं आपको सरकारी योजनाओं को समझने में कैसे मदद कर सकता हूँ?' 
+            : lang === 'as' 
+            ? 'নমস্কাৰ! মই SchemeSetu AI। মই আপোনাক চৰকাৰী আঁচনিসমূহ বুজাত কেনেকৈ সহায় কৰিব পাৰোঁ?' 
+            : 'Hello! I am SchemeSetu AI. How can I help you understand government financial schemes today?'
+        }]);
+      }, 0);
+    }
+  }, [isOpen, lang, messages.length]);
+
+  const handleSend = async (e) => {
+    e.preventDefault();
+    if (!input.trim()) return;
+
+    const userMessage = input.trim();
+    setInput('');
+    setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
+    setIsLoading(true);
+
+    try {
+      const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+      if (!apiKey) {
+        throw new Error('API key not found');
+      }
+
+      const genAI = new GoogleGenerativeAI(apiKey);
+      const model = genAI.getGenerativeModel({ 
+        model: 'gemini-3.6-flash',
+        systemInstruction: "You are SchemeSetu AI, a helpful, friendly assistant for marginalized entrepreneurs in India. You help users understand government financial schemes, grants, and loans, especially from the Ministry of Social Justice and Empowerment (MoSJE). Provide short, clear, and direct answers in the user's language. Never use markdown formatting like bolding or lists, just use plain text."
+      });
+
+      const contents = [];
+      // Gemini requires the first message to be from the user
+      if (messages.length > 0 && messages[0].role === 'model') {
+        contents.push({ role: 'user', parts: [{ text: 'Hello' }] });
+      }
+      
+      messages.forEach(m => {
+        contents.push({ role: m.role, parts: [{ text: m.content }] });
+      });
+      contents.push({ role: 'user', parts: [{ text: userMessage }] });
+
+      const result = await model.generateContent({ contents });
+      const text = result.response.text();
+
+      setMessages(prev => [...prev, { role: 'model', content: text }]);
+    } catch (error) {
+      console.error(error);
+      setMessages(prev => [...prev, { 
+        role: 'model', 
+        content: lang === 'hi' ? 'क्षमा करें, मुझे इस समय आपसे जुड़ने में परेशानी हो रही है। कृपया सुनिश्चित करें कि API कुंजी कॉन्फ़िगर की गई है।' : 
+                 lang === 'as' ? 'ক্ষমা কৰিব, এই মুহূৰ্তত আপোনাৰ সৈতে সংযোগ স্থাপন কৰাত মোৰ অসুবিধা হৈছে। অনুগ্ৰহ কৰি নিশ্চিত কৰক যে API চাবিটো কনফিগাৰ কৰা হৈছে।' : 
+                 'Sorry, I am having trouble connecting right now. Please ensure the API key is configured in your .env file.'
+      }]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <>
+      <button 
+        onClick={() => setIsOpen(true)}
+        className={`fixed bottom-6 right-6 w-14 h-14 bg-primary text-on-primary rounded-full shadow-lg flex items-center justify-center hover:scale-105 transition-transform z-50 ${isOpen ? 'hidden' : 'block'}`}
+      >
+        <Bot size={28} />
+      </button>
+
+      {isOpen && (
+        <div className="fixed bottom-6 right-6 w-80 sm:w-96 h-[500px] max-h-[80vh] bg-surface border border-surface-container shadow-xl rounded-2xl flex flex-col z-50 overflow-hidden animate-in slide-in-from-bottom-10 fade-in duration-300">
+          <div className="bg-primary p-4 text-on-primary flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              <Bot size={20} />
+              <span className="font-bold">SchemeSetu AI</span>
+            </div>
+            <button onClick={() => setIsOpen(false)} className="hover:bg-primary-container/20 p-1 rounded-full transition-colors">
+              <X size={20} />
+            </button>
+          </div>
+          
+          <div className="flex-grow p-4 overflow-y-auto bg-surface-container-lowest space-y-4">
+            {messages.map((m, i) => (
+              <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                <div className={`max-w-[80%] p-3 rounded-2xl ${m.role === 'user' ? 'bg-secondary text-on-secondary rounded-br-none' : 'bg-surface-container text-on-surface rounded-bl-none'}`}>
+                  <p className="text-sm whitespace-pre-wrap">{m.content}</p>
+                </div>
+              </div>
+            ))}
+            {isLoading && (
+              <div className="flex justify-start">
+                <div className="bg-surface-container text-on-surface max-w-[80%] p-3 rounded-2xl rounded-bl-none flex gap-1">
+                  <div className="w-2 h-2 rounded-full bg-on-surface-variant animate-bounce" style={{animationDelay: '0ms'}}></div>
+                  <div className="w-2 h-2 rounded-full bg-on-surface-variant animate-bounce" style={{animationDelay: '150ms'}}></div>
+                  <div className="w-2 h-2 rounded-full bg-on-surface-variant animate-bounce" style={{animationDelay: '300ms'}}></div>
+                </div>
+              </div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+
+          <form onSubmit={handleSend} className="p-3 bg-surface border-t border-surface-container flex gap-2">
+            <input 
+              type="text" 
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder={lang === 'hi' ? 'अपना प्रश्न पूछें...' : lang === 'as' ? 'আপোনাৰ প্ৰশ্ন সোধক...' : 'Ask a question...'}
+              className="flex-grow bg-surface-container-lowest border border-outline-variant rounded-full px-4 py-2 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+            />
+            <button 
+              type="submit" 
+              disabled={isLoading || !input.trim()}
+              className="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center disabled:opacity-50 hover:bg-primary/90 transition-colors"
+            >
+              <Send size={16} className="-ml-0.5" />
+            </button>
+          </form>
+        </div>
+      )}
+    </>
+  );
+};
+
 // --- APP SHELL ---
 function App() {
-  const [lang, setLang] = useState(null); // NULL forces the modal to show first!
+  const [lang, setLang] = useState(() => {
+    return sessionStorage.getItem('schemeSetuLang') || null;
+  });
+
+  useEffect(() => {
+    if (lang) {
+      sessionStorage.setItem('schemeSetuLang', lang);
+    }
+  }, [lang]);
 
   if (!lang) {
     return <LanguageModal setLang={setLang} />;
@@ -1270,13 +1579,15 @@ function App() {
               </Link>
             </div>
             <div className="flex items-center space-x-2 sm:space-x-6">
-              <Link to="/" className="hidden sm:block text-on-surface font-semibold hover:text-secondary">{lang === 'hi' ? 'होम' : lang === 'as' ? 'হোম' : 'Home'}</Link>
+              <Link to="/" className="hidden lg:block text-on-surface font-semibold hover:text-secondary">{lang === 'hi' ? 'होम' : lang === 'as' ? 'হোম' : 'Home'}</Link>
+              <Link to="/about" className="hidden lg:block text-on-surface font-semibold hover:text-secondary">{lang === 'hi' ? 'हमारे बारे में' : lang === 'as' ? 'আমাৰ বিষয়ে' : 'About'}</Link>
               <Link to="/find" className="hidden sm:block text-on-surface font-semibold hover:text-secondary">{t.navFind}</Link>
               <Link to="/calculator" className="hidden sm:block text-on-surface font-semibold hover:text-secondary">{t.emiBtn}</Link>
+              <Link to="/contact" className="hidden lg:block text-on-surface font-semibold hover:text-secondary">{lang === 'hi' ? 'संपर्क करें' : lang === 'as' ? 'যোগাযোগ' : 'Contact'}</Link>
               <Link to="/partners" className="hidden sm:flex text-on-secondary-fixed bg-secondary-fixed font-semibold items-center px-4 py-2 rounded-lg hover:bg-secondary-fixed-dim transition-colors"><MapPin className="mr-1.5" size={18} /> {t.navLocate}</Link>
               
               {/* Dropdown to change language later */}
-              <select value={lang} onChange={(e) => setLang(e.target.value)} className="ml-4 bg-surface border border-surface-container text-on-surface font-bold py-2 px-3 rounded-lg focus:outline-none focus:border-secondary">
+              <select value={lang} onChange={(e) => setLang(e.target.value)} className="ml-2 sm:ml-4 bg-surface border border-surface-container text-on-surface font-bold py-2 px-2 sm:px-3 rounded-lg focus:outline-none focus:border-secondary">
                 <option value="en">🇺🇸 English</option>
                 <option value="hi">🇮🇳 हिन्दी</option>
                 <option value="as">🦏 অসমীয়া</option>
@@ -1289,15 +1600,19 @@ function App() {
       <main className="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Routes>
           <Route path="/" element={<Home lang={lang} />} />
+          <Route path="/about" element={<AboutPage lang={lang} />} />
+          <Route path="/contact" element={<ContactPage lang={lang} />} />
           <Route path="/explore" element={<ExploreSchemes lang={lang} />} />
           <Route path="/scheme/:id" element={<SchemeDetails lang={lang} />} />
           <Route path="/find" element={<FindScheme lang={lang} />} />
           <Route path="/results" element={<ResultsPage lang={lang} />} />
           <Route path="/calculator" element={<CalculatorPage lang={lang} />} />
           <Route path="/partners" element={<PartnersPage lang={lang} />} />
+          <Route path="*" element={<div className="min-h-[70vh] flex flex-col items-center justify-center p-8 text-center animate-in fade-in"><h1 className="display-lg text-primary mb-4">404</h1><p className="body-lg text-on-surface-variant mb-8">Page Not Found</p><Link to="/" className="btn-primary">Return Home</Link></div>} />
         </Routes>
       </main>
-        
+      
+      <AIChatbot lang={lang} />
     </div>
   );
 }
