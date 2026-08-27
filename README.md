@@ -3,7 +3,7 @@
 A web app that helps marginalized entrepreneurs figure out which government-backed financial scheme fits their situation and where they actually need to apply.
 
 ## 🚀 Live Demo
-**[Check out the live deployment here!](https://scheme-setu-ai-driven-scheme-matching.vercel.app)**
+**[Check out the live deployment here!](https://scheme-setu-ai-driven-scheme-matchi.vercel.app/)**
 
 ## About
 
