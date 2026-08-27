@@ -2,6 +2,9 @@
 
 A web app that helps marginalized entrepreneurs figure out which government-backed financial scheme fits their situation and where they actually need to apply.
 
+## 🚀 Live Demo
+**[Check out the live deployment here!](https://scheme-setu-ai-driven-scheme-matching.vercel.app)**
+
 ## About
 
 We built SchemeSetu for the Smart India Hackathon to solve a practical problem. There are plenty of government financial schemes for marginalized entrepreneurs (like those from MoSJE and NSFDC), but they often go underutilized. The main issues are lack of awareness, complicated eligibility rules, and confusion about which local bank branch actually processes the applications.
@@ -115,6 +118,7 @@ Built for the Smart India Hackathon.
 - Multi-lingual UI implementation
 - Partner locator and scheme-specific EMI calculator
 - Gemini-powered chatbot for basic financial queries
+- Active tab routing and UI highlighting
 
 **Planned:**
 - Move static datasets to a real backend (Node.js/PostgreSQL)
