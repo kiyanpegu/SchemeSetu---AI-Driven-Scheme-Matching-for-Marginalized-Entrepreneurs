@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Routes, Route, Link, useNavigate, useLocation, useParams } from 'react-router-dom';
+import { Routes, Route, Link, NavLink, useNavigate, useLocation, useParams } from 'react-router-dom';
 import { schemes as allSchemesData } from './data/schemes';
 import { partners } from './data/partners';
 import { Landmark, Calculator, MapPin, Search, BrainCircuit, ShieldCheck, ChevronRight, ChevronLeft, MessageCircle, Globe, Bot, X, Send } from 'lucide-react';
@@ -1579,12 +1579,12 @@ function App() {
               </Link>
             </div>
             <div className="flex items-center space-x-2 sm:space-x-6">
-              <Link to="/" className="hidden lg:block text-on-surface font-semibold hover:text-secondary">{lang === 'hi' ? 'होम' : lang === 'as' ? 'হোম' : 'Home'}</Link>
-              <Link to="/about" className="hidden lg:block text-on-surface font-semibold hover:text-secondary">{lang === 'hi' ? 'हमारे बारे में' : lang === 'as' ? 'আমাৰ বিষয়ে' : 'About'}</Link>
-              <Link to="/find" className="hidden sm:block text-on-surface font-semibold hover:text-secondary">{t.navFind}</Link>
-              <Link to="/calculator" className="hidden sm:block text-on-surface font-semibold hover:text-secondary">{t.emiBtn}</Link>
-              <Link to="/contact" className="hidden lg:block text-on-surface font-semibold hover:text-secondary">{lang === 'hi' ? 'संपर्क करें' : lang === 'as' ? 'যোগাযোগ' : 'Contact'}</Link>
-              <Link to="/partners" className="hidden sm:flex text-on-secondary-fixed bg-secondary-fixed font-semibold items-center px-4 py-2 rounded-lg hover:bg-secondary-fixed-dim transition-colors"><MapPin className="mr-1.5" size={18} /> {t.navLocate}</Link>
+              <NavLink to="/" className={({ isActive }) => `hidden lg:block font-semibold transition-colors ${isActive ? 'text-secondary underline underline-offset-8 decoration-2' : 'text-on-surface hover:text-secondary'}`}>{lang === 'hi' ? 'होम' : lang === 'as' ? 'হোম' : 'Home'}</NavLink>
+              <NavLink to="/about" className={({ isActive }) => `hidden lg:block font-semibold transition-colors ${isActive ? 'text-secondary underline underline-offset-8 decoration-2' : 'text-on-surface hover:text-secondary'}`}>{lang === 'hi' ? 'हमारे बारे में' : lang === 'as' ? 'আমাৰ বিষয়ে' : 'About'}</NavLink>
+              <NavLink to="/find" className={({ isActive }) => `hidden sm:block font-semibold transition-colors ${isActive ? 'text-secondary underline underline-offset-8 decoration-2' : 'text-on-surface hover:text-secondary'}`}>{t.navFind}</NavLink>
+              <NavLink to="/calculator" className={({ isActive }) => `hidden sm:block font-semibold transition-colors ${isActive ? 'text-secondary underline underline-offset-8 decoration-2' : 'text-on-surface hover:text-secondary'}`}>{t.emiBtn}</NavLink>
+              <NavLink to="/contact" className={({ isActive }) => `hidden lg:block font-semibold transition-colors ${isActive ? 'text-secondary underline underline-offset-8 decoration-2' : 'text-on-surface hover:text-secondary'}`}>{lang === 'hi' ? 'संपर्क करें' : lang === 'as' ? 'যোগাযোগ' : 'Contact'}</NavLink>
+              <NavLink to="/partners" className={({ isActive }) => `hidden sm:flex font-semibold items-center px-4 py-2 rounded-lg transition-colors text-on-secondary-fixed bg-secondary-fixed hover:bg-secondary-fixed-dim ${isActive ? 'ring-2 ring-primary ring-offset-2' : ''}`}><MapPin className="mr-1.5" size={18} /> {t.navLocate}</NavLink>
               
               {/* Dropdown to change language later */}
               <select value={lang} onChange={(e) => setLang(e.target.value)} className="ml-2 sm:ml-4 bg-surface border border-surface-container text-on-surface font-bold py-2 px-2 sm:px-3 rounded-lg focus:outline-none focus:border-secondary">
