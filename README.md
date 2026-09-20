@@ -23,37 +23,44 @@ The main flow works like this:
 
 ## Key Features
 
-- Rule-based eligibility matching
-- Scheme-specific EMI calculator
-- Interactive authorized partner (bank) locator
-- Multi-lingual UI (English, Hindi, Assamese)
-- AI Chatbot for answering basic scheme-related queries
-- Direct links to official government portals
+- **Trilingual Localization (`en`, `hi`, `as`):** Full language support across English, Hindi (हिन्दी), and Assamese (অসমীয়া) with native Web Speech STT/TTS.
+- **Comprehensive Scheme Library (27 Verified Schemes):** Complete coverage across MoSJE, NSFDC, NBCFDC, NSKFDC, and central programs (SC, ST, OBC, Safai Karamcharis, Women, Artisans, Street Vendors).
+- **Deterministic AI Matching Engine:** Real-time eligibility evaluation based on caste, income, age, gender, and project cost ceilings.
+- **AI Business Feasibility Engine:** Powered by Gemini 2.5 Flash to convert enterprise ideas into bank-defensible capital allocations, license lists, and roadmaps.
+- **AI Caste Certificate OCR Scanner:** Gemini Vision document scanner with 1-click sample demo mode for zero-typing applicant onboarding.
+- **Bank Application Readiness Dossier:** Standardized, printable A4 verification slip with official seals and document checklists to eliminate last-mile bank counter rejection.
+- **MoSJE Nodal Telemetry Dashboard:** District-level demand heatmaps, channel partner absorption charts, and live dossier audit logs.
+- **Geospatial Channel Partner Locator:** Interactive map routing beneficiaries to nearby PSBs, RRBs (Assam Gramin Vikash Bank), and SCAs with Google Maps GPS directions.
 
-## How It Works
+## Full-Stack Architecture & REST API
 
-Right now, SchemeSetu is a frontend-only application. 
+SchemeSetu operates as a **Full-Stack Application** featuring an integrated Vercel Serverless REST API layer with resilient offline fallback:
 
-The eligibility matching runs entirely in the browser using React state. We built static datasets for both the schemes (`schemes.js`) and the channel partners (`partners.js`) based on NSFDC and MoSJE guidelines. 
-
-When a user submits their profile, the app evaluates their inputs against the dataset rules (like checking if their income is below the `annual_family_income_limit` and if their age fits the bracket) to return valid matches.
+### Serverless REST Endpoints (`/api/*`)
+- `GET /api/health` — System status, scheme database count, and uptime metrics.
+- `GET /api/schemes` — Filter schemes by `category`, `max_income`, `type`, `search`, and `lang`.
+- `POST /api/match` — Server-side deterministic scheme matching with capital subsidy calculations.
+- `POST /api/analyze` — Server-side Gemini 2.5 Flash feasibility generation (shields API keys).
+- `POST & GET /api/dossier` — Registers and retrieves beneficiary application dossiers with official tracking IDs (`SETU-2026-XXXXX`).
+- `GET /api/telemetry` — Live ministry analytics, district demand heatmaps, and partner disbursement rates.
 
 ## Tech Stack
 
-- **Frontend:** React.js, Vite
-- **Styling:** Tailwind CSS
-- **Icons:** Lucide React
-- **AI Chatbot:** Google Gemini API (`@google/genai`)
-- **Routing:** React Router DOM
-- **State:** React Hooks and Session Storage
+- **Frontend:** React 19, Vite, Tailwind CSS 4
+- **Backend:** Node.js Serverless Functions (Vercel API Architecture & Vite Dev Middleware)
+- **AI & Vision:** Google Gemini 2.5 Flash & Multimodal Vision (`@google/generative-ai`)
+- **Mapping:** React Leaflet, OpenStreetMap, Google Maps Navigation
+- **Voice Accessibility:** Web Speech API (Bidirectional Speech-to-Text & Text-to-Speech)
+- **Deployment:** Vercel Edge Network with SSL & OpenGraph Optimization
 
-*(Note: There is no backend server or database in this prototype. All data is handled locally via JS files).*
+## Data & Verified Sources
 
-## Data & Sources
-
-Because this app deals with government financial schemes, we tried to be as accurate as possible with the data. The information in `schemes.js` was transcribed from the NSFDC and MoSJE official portals. 
-
-Each scheme detail page includes a "Data Source" section with a link pointing back to the official government page, so users can verify the information themselves.
+SchemeSetu indexes **27 verified government financial assistance schemes** transcribed directly from official gazettes and statutory corporations:
+- **Ministry of Social Justice and Empowerment (MoSJE):** [https://socialjustice.gov.in/](https://socialjustice.gov.in/)
+- **National Scheduled Castes Finance and Development Corporation (NSFDC):** [https://nsfdc.nic.in/](https://nsfdc.nic.in/)
+- **National Backward Classes Finance & Development Corporation (NBCFDC):** [https://nbcfdc.gov.in/](https://nbcfdc.gov.in/)
+- **National Safai Karamcharis Finance & Development Corporation (NSKFDC):** [https://nskfdc.nic.in/](https://nskfdc.nic.in/)
+- **Stand-Up India / PM Vishwakarma / PMEGP / MUDRA:** Official guidelines linked per scheme card.
 
 ## Application Process
 

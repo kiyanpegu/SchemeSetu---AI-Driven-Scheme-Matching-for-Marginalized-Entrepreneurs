@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Users, IndianRupee, ShieldAlert, CheckCircle, 
   MapPin, Download, Filter, TrendingUp, Building2, FileCheck2 
 } from 'lucide-react';
 import { partners } from '../data/partners';
+import { apiService } from '../services/api';
 
 const dashboardTexts = {
   en: {
@@ -203,13 +204,25 @@ export default function AdminDashboard({ lang = 'en' }) {
   ];
 
   // Recent Application Dossiers Log
-  const recentDossiers = [
+  const initialDossiers = [
     { id: 'SETU-SC-2026-84912', applicant: 'Pooja Das', purpose: 'Tailoring Boutique', scheme: 'Mahila Samriddhi Yojana', branch: 'SBI Dispur Branch', date: '20 Sep 2026', status: t.statusDossierDownloaded },
     { id: 'SETU-SC-2026-39104', applicant: 'Manoj Basumatary', purpose: 'Livestock & Feed Unit', scheme: 'Micro-Credit Finance', branch: 'AGVB Silpukhuri', date: '20 Sep 2026', status: t.statusInReview },
     { id: 'SETU-SC-2026-58219', applicant: 'Rohit Baishya', purpose: 'Electronics Repair Kiosk', scheme: 'Suvidha Loan', branch: 'PNB Panbazar', date: '19 Sep 2026', status: t.statusDossierDownloaded },
     { id: 'SETU-SC-2026-11928', applicant: 'Anjali Medhi', purpose: 'M.Tech Tuition Finance', scheme: 'Educational Loan Scheme', branch: 'Canara Bank Guwahati', date: '18 Sep 2026', status: t.statusBranchVisited },
     { id: 'SETU-SC-2026-72491', applicant: 'Karan Barman', purpose: 'Light Commercial Vehicle', scheme: 'Utkarsh Loan', branch: 'UCO Bank Guwahati', date: '18 Sep 2026', status: t.statusApproved }
   ];
+
+  const [liveDossiers, setLiveDossiers] = useState(initialDossiers);
+
+  useEffect(() => {
+    let isMounted = true;
+    apiService.getDossiers().then(res => {
+      if (isMounted && res && res.dossiers && res.dossiers.length > 0) {
+        setLiveDossiers(res.dossiers);
+      }
+    }).catch(() => {});
+    return () => { isMounted = false; };
+  }, []);
 
   return (
     <div className="max-w-7xl mx-auto py-6 px-4 animate-in fade-in duration-300">
@@ -404,7 +417,7 @@ export default function AdminDashboard({ lang = 'en' }) {
               </tr>
             </thead>
             <tbody className="divide-y divide-surface-container">
-              {recentDossiers.map((item, i) => (
+              {liveDossiers.map((item, i) => (
                 <tr key={i} className="hover:bg-surface-container-low transition-colors">
                   <td className="py-3 font-mono font-bold text-primary">{item.id}</td>
                   <td className="py-3 font-semibold text-on-surface">{item.applicant}</td>

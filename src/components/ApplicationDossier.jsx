@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import { Printer, X, CheckSquare, Landmark, ShieldCheck, MapPin, FileText } from 'lucide-react';
 import { getLocalizedScheme } from '../data/schemeTranslations';
+import { apiService } from '../services/api';
 
 export default function ApplicationDossier({ scheme: rawScheme, userData, lang = 'en', onClose }) {
   const dossierRef = useRef(null);
@@ -21,6 +22,18 @@ export default function ApplicationDossier({ scheme: rawScheme, userData, lang =
   });
 
   const handlePrint = () => {
+    // Register to serverless backend audit trail
+    apiService.submitDossier({
+      id: refCode,
+      applicant: userData?.name || 'Beneficiary Applicant',
+      purpose: userData?.purpose === 'edu' ? 'Higher Education Finance' : 'Micro-Enterprise Self-Employment',
+      scheme: scheme.name,
+      amount: userData?.amount || scheme.loan_amount_max || 250000,
+      branch: 'Designated Public Sector Bank',
+      district: userData?.district || 'Kamrup Metropolitan',
+      state: userData?.state || 'Assam'
+    }).catch(() => {});
+
     window.print();
   };
 

@@ -961,24 +961,24 @@ const ResultsPage = ({ lang }) => {
   let ineligibilityReason = "";
 
   if (formData) {
-    if (formData.hasCaste === 'no') {
-      isEligible = false;
-      ineligibilityReason = t.ineligNoCaste;
-    } else if (Number(formData.income) > 300000) {
-      isEligible = false;
-      ineligibilityReason = t.ineligHighIncome;
-    }
+    allSchemesData.forEach(scheme => {
+      let score = 0;
+      let reasons = [];
+      
+      let isMatch = true;
+      const userAmt = Number(formData.amount);
+      const userInc = Number(formData.income);
+      const userAge = Number(formData.age);
+      const purpose = formData.purpose;
 
-    if (isEligible) {
-        allSchemesData.forEach(scheme => {
-          let score = 0;
-          let reasons = [];
-          
-          let isMatch = true;
-          const userAmt = Number(formData.amount);
-          const userInc = Number(formData.income);
-          const userAge = Number(formData.age);
-          const purpose = formData.purpose;
+      // Caste Requirement Check
+      if (formData.hasCaste === 'no') {
+        const isWomenStandUp = scheme.id === 'stand-up-india' && formData.gender === 'female';
+        const isUniversalTrade = scheme.id === 'pm-svanidhi' || scheme.id === 'pm-vishwakarma' || scheme.id === 'mudra-pmmy';
+        if (!isWomenStandUp && !isUniversalTrade) {
+          isMatch = false;
+        }
+      }
 
           // Purpose Matching
           if (purpose === 'edu' && !scheme.education_eligibility) {
@@ -1045,8 +1045,14 @@ const ResultsPage = ({ lang }) => {
           }
         });
         engineMatches.sort((a, b) => b.matchScore - a.matchScore);
-      }
-  }
+
+        if (engineMatches.length === 0) {
+          isEligible = false;
+          ineligibilityReason = formData.hasCaste === 'no' ? t.ineligNoCaste : t.ineligHighIncome;
+        } else {
+          isEligible = true;
+        }
+    }
 
   const matchedSchemes = engineMatches;
   const topRawScheme = matchedSchemes[0];

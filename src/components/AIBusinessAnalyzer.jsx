@@ -4,6 +4,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import { schemes } from '../data/schemes';
 import { getLocalizedScheme } from '../data/schemeTranslations';
 import { VoiceInputButton, SpeakButton } from './VoiceAssistant';
+import { apiService } from '../services/api';
 
 const analyzerTexts = {
   en: {
@@ -135,6 +136,31 @@ export default function AIBusinessAnalyzer({ lang = 'en', onSelectScheme }) {
     const langName = lang === 'hi' ? 'Hindi (हिन्दी)' : lang === 'as' ? 'Assamese (অসমীয়া)' : 'English';
 
     try {
+      // 1. Attempt serverless backend analysis first (protects API keys)
+      const backendRes = await apiService.analyzeBusiness({
+        businessIdea: input,
+        language: lang
+      });
+
+      if (backendRes && backendRes.success && backendRes.analysis) {
+        const parsed = backendRes.analysis;
+        const targetId = parsed.matchedSchemeId === 'msy' ? 'mahila-samriddhi' : (parsed.matchedSchemeId || 'mahila-samriddhi');
+        const matchedRawObj = schemes.find(s => s.id === targetId) || schemes[0];
+        const matchedSchemeObj = getLocalizedScheme(matchedRawObj, lang);
+
+        setAnalysisResult({
+          ...parsed,
+          businessSector: parsed.businessSector || (lang === 'hi' ? 'सूक्ष्म उद्यम' : lang === 'as' ? 'ক্ষুদ্ৰ উদ্যোগ' : 'Micro-Enterprise'),
+          estimatedCapital: parsed.estimatedCapital || (lang === 'hi' ? 'प्रस्तावित लागत' : lang === 'as' ? 'প্ৰস্তাৱিত মূলধন' : 'Proposed Investment'),
+          riskAssessment: parsed.riskAssessment || (lang === 'hi' ? 'प्राथमिकता क्षेत्र के तहत बैंक ऋण के लिए उपयुक्त' : 'Eligible under priority lending channel'),
+          whyThisFits: parsed.whyThisFits || (typeof t.fallbackWhy === 'function' ? t.fallbackWhy(matchedSchemeObj.name) : ''),
+          actionPlan: parsed.roadmap || parsed.actionPlan || t.fallbackPlan,
+          scheme: matchedSchemeObj
+        });
+        setIsAnalyzing(false);
+        return;
+      }
+
       const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
       if (!apiKey) {
         throw new Error("Gemini API key is not configured.");
@@ -147,6 +173,14 @@ export default function AIBusinessAnalyzer({ lang = 'en', onSelectScheme }) {
         systemInstruction: `You are the SchemeSetu AI Decision Engine for Ministry of Social Justice & Empowerment (MoSJE) schemes.
 Analyze the user's business idea and match them to the single best scheme from this verified list:
 - "mahila-samriddhi" (Mahila Samriddhi Yojana): For SC women micro-entrepreneurs, project cost up to ₹1.4L, loan up to ₹1.25L at 4% p.a.
+- "nsfdc-green-business" (NSFDC Green Business): E-rickshaws, solar rooftops, clean energy up to ₹30L at 4-6% p.a.
+- "pm-vishwakarma" (PM Vishwakarma): Traditional artisans (carpenters, blacksmiths, cobblers, tailors) up to ₹3L at 5% p.a. with ₹15,000 toolkit grant.
+- "pm-svanidhi" (PM SVANidhi): Urban street vendors, chai kiosks, fruit sellers up to ₹50,000 with 7% subsidy.
+- "nsfdc-lvy" (Laghu Vyavasay Yojana): Small shops, tailoring, repair up to ₹5L at 6% p.a.
+- "stand-up-india" (Stand-Up India): Greenfield SC/ST/Women business from ₹10L to ₹1 Crore.
+- "pmegp" (PMEGP): Micro-enterprises with 35% capital subsidy up to ₹50L.
+- "nbcfdc-new-swarnima" (New Swarnima): OBC women entrepreneurs up to ₹2L at 5% p.a.
+- "nskfdc-suy" (Swachhta Udyami): Sanitation and sewer cleaning mechanization up to ₹50L with ₹3.25L subsidy.
 - "nsfdc-mcf" (Micro-Credit Finance): For SC micro-entrepreneurs, loan up to ₹1.25L at 6.5% p.a.
 - "nsfdc-suvidha" (Suvidha Loan): For SC small business, loan up to ₹9L at 8% p.a.
 - "nsfdc-utkarsh" (Utkarsh Loan): For medium SC enterprise, loan up to ₹45L at 9% p.a.
