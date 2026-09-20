@@ -1,14 +1,12 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { 
-  BarChart3, Users, IndianRupee, ShieldAlert, CheckCircle, 
-  MapPin, Download, Filter, TrendingUp, Building2, FileCheck2, ArrowUpRight 
+  Users, IndianRupee, ShieldAlert, CheckCircle, 
+  MapPin, Download, Filter, TrendingUp, Building2, FileCheck2 
 } from 'lucide-react';
-import { schemes } from '../data/schemes';
 import { partners } from '../data/partners';
 
-export default function AdminDashboard({ lang = 'en' }) {
+export default function AdminDashboard() {
   const [selectedState, setSelectedState] = useState('All');
-  const [selectedScheme, setSelectedScheme] = useState('All');
 
   // Summary Metrics (Grounding in realistic MoSJE / NSFDC parameters)
   const stats = [
@@ -118,14 +116,28 @@ export default function AdminDashboard({ lang = 'en' }) {
         
         {/* District Demand Telemetry */}
         <div className="lg:col-span-2 bg-surface border border-surface-container rounded-2xl p-6 shadow-sm">
-          <div className="flex justify-between items-center mb-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
             <div>
               <h2 className="text-lg font-bold text-on-surface">District-Level Demand Telemetry</h2>
               <p className="text-xs text-on-surface-variant">Identifies regions where SC entrepreneurs are actively seeking capital</p>
             </div>
-            <span className="text-xs font-bold text-secondary bg-secondary/10 px-2.5 py-1 rounded-lg">
-              Live Feed
-            </span>
+            <div className="flex items-center gap-2">
+              <Filter size={14} className="text-on-surface-variant" />
+              <select
+                value={selectedState}
+                onChange={(e) => setSelectedState(e.target.value)}
+                className="bg-surface border border-surface-container text-xs rounded-lg px-2.5 py-1 font-semibold text-on-surface focus:outline-none cursor-pointer"
+              >
+                <option value="All">All States</option>
+                <option value="Assam">Assam</option>
+                <option value="Bihar">Bihar</option>
+                <option value="Uttar Pradesh">Uttar Pradesh</option>
+                <option value="Maharashtra">Maharashtra</option>
+              </select>
+              <span className="text-xs font-bold text-secondary bg-secondary/10 px-2.5 py-1 rounded-lg">
+                Live Feed
+              </span>
+            </div>
           </div>
 
           <div className="overflow-x-auto">
@@ -140,7 +152,9 @@ export default function AdminDashboard({ lang = 'en' }) {
                 </tr>
               </thead>
               <tbody className="divide-y divide-surface-container">
-                {districtDemand.map((row, i) => (
+                {districtDemand
+                  .filter(row => selectedState === 'All' || row.state === selectedState)
+                  .map((row, i) => (
                   <tr key={i} className="hover:bg-surface-container-low transition-colors">
                     <td className="py-3 font-bold text-on-surface flex items-center gap-2">
                       <MapPin size={14} className="text-primary shrink-0" />
@@ -271,3 +285,4 @@ export default function AdminDashboard({ lang = 'en' }) {
     </div>
   );
 }
+

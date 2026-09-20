@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Routes, Route, Link, NavLink, useNavigate, useLocation, useParams } from 'react-router-dom';
 import { schemes as allSchemesData } from './data/schemes';
 import { partners } from './data/partners';
-import { Landmark, Calculator, MapPin, Search, BrainCircuit, ShieldCheck, ChevronRight, ChevronLeft, MessageCircle, Globe, Bot, X, Send, FileText, Sparkles, ShieldAlert, Volume2, Printer } from 'lucide-react';
+import { Landmark, Calculator, MapPin, Search, BrainCircuit, ShieldCheck, ChevronRight, ChevronLeft, MessageCircle, Globe, Bot, X, Send, FileText, Sparkles, ShieldAlert } from 'lucide-react';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import ApplicationDossier from './components/ApplicationDossier';
 import { SpeakButton, VoiceInputButton } from './components/VoiceAssistant';
@@ -370,7 +370,7 @@ const LanguageModal = ({ setLang }) => (
 
 // --- HOME COMPONENT ---
 const Home = ({ lang }) => {
-  const t = translations[lang];
+  const t = translations[lang] || translations.en;
   return (
     <section className="relative pt-12 pb-24 px-4 overflow-hidden animate-in fade-in duration-700 w-full">
       <div className="absolute inset-0 z-[-1] opacity-30 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at 100% 0%, rgba(214, 227, 255, 0.5) 0%, transparent 50%), radial-gradient(circle at 0% 100%, rgba(216, 226, 255, 0.4) 0%, transparent 50%)' }}></div>
@@ -464,7 +464,7 @@ const Home = ({ lang }) => {
 
 // --- ADVANCED EMI CALCULATOR ---
 const CalculatorPage = ({ lang }) => {
-  const t = translations[lang];
+  const t = translations[lang] || translations.en;
   const [loanAmount, setLoanAmount] = useState(140000);
   const [interestRate, setInterestRate] = useState(6.5);
   const [tenureYears, setTenureYears] = useState(5);
@@ -533,7 +533,7 @@ const CalculatorPage = ({ lang }) => {
 // --- MULTI-STEP SCHEME FINDER ---
 // --- MULTI-STEP SCHEME FINDER ---
 const FindScheme = ({ lang }) => {
-  const t = translations[lang];
+  const t = translations[lang] || translations.en;
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [discoveryMode, setDiscoveryMode] = useState('form'); // 'form' | 'ai-idea' | 'scan'
@@ -838,7 +838,7 @@ const FindScheme = ({ lang }) => {
 
 // --- RESULTS PAGE ---
 const ResultsPage = ({ lang }) => {
-  const t = translations[lang];
+  const t = translations[lang] || translations.en;
   const location = useLocation();
   const formData = location.state?.formData;
   const navigate = useNavigate();
@@ -1154,7 +1154,7 @@ const ResultsPage = ({ lang }) => {
 
 // --- EXPLORE SCHEMES PAGE ---
 const ExploreSchemes = ({ lang }) => {
-  const t = translations[lang];
+  const t = translations[lang] || translations.en;
   return (
     <div className="max-w-7xl mx-auto py-8 px-4 animate-in fade-in duration-500">
       <div className="mb-8 flex flex-col gap-2">
@@ -1205,7 +1205,7 @@ const ExploreSchemes = ({ lang }) => {
 };
 
 const SchemeDetails = ({ lang }) => {
-  const t = translations[lang];
+  const t = translations[lang] || translations.en;
   const { id } = useParams();
   const navigate = useNavigate();
   const [showDossier, setShowDossier] = useState(false);
@@ -1356,8 +1356,7 @@ const PartnersPage = ({ lang }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [userLoc] = useState(null);
   const [eligibleOnly, setEligibleOnly] = useState(true);
-    const [partnerType, setPartnerType] = useState('');
-  const navigate = useNavigate();
+  const [partnerType, setPartnerType] = useState('');
 
   const filteredPartners = partners
     .filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()) || p.type.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -1705,25 +1704,45 @@ const AIChatbot = ({ lang }) => {
 
 // --- APP SHELL ---
 function App() {
+  const navigate = useNavigate();
   const [lang, setLang] = useState(() => {
-    return sessionStorage.getItem('schemeSetuLang') || null;
+    try {
+      return sessionStorage.getItem('schemeSetuLang') || 'en';
+    } catch {
+      return 'en';
+    }
+  });
+
+  const [showLangModal, setShowLangModal] = useState(() => {
+    try {
+      return !sessionStorage.getItem('schemeSetuLang');
+    } catch {
+      return false;
+    }
   });
 
   useEffect(() => {
     if (lang) {
-      sessionStorage.setItem('schemeSetuLang', lang);
+      try {
+        sessionStorage.setItem('schemeSetuLang', lang);
+      } catch (e) {
+        console.warn('SessionStorage write error:', e);
+      }
     }
   }, [lang]);
 
-  if (!lang) {
-    return <LanguageModal setLang={setLang} />;
-  }
-
-  const t = translations[lang];
-  const navigate = useNavigate();
+  const t = translations[lang] || translations.en;
 
   return (
     <div className="min-h-screen bg-background flex flex-col font-sans selection:bg-secondary selection:text-on-secondary">
+      {showLangModal && (
+        <LanguageModal 
+          setLang={(selectedLang) => { 
+            setLang(selectedLang); 
+            setShowLangModal(false); 
+          }} 
+        />
+      )}
       <nav className="bg-surface/80 backdrop-blur-md shadow-sm border-b border-surface-container sticky top-0 z-50 transition-all">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-20">

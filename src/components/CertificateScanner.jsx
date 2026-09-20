@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { FileUp, ShieldCheck, CheckCircle2, AlertTriangle, Sparkles, RefreshCw, FileText, ArrowRight } from 'lucide-react';
+import { useState } from 'react';
+import { FileUp, ShieldCheck, CheckCircle2, Sparkles, RefreshCw, FileText, ArrowRight } from 'lucide-react';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 export default function CertificateScanner({ lang = 'en', onApplyExtractedData }) {
@@ -119,6 +119,12 @@ Analyze this uploaded certificate and extract the key details in valid JSON:
         </div>
       </div>
 
+      {error && (
+        <div className="mb-6 p-3 bg-rose-50 text-rose-700 text-xs rounded-xl border border-rose-200">
+          {error}
+        </div>
+      )}
+
       {/* Upload Box */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div className="border-2 border-dashed border-outline-variant rounded-2xl p-6 flex flex-col items-center justify-center text-center bg-surface hover:bg-surface-container-low transition-all">
@@ -139,6 +145,21 @@ Analyze this uploaded certificate and extract the key details in valid JSON:
           >
             Browse Document
           </label>
+
+          {selectedFile && (
+            <div className="mt-3 flex flex-col items-center">
+              <span className="text-xs font-medium text-slate-700 truncate max-w-[220px]">{selectedFile.name}</span>
+              <button
+                type="button"
+                onClick={handleScanUploaded}
+                disabled={isScanning}
+                className="mt-2 bg-secondary hover:bg-secondary-dim text-white text-xs font-bold px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer shadow-sm transition-all"
+              >
+                {isScanning ? <RefreshCw size={13} className="animate-spin" /> : <ShieldCheck size={13} />}
+                <span>Scan Document with AI</span>
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Demo Fast-Track Card */}
@@ -227,3 +248,4 @@ Analyze this uploaded certificate and extract the key details in valid JSON:
     </div>
   );
 }
+

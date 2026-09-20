@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Sparkles, BrainCircuit, ArrowRight, CheckCircle2, AlertCircle, Lightbulb, RefreshCw, ChevronRight } from 'lucide-react';
+import { useState } from 'react';
+import { Sparkles, BrainCircuit, CheckCircle2, AlertCircle, Lightbulb, RefreshCw, ChevronRight } from 'lucide-react';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { schemes } from '../data/schemes';
 import { VoiceInputButton, SpeakButton } from './VoiceAssistant';
@@ -211,6 +211,13 @@ Evaluate sector, loan bracket, and match with the optimal NSFDC/MoSJE scheme. La
         </button>
       </div>
 
+      {error && (
+        <div className="mt-4 p-3.5 bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium rounded-xl flex items-center gap-2">
+          <AlertCircle size={16} className="shrink-0 text-rose-500" />
+          <span>{error}</span>
+        </div>
+      )}
+
       {/* AI Analysis Results Card */}
       {analysisResult && (
         <div className="mt-8 border border-secondary/30 bg-secondary/5 rounded-2xl p-6 animate-in slide-in-from-bottom-4 duration-300">
@@ -289,3 +296,4 @@ Evaluate sector, loan bracket, and match with the optimal NSFDC/MoSJE scheme. La
     </div>
   );
 }
+

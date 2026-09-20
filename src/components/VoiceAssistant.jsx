@@ -1,27 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { Mic, MicOff, Volume2, VolumeX, Loader2 } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Mic, MicOff, Volume2, VolumeX } from 'lucide-react';
 
 /**
  * TextToSpeechButton: Reads out given text in Hindi, English, or Assamese (Bengali/Assamese phonetic fallback).
  */
-export function SpeakButton({ text, lang = 'en', label = 'Listen', className = '' }) {
+export function SpeakButton({ text = '', lang = 'en', label = 'Listen', className = '' }) {
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [isSupported, setIsSupported] = useState(true);
+  const isSupported = typeof window !== 'undefined' && 'speechSynthesis' in window;
 
   useEffect(() => {
-    if (!('speechSynthesis' in window)) {
-      setIsSupported(false);
-    }
-
     return () => {
-      if ('speechSynthesis' in window) {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
         window.speechSynthesis.cancel();
       }
     };
   }, []);
 
   const handleToggleSpeak = () => {
-    if (!isSupported) return;
+    if (!isSupported || !text) return;
 
     if (isSpeaking) {
       window.speechSynthesis.cancel();
@@ -31,7 +27,7 @@ export function SpeakButton({ text, lang = 'en', label = 'Listen', className = '
 
     window.speechSynthesis.cancel(); // Stop any pending speech
 
-    const cleanText = text.replace(/[*#_~`[\]()]/g, ' '); // Strip markdown
+    const cleanText = (text || '').replace(/[*#_~`[\]()]/g, ' '); // Strip markdown
     const utterance = new SpeechSynthesisUtterance(cleanText);
 
     // Set appropriate language code
@@ -87,10 +83,14 @@ export function SpeakButton({ text, lang = 'en', label = 'Listen', className = '
  */
 export function VoiceInputButton({ onTranscript, lang = 'en', className = '' }) {
   const [isListening, setIsListening] = useState(false);
-  const [recognition, setRecognition] = useState(null);
-  const [isSupported, setIsSupported] = useState(true);
+  const recognitionRef = useRef(null);
+  const isSupported = typeof window !== 'undefined' && (
+    'SpeechRecognition' in window || 'webkitSpeechRecognition' in window
+  );
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SpeechRecognition) {
       const recognizer = new SpeechRecognition();
@@ -114,30 +114,42 @@ export function VoiceInputButton({ onTranscript, lang = 'en', className = '' }) 
         setIsListening(false);
       };
 
-      setRecognition(recognizer);
-    } else {
-      setIsSupported(false);
+      recognitionRef.current = recognizer;
     }
+
+    return () => {
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.abort();
+        } catch {
+          // ignore
+        }
+      }
+    };
   }, [onTranscript]);
 
   const toggleListening = () => {
-    if (!recognition) return;
+    if (!recognitionRef.current) return;
 
     if (isListening) {
-      recognition.stop();
+      try {
+        recognitionRef.current.stop();
+      } catch {
+        // ignore
+      }
       setIsListening(false);
     } else {
       // Set language code based on current UI language
       if (lang === 'hi') {
-        recognition.lang = 'hi-IN';
+        recognitionRef.current.lang = 'hi-IN';
       } else if (lang === 'as') {
-        recognition.lang = 'as-IN';
+        recognitionRef.current.lang = 'as-IN';
       } else {
-        recognition.lang = 'en-IN';
+        recognitionRef.current.lang = 'en-IN';
       }
 
       try {
-        recognition.start();
+        recognitionRef.current.start();
         setIsListening(true);
       } catch (err) {
         console.error('Speech recognition start failed:', err);

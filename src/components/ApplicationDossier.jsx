@@ -1,13 +1,16 @@
-import React, { useRef } from 'react';
-import { Printer, X, CheckSquare, Landmark, ShieldCheck, MapPin, FileText, Download } from 'lucide-react';
+import { useRef } from 'react';
+import { Printer, X, CheckSquare, Landmark, ShieldCheck, MapPin, FileText } from 'lucide-react';
 
 export default function ApplicationDossier({ scheme, userData, lang = 'en', onClose }) {
   const dossierRef = useRef(null);
-  
+
   if (!scheme) return null;
 
-  // Generate reference number based on scheme id and timestamp
-  const refCode = `SETU-SC-${new Date().getFullYear()}-${Math.floor(10000 + Math.random() * 90000)}`;
+  // Generate deterministic reference number based on scheme id
+  const schemeCode = scheme.id.replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 5) || 'NSFDC';
+  const numericSeed = scheme.id.split('').reduce((acc, c) => acc + c.charCodeAt(0), 48201);
+  const refCode = `SETU-SC-2026-${schemeCode}-${(numericSeed % 89999) + 10000}`;
+
   const currentDate = new Date().toLocaleDateString(lang === 'hi' ? 'hi-IN' : lang === 'as' ? 'as-IN' : 'en-IN', {
     day: '2-digit',
     month: 'short',
@@ -195,3 +198,4 @@ export default function ApplicationDossier({ scheme, userData, lang = 'en', onCl
     </div>
   );
 }
+
