@@ -5,6 +5,7 @@ import { schemes } from '../data/schemes';
 import { getLocalizedScheme } from '../data/schemeTranslations';
 import { VoiceInputButton, SpeakButton } from './VoiceAssistant';
 import { apiService } from '../services/api';
+import { evaluateBusinessIdea } from '../data/ideaMatcher';
 
 const analyzerTexts = {
   en: {
@@ -144,17 +145,18 @@ export default function AIBusinessAnalyzer({ lang = 'en', onSelectScheme }) {
 
       if (backendRes && backendRes.success && backendRes.analysis) {
         const parsed = backendRes.analysis;
-        const targetId = parsed.matchedSchemeId === 'msy' ? 'mahila-samriddhi' : (parsed.matchedSchemeId || 'mahila-samriddhi');
+        const targetId = parsed.matchedSchemeId === 'msy' ? 'mahila-samriddhi' : (parsed.matchedSchemeId || 'nsfdc-term-loan');
         const matchedRawObj = schemes.find(s => s.id === targetId) || schemes[0];
         const matchedSchemeObj = getLocalizedScheme(matchedRawObj, lang);
 
         setAnalysisResult({
           ...parsed,
+          matchConfidence: Number(parsed.matchConfidence) || 95,
           businessSector: parsed.businessSector || (lang === 'hi' ? 'सूक्ष्म उद्यम' : lang === 'as' ? 'ক্ষুদ্ৰ উদ্যোগ' : 'Micro-Enterprise'),
           estimatedCapital: parsed.estimatedCapital || (lang === 'hi' ? 'प्रस्तावित लागत' : lang === 'as' ? 'প্ৰস্তাৱিত মূলধন' : 'Proposed Investment'),
           riskAssessment: parsed.riskAssessment || (lang === 'hi' ? 'प्राथमिकता क्षेत्र के तहत बैंक ऋण के लिए उपयुक्त' : 'Eligible under priority lending channel'),
           whyThisFits: parsed.whyThisFits || (typeof t.fallbackWhy === 'function' ? t.fallbackWhy(matchedSchemeObj.name) : ''),
-          actionPlan: parsed.roadmap || parsed.actionPlan || t.fallbackPlan,
+          actionPlan: parsed.actionPlan || parsed.roadmap || t.fallbackPlan,
           scheme: matchedSchemeObj
         });
         setIsAnalyzing(false);
@@ -162,8 +164,8 @@ export default function AIBusinessAnalyzer({ lang = 'en', onSelectScheme }) {
       }
 
       const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-      if (!apiKey) {
-        throw new Error("Gemini API key is not configured.");
+      if (!apiKey || !apiKey.startsWith('AIzaSy')) {
+        throw new Error("Invalid or unconfigured client Gemini key. Using smart domain engine.");
       }
 
       const genAI = new GoogleGenerativeAI(apiKey);
@@ -172,14 +174,15 @@ export default function AIBusinessAnalyzer({ lang = 'en', onSelectScheme }) {
         generationConfig: { responseMimeType: "application/json" },
         systemInstruction: `You are the SchemeSetu AI Decision Engine for Ministry of Social Justice & Empowerment (MoSJE) schemes.
 Analyze the user's business idea and match them to the single best scheme from this verified list:
-- "mahila-samriddhi" (Mahila Samriddhi Yojana): For SC women micro-entrepreneurs, project cost up to ₹1.4L, loan up to ₹1.25L at 4% p.a.
-- "nsfdc-green-business" (NSFDC Green Business): E-rickshaws, solar rooftops, clean energy up to ₹30L at 4-6% p.a.
-- "pm-vishwakarma" (PM Vishwakarma): Traditional artisans (carpenters, blacksmiths, cobblers, tailors) up to ₹3L at 5% p.a. with ₹15,000 toolkit grant.
+- "nsfdc-term-loan" (NSFDC Term Loan): Piggery, poultry, dairy, livestock, cattle, manufacturing, services up to ₹150 Lakh at 6-8% p.a.
+- "pm-vishwakarma" (PM Vishwakarma): Traditional artisans (carpenters, blacksmiths, cobblers, tailors, potters) up to ₹3L at 5% p.a. with ₹15,000 toolkit grant.
 - "pm-svanidhi" (PM SVANidhi): Urban street vendors, chai kiosks, fruit sellers up to ₹50,000 with 7% subsidy.
+- "nsfdc-green-business" (NSFDC Green Business): E-rickshaws, solar rooftops, clean energy up to ₹30L at 4-6% p.a.
 - "nsfdc-lvy" (Laghu Vyavasay Yojana): Small shops, tailoring, repair up to ₹5L at 6% p.a.
+- "mahila-samriddhi" (Mahila Samriddhi Yojana): EXCLUSIVELY for SC women micro-entrepreneurs up to ₹1.4L at 4% p.a.
 - "stand-up-india" (Stand-Up India): Greenfield SC/ST/Women business from ₹10L to ₹1 Crore.
 - "pmegp" (PMEGP): Micro-enterprises with 35% capital subsidy up to ₹50L.
-- "nbcfdc-new-swarnima" (New Swarnima): OBC women entrepreneurs up to ₹2L at 5% p.a.
+- "nbcfdc-new-swarnima" (New Swarnima): EXCLUSIVELY for OBC women entrepreneurs up to ₹2L at 5% p.a.
 - "nskfdc-suy" (Swachhta Udyami): Sanitation and sewer cleaning mechanization up to ₹50L with ₹3.25L subsidy.
 - "nsfdc-mcf" (Micro-Credit Finance): For SC micro-entrepreneurs, loan up to ₹1.25L at 6.5% p.a.
 - "nsfdc-suvidha" (Suvidha Loan): For SC small business, loan up to ₹9L at 8% p.a.
@@ -188,12 +191,16 @@ Analyze the user's business idea and match them to the single best scheme from t
 - "mudra-pmmy" (Pradhan Mantri MUDRA): Non-farm micro-units up to ₹10L.
 - "asiim" (Ambedkar Social Innovation): Tech startups and students in higher ed.
 
+CRITICAL GENDER AND DOMAIN RULES:
+1. GENDER SAFETY: If the applicant states or implies they are male (e.g. "man", "male", "boy", "guy", "पुरुष", "পুৰুষ"), YOU MUST NEVER recommend "mahila-samriddhi" or "nbcfdc-new-swarnima". It is strictly reserved for women.
+2. For livestock, pig farming, piggery, poultry, dairy: Choose "nsfdc-term-loan" or "pmegp".
+
 IMPORTANT: The requested language is ${langName}. You MUST generate the fields 'businessSector', 'whyThisFits', 'riskAssessment', and all array items in 'actionPlan' in ${langName}.
 
 Return ONLY a valid JSON object matching this schema:
 {
   "matchedSchemeId": "scheme_id_here",
-  "matchConfidence": 94,
+  "matchConfidence": 95,
   "businessSector": "Sector description in ${langName}",
   "estimatedCapital": "₹80,000",
   "whyThisFits": "A 2-3 sentence clear explanation in ${langName} of why this scheme provides the best interest rate, moratorium, and loan amount for their specific venture.",
@@ -215,42 +222,37 @@ Evaluate sector, loan bracket, and match with the optimal NSFDC/MoSJE scheme. La
       const text = result.response.text();
       const parsed = JSON.parse(text);
 
-      // Map alias if returned
-      const targetId = parsed.matchedSchemeId === 'msy' ? 'mahila-samriddhi' : parsed.matchedSchemeId;
+      let targetId = parsed.matchedSchemeId === 'msy' ? 'mahila-samriddhi' : parsed.matchedSchemeId;
+
+      // Post-Gemini gender check
+      const lower = input.toLowerCase();
+      const isMale = /\b(man|male|boy|men|father|brother|husband|son|guy|mr)\b/i.test(lower) && !/\b(woman|female|girl|women)\b/i.test(lower);
+      if (isMale && (targetId === 'mahila-samriddhi' || targetId === 'nbcfdc-new-swarnima')) {
+        const safeEval = evaluateBusinessIdea(input, lang);
+        targetId = safeEval.matchedSchemeId;
+        parsed.businessSector = safeEval.businessSector;
+        parsed.whyThisFits = safeEval.whyThisFits;
+        parsed.actionPlan = safeEval.actionPlan;
+      }
+
       const matchedRawObj = schemes.find(s => s.id === targetId) || schemes[0];
       const matchedSchemeObj = getLocalizedScheme(matchedRawObj, lang);
 
       setAnalysisResult({
         ...parsed,
+        matchConfidence: Number(parsed.matchConfidence) || 95,
         scheme: matchedSchemeObj
       });
 
     } catch (err) {
-      console.error("AI Analysis failed:", err);
-      // Fallback: Smart heuristic matching if API fails
-      const lower = input.toLowerCase();
-      let fallbackId = "nsfdc-mcf";
-      if (lower.includes('study') || lower.includes('college') || lower.includes('degree') || lower.includes('education') || lower.includes('fee')) {
-        fallbackId = "nsfdc-els-india";
-      } else if (lower.includes('women') || lower.includes('woman') || lower.includes('tailor') || lower.includes('sewing') || lower.includes('boutique') || lower.includes('सिलाई') || lower.includes('চিলাই')) {
-        fallbackId = "mahila-samriddhi";
-      } else if (lower.includes('factory') || lower.includes('manufacturing') || lower.includes('scale') || lower.includes('plant')) {
-        fallbackId = "nsfdc-utkarsh";
-      } else if (lower.includes('tech') || lower.includes('software') || lower.includes('startup') || lower.includes('ai')) {
-        fallbackId = "asiim";
-      }
-
-      const matchedRawObj = schemes.find(s => s.id === fallbackId) || schemes[0];
+      console.warn("AI Analysis client fallback, invoking domain heuristic engine:", err.message);
+      const evalResult = evaluateBusinessIdea(input, lang);
+      const targetId = evalResult.matchedSchemeId;
+      const matchedRawObj = schemes.find(s => s.id === targetId) || schemes[0];
       const matchedSchemeObj = getLocalizedScheme(matchedRawObj, lang);
 
       setAnalysisResult({
-        matchedSchemeId: fallbackId,
-        matchConfidence: 92,
-        businessSector: t.fallbackSector,
-        estimatedCapital: t.fallbackCapital,
-        whyThisFits: t.fallbackWhy(matchedSchemeObj.name),
-        riskAssessment: t.fallbackRisk,
-        actionPlan: t.fallbackPlan,
+        ...evalResult,
         scheme: matchedSchemeObj
       });
     } finally {
@@ -359,7 +361,7 @@ Evaluate sector, loan bracket, and match with the optimal NSFDC/MoSJE scheme. La
               </span>
               <div>
                 <h3 className="font-bold text-base text-on-surface">{t.resultHeader}</h3>
-                <p className="text-xs text-on-surface-variant">{t.sectorLabel}: <span className="font-semibold text-primary">{analysisResult.businessSector}</span> | {t.confidenceLabel}: <span className="font-bold text-emerald-600">{analysisResult.matchConfidence}%</span></p>
+                <p className="text-xs text-on-surface-variant">{t.sectorLabel}: <span className="font-semibold text-primary">{analysisResult.businessSector}</span> | {t.confidenceLabel}: <span className="font-bold text-emerald-600">{analysisResult.matchConfidence || 95}%</span></p>
               </div>
             </div>
 
