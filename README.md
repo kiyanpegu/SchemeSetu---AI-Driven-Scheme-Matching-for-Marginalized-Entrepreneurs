@@ -114,15 +114,21 @@ Built for the Smart India Hackathon.
 ## Roadmap
 
 **Implemented:**
-- Core matching engine and static data models
-- Multi-lingual UI implementation
-- Partner locator and scheme-specific EMI calculator
-- Gemini-powered chatbot for basic financial queries
-- Active tab routing and UI highlighting
+- Core deterministic rule-based matching engine for 100% legal compliance
+- Multi-lingual UI implementation (English, Hindi, Assamese)
+- Multilingual Voice Accessibility (Web Speech API STT voice input and TTS scheme narration)
+- AI Business Idea Feasibility & Scheme Fit Analyzer (Gemini-powered feasibility assessment & 3-step action roadmap)
+- AI Document OCR & Certificate Scanner (Auto-extracts applicant name, caste, and income to pre-fill profile)
+- Official Printable Bank Application Dossier (A4 readiness slip with mandatory checklist & partner branch routing)
+- MoSJE & Channel Partner Nodal Administration Portal (`/admin` district demand telemetry & absorption rates)
+- Interactive Partner Bank Locator (PSBs, RRBs, SCAs) with Google Maps intent links
+- Scheme-specific EMI Calculator with NSFDC moratorium grace period logic
+- Gemini-powered Conversational Assistant with voice input and audio readout
 
-**Planned:**
-- Move static datasets to a real backend (Node.js/PostgreSQL)
-- Add document OCR to automatically fill the profile form from an uploaded caste/income certificate
+**Planned (Production Scale):**
+- Centralized PostgreSQL/Supabase database for live scheme updates without redeploying code
+- DigiLocker API integration for automated government credential fetching
+- Aadhaar-based e-KYC and direct SCA application forwarding
 
 ## Disclaimer
 

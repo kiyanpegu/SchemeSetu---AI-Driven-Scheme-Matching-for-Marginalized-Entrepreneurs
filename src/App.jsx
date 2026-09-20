@@ -2,8 +2,13 @@ import { useState, useRef, useEffect } from 'react';
 import { Routes, Route, Link, NavLink, useNavigate, useLocation, useParams } from 'react-router-dom';
 import { schemes as allSchemesData } from './data/schemes';
 import { partners } from './data/partners';
-import { Landmark, Calculator, MapPin, Search, BrainCircuit, ShieldCheck, ChevronRight, ChevronLeft, MessageCircle, Globe, Bot, X, Send } from 'lucide-react';
+import { Landmark, Calculator, MapPin, Search, BrainCircuit, ShieldCheck, ChevronRight, ChevronLeft, MessageCircle, Globe, Bot, X, Send, FileText, Sparkles, ShieldAlert, Volume2, Printer } from 'lucide-react';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import ApplicationDossier from './components/ApplicationDossier';
+import { SpeakButton, VoiceInputButton } from './components/VoiceAssistant';
+import AIBusinessAnalyzer from './components/AIBusinessAnalyzer';
+import AdminDashboard from './components/AdminDashboard';
+import CertificateScanner from './components/CertificateScanner';
 import { MapContainer, TileLayer, Marker, Popup, ZoomControl } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -531,6 +536,8 @@ const FindScheme = ({ lang }) => {
   const t = translations[lang];
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
+  const [discoveryMode, setDiscoveryMode] = useState('form'); // 'form' | 'ai-idea' | 'scan'
+  const [verifiedNotice, setVerifiedNotice] = useState(null);
   
   // Expanded Data Model for the AI Engine
   const [formData, setFormData] = useState({ 
@@ -550,25 +557,99 @@ const FindScheme = ({ lang }) => {
   return (
     <div className="w-full max-w-7xl mx-auto py-8 px-4 h-full flex flex-col items-center">
       
-      {/* Progress Header */}
-      <div className="w-full max-w-3xl mb-8">
-        <div className="flex justify-between items-center mb-2 relative">
-          <button 
-            onClick={() => step > 1 ? setStep(step - 1) : navigate(-1)} 
-            className="absolute -left-16 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors flex items-center font-semibold text-sm hidden md:flex"
-            title="Go Back"
-          >
-            <ChevronLeft size={20} /> {t.backBtn}
-          </button>
-          <span className="text-sm font-medium text-on-surface-variant uppercase tracking-wider">{t.step} {step} {t.of} 7</span>
-          <span className="text-sm font-medium text-secondary">{t.tellUs}</span>
-        </div>
-        <div className="h-2 w-full bg-surface-container-high rounded-full overflow-hidden">
-          <div className="h-full bg-gradient-to-r from-primary-container to-secondary rounded-full transition-all duration-500" style={{ width: `${(step / 7) * 100}%` }}></div>
-        </div>
+      {/* Discovery Mode Selector Tabs */}
+      <div className="w-full max-w-2xl mb-8 bg-surface-container p-1.5 rounded-2xl flex border border-surface-container-high shadow-sm">
+        <button
+          type="button"
+          onClick={() => setDiscoveryMode('form')}
+          className={`flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+            discoveryMode === 'form' 
+              ? 'bg-surface text-primary shadow-sm' 
+              : 'text-on-surface-variant hover:text-on-surface'
+          }`}
+        >
+          <FileText size={16} />
+          <span>{lang === 'hi' ? '7-चरण प्रोफाइलर' : '7-Step Questionnaire'}</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setDiscoveryMode('ai-idea')}
+          className={`flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+            discoveryMode === 'ai-idea' 
+              ? 'bg-surface text-secondary shadow-sm' 
+              : 'text-on-surface-variant hover:text-on-surface'
+          }`}
+        >
+          <Sparkles size={16} className="text-secondary" />
+          <span>{lang === 'hi' ? 'AI व्यापार विश्लेषण' : 'AI Idea Analyzer'}</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setDiscoveryMode('scan')}
+          className={`flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+            discoveryMode === 'scan' 
+              ? 'bg-surface text-emerald-700 shadow-sm' 
+              : 'text-on-surface-variant hover:text-on-surface'
+          }`}
+        >
+          <ShieldCheck size={16} className="text-emerald-600" />
+          <span>{lang === 'hi' ? 'प्रमाण पत्र स्कैन' : 'Scan Certificate'}</span>
+        </button>
       </div>
 
-      <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 gap-8">
+      {verifiedNotice && (
+        <div className="w-full max-w-2xl mb-6 p-3.5 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-800 flex items-center justify-between animate-in fade-in">
+          <div className="flex items-center gap-2">
+            <ShieldCheck size={16} className="text-emerald-600 shrink-0" />
+            <span className="font-medium">{verifiedNotice}</span>
+          </div>
+          <button onClick={() => setVerifiedNotice(null)} className="text-emerald-700 font-bold ml-2">✕</button>
+        </div>
+      )}
+
+      {discoveryMode === 'ai-idea' ? (
+        <div className="w-full max-w-4xl">
+          <AIBusinessAnalyzer lang={lang} onSelectScheme={(s) => navigate('/scheme/' + s.id)} />
+        </div>
+      ) : discoveryMode === 'scan' ? (
+        <div className="w-full max-w-4xl">
+          <CertificateScanner 
+            lang={lang} 
+            onApplyExtractedData={(data) => {
+              setFormData(prev => ({
+                ...prev,
+                hasCaste: 'yes',
+                income: String(data.annualIncome || '140000'),
+                age: '26'
+              }));
+              setVerifiedNotice(`Verified ${data.applicantName}'s SC Certificate (${data.certificateNumber}). Income pre-filled to ₹${Number(data.annualIncome).toLocaleString('en-IN')}.`);
+              setDiscoveryMode('form');
+            }} 
+          />
+        </div>
+      ) : (
+        <>
+          {/* Progress Header */}
+          <div className="w-full max-w-3xl mb-8">
+            <div className="flex justify-between items-center mb-2 relative">
+              <button 
+                onClick={() => step > 1 ? setStep(step - 1) : navigate(-1)} 
+                className="absolute -left-16 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors flex items-center font-semibold text-sm hidden md:flex"
+                title="Go Back"
+              >
+                <ChevronLeft size={20} /> {t.backBtn}
+              </button>
+              <span className="text-sm font-medium text-on-surface-variant uppercase tracking-wider">{t.step} {step} {t.of} 7</span>
+              <span className="text-sm font-medium text-secondary">{t.tellUs}</span>
+            </div>
+            <div className="h-2 w-full bg-surface-container-high rounded-full overflow-hidden">
+              <div className="h-full bg-gradient-to-r from-primary-container to-secondary rounded-full transition-all duration-500" style={{ width: `${(step / 7) * 100}%` }}></div>
+            </div>
+          </div>
+
+          <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 gap-8">
         
         {/* Main Questions Area */}
         <div className="lg:col-span-8 flex flex-col gap-6">
@@ -747,10 +828,11 @@ const FindScheme = ({ lang }) => {
             </div>
           </div>
         </div>
-
       </div>
-    </div>
-  );
+      </>
+    )}
+  </div>
+);
 };
 
 
@@ -860,6 +942,7 @@ const ResultsPage = ({ lang }) => {
   // Mini EMI Calculator State
   const [loanAmt, setLoanAmt] = useState(formData?.amount || '300000');
   const [tenure, setTenure] = useState('5');
+  const [dossierScheme, setDossierScheme] = useState(null);
 
   const p = Number(loanAmt);
   const r = (topScheme?.calcInterest || 4) / 12 / 100;
@@ -869,12 +952,24 @@ const ResultsPage = ({ lang }) => {
   return (
     <main className="flex-grow w-full max-w-7xl mx-auto px-4 py-12 animate-in fade-in duration-500">
       {/* Header Section */}
-      <div className="mb-12 flex flex-col gap-2">
-        <h1 className="text-4xl md:text-5xl font-bold text-primary">{t.resultsTitle}</h1>
-        {isEligible && matchedSchemes.length > 0 ? (
-          <p className="text-lg text-on-surface-variant">{t.resultsSub}</p>
-        ) : (
-          <p className="text-lg text-red-600">{t.noMatchDesc}</p>
+      <div className="mb-12 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-4xl md:text-5xl font-bold text-primary">{t.resultsTitle}</h1>
+          {isEligible && matchedSchemes.length > 0 ? (
+            <p className="text-lg text-on-surface-variant">{t.resultsSub}</p>
+          ) : (
+            <p className="text-lg text-red-600">{t.noMatchDesc}</p>
+          )}
+        </div>
+
+        {isEligible && matchedSchemes.length > 0 && (
+          <div className="flex items-center gap-3">
+            <SpeakButton 
+              text={`You have ${matchedSchemes.length} matched schemes. Your top recommended scheme is ${topScheme?.name}, with maximum funding of ${topScheme?.amount} at ${topScheme?.interest} interest rate.`} 
+              lang={lang} 
+              label={lang === 'hi' ? 'परिणाम सुनें' : 'Listen to Results'} 
+            />
+          </div>
         )}
       </div>
       
@@ -948,10 +1043,17 @@ const ResultsPage = ({ lang }) => {
                   </div>
                 </div>
 
-                <div className="flex gap-4">
+                <div className="flex flex-wrap gap-3">
                   {idx === 0 ? (
                     <>
                       <button onClick={() => s.id && navigate(`/scheme/${s.id}`)} className="btn-primary flex-1 py-2.5 font-bold">{t.viewDetailsApply}</button>
+                      <button 
+                        type="button"
+                        onClick={() => setDossierScheme(s)} 
+                        className="btn-ghost flex-1 py-2.5 bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200 text-center font-bold flex items-center justify-center gap-1.5 cursor-pointer"
+                      >
+                        <FileText size={16} /> Print Bank Dossier
+                      </button>
                       {s.online_application_available ? (
                          <a href={s.official_application_portal} target="_blank" rel="noopener noreferrer" className="btn-ghost flex-1 py-2.5 bg-green-50 hover:bg-green-100 text-green-800 border border-green-200 text-center font-bold">
                            Apply Online Portal
@@ -963,9 +1065,18 @@ const ResultsPage = ({ lang }) => {
                       )}
                     </>
                   ) : (
-                    <button onClick={() => s.id && navigate(`/scheme/${s.id}`)} className="text-secondary font-bold hover:underline flex items-center ml-auto">
-                      {t.viewDetailsApply} <ChevronRight size={16} />
-                    </button>
+                    <div className="flex items-center justify-between w-full">
+                      <button 
+                        type="button"
+                        onClick={() => setDossierScheme(s)} 
+                        className="text-xs font-bold text-blue-800 hover:underline flex items-center gap-1 cursor-pointer"
+                      >
+                        <FileText size={14} /> Get Application Dossier
+                      </button>
+                      <button onClick={() => s.id && navigate(`/scheme/${s.id}`)} className="text-secondary font-bold hover:underline flex items-center ml-auto">
+                        {t.viewDetailsApply} <ChevronRight size={16} />
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>
@@ -1028,6 +1139,15 @@ const ResultsPage = ({ lang }) => {
           </div>
         </aside>
       </div>
+
+      {dossierScheme && (
+        <ApplicationDossier 
+          scheme={dossierScheme} 
+          userData={formData} 
+          lang={lang} 
+          onClose={() => setDossierScheme(null)} 
+        />
+      )}
     </main>
   );
 };
@@ -1088,6 +1208,7 @@ const SchemeDetails = ({ lang }) => {
   const t = translations[lang];
   const { id } = useParams();
   const navigate = useNavigate();
+  const [showDossier, setShowDossier] = useState(false);
   const scheme = allSchemesData.find(s => s.id === id);
 
   if (!scheme) {
@@ -1111,9 +1232,16 @@ const SchemeDetails = ({ lang }) => {
 
       <div className="card-ambient bg-surface-container-lowest border border-surface-container rounded-2xl overflow-hidden shadow-sm">
         <div className="bg-primary p-8 text-on-primary">
-          <span className="inline-block px-3 py-1 bg-white/20 text-white text-xs font-bold rounded-full mb-4">
-            {scheme.target}
-          </span>
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+            <span className="inline-block px-3 py-1 bg-white/20 text-white text-xs font-bold rounded-full">
+              {scheme.target}
+            </span>
+            <SpeakButton 
+              text={`${scheme.name}. ${scheme.shortDesc}. Maximum loan amount is ${scheme.maxAmount}. Interest rate is ${scheme.interest}.`} 
+              lang={lang} 
+              label={lang === 'hi' ? 'योजना सुनें' : 'Listen in Voice'}
+            />
+          </div>
           <h1 className="text-3xl md:text-4xl font-bold mb-4">{scheme.name}</h1>
           <p className="text-primary-container-light text-lg leading-relaxed max-w-2xl">{scheme.shortDesc}</p>
         </div>
@@ -1196,13 +1324,28 @@ const SchemeDetails = ({ lang }) => {
           </div>
 
           <div className="mt-10 pt-8 border-t border-surface-container flex flex-col sm:flex-row gap-4 items-center justify-between">
-             <p className="text-sm text-on-surface-variant">{lang === 'hi' ? 'क्या आप आगे बढ़ने के लिए तैयार हैं?' : lang === 'as' ? 'আপুনি আগবাঢ়িবলৈ সাজুনে?' : 'Ready to move forward?'}</p>
-             <button onClick={() => navigate('/partners')} className="w-full sm:w-auto bg-secondary text-white font-bold px-8 py-3 rounded-lg hover:bg-opacity-90 transition-all flex items-center justify-center gap-2 shadow-sm">
+             <button 
+               type="button"
+               onClick={() => setShowDossier(true)}
+               className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-on-primary font-bold px-6 py-3 rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer"
+             >
+               <FileText size={18} /> {lang === 'hi' ? 'बैंक आवेदन डॉसियर (प्रिंट स्लिप)' : 'Download Application Dossier (Print Slip)'}
+             </button>
+             <button onClick={() => navigate('/partners')} className="w-full sm:w-auto bg-secondary text-white font-bold px-8 py-3 rounded-xl hover:bg-opacity-90 transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer">
                {t.findPartnerBtn} <MapPin size={18} />
              </button>
           </div>
         </div>
       </div>
+
+      {showDossier && (
+        <ApplicationDossier 
+          scheme={scheme} 
+          userData={{ income: '200000', purpose: scheme.business_eligibility ? 'biz' : 'edu', age: 28 }} 
+          lang={lang} 
+          onClose={() => setShowDossier(false)} 
+        />
+      )}
     </div>
   );
 };
@@ -1512,6 +1655,11 @@ const AIChatbot = ({ lang }) => {
               <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                 <div className={`max-w-[80%] p-3 rounded-2xl ${m.role === 'user' ? 'bg-secondary text-on-secondary rounded-br-none' : 'bg-surface-container text-on-surface rounded-bl-none'}`}>
                   <p className="text-sm whitespace-pre-wrap">{m.content}</p>
+                  {m.role === 'model' && (
+                    <div className="mt-2 flex justify-end">
+                      <SpeakButton text={m.content} lang={lang} label="" className="!py-0.5 !px-1.5 !text-[10px] !bg-surface-container-high" />
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
@@ -1527,18 +1675,24 @@ const AIChatbot = ({ lang }) => {
             <div ref={messagesEndRef} />
           </div>
 
-          <form onSubmit={handleSend} className="p-3 bg-surface border-t border-surface-container flex gap-2">
+          <form onSubmit={handleSend} className="p-3 bg-surface border-t border-surface-container flex items-center gap-2">
             <input 
               type="text" 
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder={lang === 'hi' ? 'अपना प्रश्न पूछें...' : lang === 'as' ? 'আপোনাৰ প্ৰশ্ন সোধক...' : 'Ask a question...'}
+              placeholder={lang === 'hi' ? 'प्रश्न पूछें या माइक दबाएं...' : lang === 'as' ? 'প্ৰশ্ন সোধক বা মাইক ব্যৱহাৰ কৰক...' : 'Ask or speak a question...'}
               className="flex-grow bg-surface-container-lowest border border-outline-variant rounded-full px-4 py-2 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+            />
+            <VoiceInputButton 
+              lang={lang} 
+              onTranscript={(transcript) => {
+                setInput(prev => prev ? `${prev} ${transcript}` : transcript);
+              }} 
             />
             <button 
               type="submit" 
               disabled={isLoading || !input.trim()}
-              className="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center disabled:opacity-50 hover:bg-primary/90 transition-colors"
+              className="w-10 h-10 shrink-0 rounded-full bg-primary text-on-primary flex items-center justify-center disabled:opacity-50 hover:bg-primary/90 transition-colors cursor-pointer"
             >
               <Send size={16} className="-ml-0.5" />
             </button>
@@ -1566,6 +1720,7 @@ function App() {
   }
 
   const t = translations[lang];
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-background flex flex-col font-sans selection:bg-secondary selection:text-on-secondary">
@@ -1584,6 +1739,7 @@ function App() {
               <NavLink to="/find" className={({ isActive }) => `hidden sm:block font-semibold transition-colors ${isActive ? 'text-secondary underline underline-offset-8 decoration-2' : 'text-on-surface hover:text-secondary'}`}>{t.navFind}</NavLink>
               <NavLink to="/calculator" className={({ isActive }) => `hidden sm:block font-semibold transition-colors ${isActive ? 'text-secondary underline underline-offset-8 decoration-2' : 'text-on-surface hover:text-secondary'}`}>{t.emiBtn}</NavLink>
               <NavLink to="/contact" className={({ isActive }) => `hidden lg:block font-semibold transition-colors ${isActive ? 'text-secondary underline underline-offset-8 decoration-2' : 'text-on-surface hover:text-secondary'}`}>{lang === 'hi' ? 'संपर्क करें' : lang === 'as' ? 'যোগাযোগ' : 'Contact'}</NavLink>
+              <NavLink to="/admin" className={({ isActive }) => `hidden xl:flex items-center gap-1 font-semibold transition-colors ${isActive ? 'text-secondary underline underline-offset-8 decoration-2' : 'text-on-surface hover:text-secondary'}`} title="Ministry of Social Justice & Empowerment Nodal Administration"><ShieldAlert size={16} className="text-secondary" /> {lang === 'hi' ? 'नोडल पोर्टल' : 'MoSJE Portal'}</NavLink>
               <NavLink to="/partners" className={({ isActive }) => `hidden sm:flex font-semibold items-center px-4 py-2 rounded-lg transition-colors text-on-secondary-fixed bg-secondary-fixed hover:bg-secondary-fixed-dim ${isActive ? 'ring-2 ring-primary ring-offset-2' : ''}`}><MapPin className="mr-1.5" size={18} /> {t.navLocate}</NavLink>
               
               {/* Dropdown to change language later */}
@@ -1608,6 +1764,8 @@ function App() {
           <Route path="/results" element={<ResultsPage lang={lang} />} />
           <Route path="/calculator" element={<CalculatorPage lang={lang} />} />
           <Route path="/partners" element={<PartnersPage lang={lang} />} />
+          <Route path="/admin" element={<AdminDashboard lang={lang} />} />
+          <Route path="/ai-analyzer" element={<div className="max-w-4xl mx-auto py-4"><AIBusinessAnalyzer lang={lang} onSelectScheme={(s) => navigate('/scheme/' + s.id)} /></div>} />
           <Route path="*" element={<div className="min-h-[70vh] flex flex-col items-center justify-center p-8 text-center animate-in fade-in"><h1 className="display-lg text-primary mb-4">404</h1><p className="body-lg text-on-surface-variant mb-8">Page Not Found</p><Link to="/" className="btn-primary">Return Home</Link></div>} />
         </Routes>
       </main>

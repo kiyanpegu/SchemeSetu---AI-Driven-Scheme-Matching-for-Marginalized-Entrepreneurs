@@ -35,3 +35,4 @@ The primary remaining goal is **Deployment**.
 
 ---
 *Note to AI Assistants (Antigravity/Cursor/Copilot): Read this file to understand the project's current state and strict frontend-only architecture before suggesting backend databases or full-stack rewrites.*
+
