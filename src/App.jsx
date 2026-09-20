@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Routes, Route, Link, NavLink, useNavigate, useLocation, useParams } from 'react-router-dom';
 import { schemes as allSchemesData } from './data/schemes';
+import { getLocalizedScheme } from './data/schemeTranslations';
 import { partners } from './data/partners';
 import { Landmark, Calculator, MapPin, Search, BrainCircuit, ShieldCheck, ChevronRight, ChevronLeft, MessageCircle, Globe, Bot, X, Send, FileText, Sparkles, ShieldAlert } from 'lucide-react';
 import { GoogleGenerativeAI } from '@google/generative-ai';
@@ -127,7 +128,44 @@ const translations = {
     noMatchTitle: "No Direct Matches Found",
     noMatchDesc: "Your profile doesn't strictly match the available specialized schemes. Consider browsing all schemes or adjusting your loan amount.",
     notEligibleTitle: "Eligibility Requirements Not Met",
-    editProfileBtn: "Edit Profile"
+    editProfileBtn: "Edit Profile",
+    resultsVoiceLabel: "Listen to Results",
+    resultsVoiceText: (count, name, amount, interest) => `You have ${count} matched schemes. Your top recommended scheme is ${name}, with maximum funding of ${amount} at ${interest} interest rate.`,
+    onlineApp: "Online Application",
+    dossierBtn: "Print Bank Dossier",
+    applyOnlineBtn: "Apply Online Portal",
+    getDossierBtn: "Get Application Dossier",
+    needGuidanceTitle: "Need Guidance?",
+    needGuidanceDesc: "Navigating schemes can be complex. Connect with an official partner for free assistance.",
+    findLocalPartner: "Find a local partner",
+    ineligNoCaste: "NSFDC schemes strictly require a valid Scheduled Caste (SC) certificate. Based on your input, you do not meet this mandatory criteria.",
+    ineligHighIncome: "Your family income exceeds the ₹3.00 Lakh limit for NSFDC schemes. These schemes are strictly targeted at marginalized entrepreneurs.",
+    reasonBase: "Meets base eligibility criteria.",
+    reasonAmountWithin: (amt, max) => `Amount (₹${amt}) is within the scheme limit of ₹${max}.`,
+    reasonAmountExceed: (max) => `Note: Requested amount exceeds scheme limit of ₹${max}.`,
+    reasonWomen: "Specialized scheme for female entrepreneurs.",
+    estEmi: "Est. EMI",
+    interestRateLabel: "Interest Rate",
+    listenScheme: "Listen in Voice",
+    downloadDossier: "Download Application Dossier (Print Slip)",
+    appProvenance: "Application & Provenance",
+    appRoute: "Application Route",
+    officialPortal: "Official Portal",
+    offlineApp: "Offline Application",
+    mustApplyChannel: "Must apply via authorized channel partners:",
+    dataSource: "Data Source (Provenance)",
+    statusVerified: "Status: Verified",
+    lastVerified: "Last Verified",
+    schemeNotFound: "Scheme not found",
+    backToExplore: "Back to Explore",
+    tabQuestionnaire: "7-Step Questionnaire",
+    tabAiIdea: "AI Idea Analyzer",
+    tabScanCert: "Scan Certificate",
+    bankAll: "All Banks",
+    bankPublic: "Public Sector",
+    bankPrivate: "Private Sector",
+    bankRural: "Rural Banks",
+    navAdmin: "MoSJE Portal"
   },
   hi: {
     schemeEdu: "शिक्षा ऋण योजना",
@@ -233,7 +271,44 @@ const translations = {
     noMatchTitle: "कोई सीधा मिलान नहीं मिला",
     noMatchDesc: "आपकी प्रोफ़ाइल उपलब्ध विशेष योजनाओं से पूरी तरह मेल नहीं खाती। सभी योजनाओं को ब्राउज़ करने या अपनी ऋण राशि को समायोजित करने पर विचार करें।",
     notEligibleTitle: "पात्रता आवश्यकताएँ पूरी नहीं हुईं",
-    editProfileBtn: "प्रोफ़ाइल संपादित करें"
+    editProfileBtn: "प्रोफ़ाइल संपादित करें",
+    resultsVoiceLabel: "परिणाम सुनें",
+    resultsVoiceText: (count, name, amount, interest) => `आपके लिए ${count} योजनाएं उपयुक्त पाई गई हैं। आपकी शीर्ष अनुशंसित योजना ${name} है, जिसमें ${interest} ब्याज दर पर अधिकतम ${amount} का ऋण उपलब्ध है।`,
+    onlineApp: "ऑनलाइन आवेदन",
+    dossierBtn: "बैंक डॉसियर प्रिंट करें",
+    applyOnlineBtn: "ऑनलाइन पोर्टल पर आवेदन करें",
+    getDossierBtn: "आवेदन डॉसियर प्राप्त करें",
+    needGuidanceTitle: "मार्गदर्शन चाहिए?",
+    needGuidanceDesc: "सरकारी योजनाओं को समझना जटिल हो सकता है। निःशुल्क सहायता के लिए किसी आधिकारिक पार्टनर से जुड़ें।",
+    findLocalPartner: "स्थानीय पार्टनर खोजें",
+    ineligNoCaste: "NSFDC योजनाओं के लिए वैध अनुसूचित जाति (SC) प्रमाण पत्र अनिवार्य है। आपके इनपुट के आधार पर, आप इस अनिवार्य मानदंड को पूरा नहीं करते हैं।",
+    ineligHighIncome: "आपकी पारिवारिक आय NSFDC योजनाओं की ₹3.00 लाख की सीमा से अधिक है। ये योजनाएं केवल हाशिए पर रहने वाले उद्यमियों के लिए हैं।",
+    reasonBase: "मूल पात्रता मानदंड पूरा करता है।",
+    reasonAmountWithin: (amt, max) => `ऋण राशि (₹${amt}) योजना की अधिकतम सीमा ₹${max} के भीतर है।`,
+    reasonAmountExceed: (max) => `ध्यान दें: मांगी गई राशि योजना की सीमा ₹${max} से अधिक है।`,
+    reasonWomen: "महिला उद्यमियों के लिए विशेष योजना।",
+    estEmi: "अनुमानित ईएमआई",
+    interestRateLabel: "ब्याज दर",
+    listenScheme: "योजना सुनें",
+    downloadDossier: "बैंक आवेदन डॉसियर (प्रिंट स्लिप)",
+    appProvenance: "आवेदन एवं स्रोत सत्यापन",
+    appRoute: "आवेदन का तरीका",
+    officialPortal: "आधिकारिक पोर्टल",
+    offlineApp: "ऑफलाइन आवेदन",
+    mustApplyChannel: "अधिकृत चैनल पार्टनर्स के माध्यम से आवेदन करना होगा:",
+    dataSource: "डेटा स्रोत (सत्यापन)",
+    statusVerified: "स्थिति: सत्यापित",
+    lastVerified: "अंतिम सत्यापन",
+    schemeNotFound: "योजना नहीं मिली",
+    backToExplore: "योजनाएं देखने वापस जाएं",
+    tabQuestionnaire: "7-चरण प्रोफाइलर",
+    tabAiIdea: "AI व्यापार विश्लेषण",
+    tabScanCert: "प्रमाण पत्र स्कैन",
+    bankAll: "सभी बैंक",
+    bankPublic: "सार्वजनिक क्षेत्र",
+    bankPrivate: "निजी क्षेत्र",
+    bankRural: "ग्रामीण बैंक",
+    navAdmin: "नोडल पोर्टल"
   },
   as: {
     schemeEdu: "শিক্ষা ঋণ আঁচনি",
@@ -339,7 +414,44 @@ const translations = {
     noMatchTitle: "কোনো পোনপটীয়া মেচ পোৱা নগ'ল",
     noMatchDesc: "আপোনাৰ প্ৰফাইল উপলব্ধ বিশেষ আঁচনিসমূহৰ সৈতে সম্পূৰ্ণৰূপে মিলি নাযায়। সকলো আঁচনি ব্ৰাউজ কৰা বা আপোনাৰ ঋণৰ পৰিমাণ সামঞ্জস্য কৰাৰ কথা বিবেচনা কৰক।",
     notEligibleTitle: "যোগ্যতাৰ প্ৰয়োজনীয়তা পূৰণ হোৱা নাই",
-    editProfileBtn: "প্ৰফাইল সম্পাদনা কৰক"
+    editProfileBtn: "প্ৰফাইল সম্পাদনা কৰক",
+    resultsVoiceLabel: "ফলাফল শুনক",
+    resultsVoiceText: (count, name, amount, interest) => `আপোনাৰ বাবে ${count} খন উপযুক্ত আঁচনি পোৱা গৈছে। আপোনাৰ শীৰ্ষ পৰামৰ্শপ্ৰাপ্ত আঁচনি হৈছে ${name}, য'ত ${interest} সুদৰ হাৰত সৰ্বোচ্চ ${amount} পুঁজি উপলব্ধ।`,
+    onlineApp: "অনলাইন আবেদন",
+    dossierBtn: "বেংক ডচিয়েৰ প্ৰিন্ট কৰক",
+    applyOnlineBtn: "অনলাইন প'ৰ্টেলত আবেদন কৰক",
+    getDossierBtn: "আবেদন ডচিয়েৰ প্ৰাপ্ত কৰক",
+    needGuidanceTitle: "পথপ্ৰদৰ্শনৰ প্ৰয়োজন নেকি?",
+    needGuidanceDesc: "আঁচনিসমূহ বুজাটো জটিল হ'ব পাৰে। বিনামূলীয়া সাহায্যৰ বাবে এজন কৰ্তৃত্বপ্ৰাপ্ত অংশীদাৰৰ সৈতে সংযোগ কৰক।",
+    findLocalPartner: "স্থানীয় অংশীদাৰ বিচাৰক",
+    ineligNoCaste: "NSFDC আঁচনিসমূহৰ বাবে বৈধ অনুসূচীত জাতিৰ প্ৰমাণপত্ৰ বাধ্যতামূলক। আপোনাৰ তথ্য অনুসৰি, আপুনি এই মাপকাঠী পূৰণ নকৰে।",
+    ineligHighIncome: "আপোনাৰ পাৰিবাৰিক আয় NSFDC আঁচনিসমূহৰ ৩.০০ লাখ টকাৰ সীমা অতিক্ৰম কৰিছে। এই আঁচনিসমূহ প্ৰান্তীয় উদ্যোগীসকলৰ বাবে লক্ষ্য নিৰ্ধাৰিত।",
+    reasonBase: "মূল যোগ্যতাৰ মাপকাঠী পূৰণ কৰে।",
+    reasonAmountWithin: (amt, max) => `ঋণৰ পৰিমাণ (₹${amt}) আঁচনিৰ সৰ্বোচ্চ সীমা ₹${max} ৰ ভিতৰত আছে।`,
+    reasonAmountExceed: (max) => `মন কৰিব: বিচৰা পৰিমাণ আঁচনিৰ সীমা ₹${max} তকৈ বেছি।`,
+    reasonWomen: "মহিলা উদ্যোগীসকলৰ বাবে বিশেষ আঁচনি।",
+    estEmi: "আনুমানিক ইএমআই",
+    interestRateLabel: "সুদৰ হাৰ",
+    listenScheme: "আঁচনি শুনক",
+    downloadDossier: "বেংক আবেদন ডচিয়েৰ (প্ৰিন্ট শ্লিপ)",
+    appProvenance: "আবেদন আৰু উৎস সত্যপন",
+    appRoute: "আবেদনৰ মাধ্যম",
+    officialPortal: "কৰ্তৃত্বপ্ৰাপ্ত প'ৰ্টেল",
+    offlineApp: "অফলাইন আবেদন",
+    mustApplyChannel: "কৰ্তৃত্বপ্ৰাপ্ত চেনেল অংশীদাৰৰ জৰিয়তে আবেদন কৰিব লাগিব:",
+    dataSource: "তথ্যৰ উৎস (সত্যপন)",
+    statusVerified: "স্থিতি: সত্যাাপিত",
+    lastVerified: "অন্তিম সত্যপন",
+    schemeNotFound: "আঁচনি বিচাৰি পোৱা নগ'ল",
+    backToExplore: "আঁচনিসমূহলৈ উভতি যাওক",
+    tabQuestionnaire: "৭-পদক্ষেপৰ প্ৰশ্নাৱলী",
+    tabAiIdea: "AI ব্যৱসায়িক বিশ্লেষণ",
+    tabScanCert: "প্ৰমাণপত্ৰ স্কেন",
+    bankAll: "সকলো বেংক",
+    bankPublic: "ৰাজহুৱা খণ্ড",
+    bankPrivate: "ব্যক্তিগত খণ্ড",
+    bankRural: "গ্ৰাম্য বেংক",
+    navAdmin: "ন'ডেল প'ৰ্টেল"
   }
 };
 
@@ -569,7 +681,7 @@ const FindScheme = ({ lang }) => {
           }`}
         >
           <FileText size={16} />
-          <span>{lang === 'hi' ? '7-चरण प्रोफाइलर' : '7-Step Questionnaire'}</span>
+          <span>{t.tabQuestionnaire}</span>
         </button>
 
         <button
@@ -582,7 +694,7 @@ const FindScheme = ({ lang }) => {
           }`}
         >
           <Sparkles size={16} className="text-secondary" />
-          <span>{lang === 'hi' ? 'AI व्यापार विश्लेषण' : 'AI Idea Analyzer'}</span>
+          <span>{t.tabAiIdea}</span>
         </button>
 
         <button
@@ -595,7 +707,7 @@ const FindScheme = ({ lang }) => {
           }`}
         >
           <ShieldCheck size={16} className="text-emerald-600" />
-          <span>{lang === 'hi' ? 'प्रमाण पत्र स्कैन' : 'Scan Certificate'}</span>
+          <span>{t.tabScanCert}</span>
         </button>
       </div>
 
@@ -851,10 +963,10 @@ const ResultsPage = ({ lang }) => {
   if (formData) {
     if (formData.hasCaste === 'no') {
       isEligible = false;
-      ineligibilityReason = "NSFDC schemes strictly require a valid Scheduled Caste (SC) certificate. Based on your input, you do not meet this mandatory criteria.";
+      ineligibilityReason = t.ineligNoCaste;
     } else if (Number(formData.income) > 300000) {
       isEligible = false;
-      ineligibilityReason = "Your family income exceeds the ₹3.00 Lakh limit for NSFDC schemes. These schemes are strictly targeted at marginalized entrepreneurs.";
+      ineligibilityReason = t.ineligHighIncome;
     }
 
     if (isEligible) {
@@ -883,14 +995,14 @@ const ResultsPage = ({ lang }) => {
 
           if (isMatch) {
              score += 50; // base match
-             reasons.push("Meets base eligibility criteria.");
+             reasons.push(t.reasonBase);
 
              // Amount matching
              if (scheme.loan_amount_max && userAmt <= scheme.loan_amount_max) {
                  score += 15;
-                 reasons.push(`Amount (₹${userAmt}) is within the scheme limit of ₹${scheme.loan_amount_max}.`);
+                 reasons.push(t.reasonAmountWithin(userAmt, scheme.loan_amount_max));
              } else if (scheme.loan_amount_max) {
-                 reasons.push(`Note: Requested amount exceeds scheme limit of ₹${scheme.loan_amount_max}.`);
+                 reasons.push(t.reasonAmountExceed(scheme.loan_amount_max));
              }
              
              if (scheme.loan_amount_min && userAmt >= scheme.loan_amount_min) {
@@ -901,7 +1013,7 @@ const ResultsPage = ({ lang }) => {
              if (scheme.beneficiary_category?.includes('Women') || scheme.target_groups?.includes('Women')) {
                  if (formData.gender === 'female') {
                      score += 25;
-                     reasons.push("Specialized scheme for female entrepreneurs.");
+                     reasons.push(t.reasonWomen);
                  } else {
                      // Scheme is strictly for women, disqualify men
                      isMatch = false;
@@ -937,7 +1049,8 @@ const ResultsPage = ({ lang }) => {
   }
 
   const matchedSchemes = engineMatches;
-  const topScheme = matchedSchemes[0];
+  const topRawScheme = matchedSchemes[0];
+  const topScheme = topRawScheme ? getLocalizedScheme(topRawScheme, lang) : null;
 
   // Mini EMI Calculator State
   const [loanAmt, setLoanAmt] = useState(formData?.amount || '300000');
@@ -965,9 +1078,14 @@ const ResultsPage = ({ lang }) => {
         {isEligible && matchedSchemes.length > 0 && (
           <div className="flex items-center gap-3">
             <SpeakButton 
-              text={`You have ${matchedSchemes.length} matched schemes. Your top recommended scheme is ${topScheme?.name}, with maximum funding of ${topScheme?.amount} at ${topScheme?.interest} interest rate.`} 
+              text={t.resultsVoiceText(
+                matchedSchemes.length, 
+                topScheme?.name || '', 
+                topScheme?.maxAmount || topScheme?.amount || '', 
+                topScheme?.interest || ''
+              )} 
               lang={lang} 
-              label={lang === 'hi' ? 'परिणाम सुनें' : 'Listen to Results'} 
+              label={t.resultsVoiceLabel} 
             />
           </div>
         )}
@@ -993,14 +1111,16 @@ const ResultsPage = ({ lang }) => {
                </div>
              </div>
           ) : (
-            matchedSchemes.map((s, idx) => (
+            matchedSchemes.map((rawS, idx) => {
+              const s = getLocalizedScheme(rawS, lang);
+              return (
               <div key={idx} className={`card-ambient border bg-surface-container-lowest ${idx === 0 ? 'border-secondary shadow-md' : 'border-surface-container'}`}>
                   <div className="flex justify-between items-start mb-4">
                     <div>
                       <h3 className="headline-md text-on-surface">{s.name}</h3>
                       <div className="flex flex-wrap gap-2 mt-2">
                         {s.online_application_available && (
-                           <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-bold rounded-md">Online Application</span>
+                           <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-bold rounded-md">{t.onlineApp}</span>
                         )}
                         <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-bold rounded-md">{s.implementing_agency}</span>
                       </div>
@@ -1028,12 +1148,12 @@ const ResultsPage = ({ lang }) => {
                     <p className="font-bold text-on-surface">{s.amount}</p>
                   </div>
                   <div className="bg-surface-container-lowest p-3 rounded-lg border border-surface-container">
-                    <p className="text-xs text-on-surface-variant mb-1 uppercase">Interest Rate</p>
+                    <p className="text-xs text-on-surface-variant mb-1 uppercase">{t.interestRateLabel}</p>
                     <p className="font-bold text-on-surface">{s.interest || 'Varies'}</p>
                   </div>
                   {s.emi && (
                     <div className="bg-surface-container-lowest p-3 rounded-lg border border-surface-container">
-                      <p className="text-xs text-on-surface-variant mb-1 uppercase">Est. EMI</p>
+                      <p className="text-xs text-on-surface-variant mb-1 uppercase">{t.estEmi}</p>
                       <p className="font-bold text-on-surface">{s.emi}</p>
                     </div>
                   )}
@@ -1052,11 +1172,11 @@ const ResultsPage = ({ lang }) => {
                         onClick={() => setDossierScheme(s)} 
                         className="btn-ghost flex-1 py-2.5 bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200 text-center font-bold flex items-center justify-center gap-1.5 cursor-pointer"
                       >
-                        <FileText size={16} /> Print Bank Dossier
+                        <FileText size={16} /> {t.dossierBtn}
                       </button>
                       {s.online_application_available ? (
                          <a href={s.official_application_portal} target="_blank" rel="noopener noreferrer" className="btn-ghost flex-1 py-2.5 bg-green-50 hover:bg-green-100 text-green-800 border border-green-200 text-center font-bold">
-                           Apply Online Portal
+                           {t.applyOnlineBtn}
                          </a>
                       ) : (
                          <button onClick={() => navigate('/partners', { state: { topSchemeId: s.id } })} className="btn-ghost flex-1 py-2.5 bg-surface-container hover:bg-surface-container-high border border-outline-variant font-bold">
@@ -1071,7 +1191,7 @@ const ResultsPage = ({ lang }) => {
                         onClick={() => setDossierScheme(s)} 
                         className="text-xs font-bold text-blue-800 hover:underline flex items-center gap-1 cursor-pointer"
                       >
-                        <FileText size={14} /> Get Application Dossier
+                        <FileText size={14} /> {t.getDossierBtn}
                       </button>
                       <button onClick={() => s.id && navigate(`/scheme/${s.id}`)} className="text-secondary font-bold hover:underline flex items-center ml-auto">
                         {t.viewDetailsApply} <ChevronRight size={16} />
@@ -1080,7 +1200,8 @@ const ResultsPage = ({ lang }) => {
                   )}
                 </div>
               </div>
-            ))
+              );
+            })
           )}
         </div>
 
@@ -1130,11 +1251,11 @@ const ResultsPage = ({ lang }) => {
           <div className="bg-surface-container-lowest rounded-xl p-6 shadow-ambient flex flex-col gap-3 border border-outline-variant/30">
             <div className="flex items-center gap-2 text-primary">
               <MessageCircle size={24} />
-              <h3 className="text-lg font-bold">Need Guidance?</h3>
+              <h3 className="text-lg font-bold">{t.needGuidanceTitle}</h3>
             </div>
-            <p className="text-sm text-on-surface-variant leading-relaxed">Navigating schemes can be complex. Connect with an official partner for free assistance.</p>
+            <p className="text-sm text-on-surface-variant leading-relaxed">{t.needGuidanceDesc}</p>
             <button onClick={() => navigate('/partners')} className="text-secondary font-bold text-sm mt-2 flex items-center gap-1 hover:underline">
-              {t.findPartnerBtn || "Find a local partner"} <ChevronRight size={16} />
+              {t.findLocalPartner} <ChevronRight size={16} />
             </button>
           </div>
         </aside>
@@ -1163,7 +1284,9 @@ const ExploreSchemes = ({ lang }) => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {allSchemesData.map((scheme) => (
+        {allSchemesData.map((rawScheme) => {
+          const scheme = getLocalizedScheme(rawScheme, lang);
+          return (
           <div key={scheme.id} className="card-ambient border border-surface-container bg-surface-container-lowest rounded-xl p-6 flex flex-col hover:-translate-y-1 hover:shadow-md transition-all duration-300">
             <div className="mb-4">
               <div className="flex flex-wrap gap-2 mb-3">
@@ -1172,7 +1295,7 @@ const ExploreSchemes = ({ lang }) => {
                 </span>
                 {scheme.online_application_available && (
                   <span className="px-3 py-1 bg-green-100 text-green-800 text-xs font-bold rounded-full">
-                    Online Application
+                    {t.onlineApp}
                   </span>
                 )}
                 <span className="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-bold rounded-full">
@@ -1198,7 +1321,8 @@ const ExploreSchemes = ({ lang }) => {
               {t.viewDetailsApply} <ChevronRight size={16} />
             </Link>
           </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
@@ -1209,13 +1333,14 @@ const SchemeDetails = ({ lang }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [showDossier, setShowDossier] = useState(false);
-  const scheme = allSchemesData.find(s => s.id === id);
+  const rawScheme = allSchemesData.find(s => s.id === id);
+  const scheme = rawScheme ? getLocalizedScheme(rawScheme, lang) : null;
 
   if (!scheme) {
     return (
       <div className="text-center py-20">
-        <h2 className="text-2xl font-bold text-on-surface">Scheme not found</h2>
-        <button onClick={() => navigate('/explore')} className="mt-4 text-secondary hover:underline">Back to Explore</button>
+        <h2 className="text-2xl font-bold text-on-surface">{t.schemeNotFound}</h2>
+        <button onClick={() => navigate('/explore')} className="mt-4 text-secondary hover:underline">{t.backToExplore}</button>
       </div>
     );
   }
@@ -1237,9 +1362,9 @@ const SchemeDetails = ({ lang }) => {
               {scheme.target}
             </span>
             <SpeakButton 
-              text={`${scheme.name}. ${scheme.shortDesc}. Maximum loan amount is ${scheme.maxAmount}. Interest rate is ${scheme.interest}.`} 
+              text={`${scheme.name}. ${scheme.shortDesc}. ${t.maxLoanAmt}: ${scheme.maxAmount}. ${t.interestRate}: ${scheme.interest}.`} 
               lang={lang} 
-              label={lang === 'hi' ? 'योजना सुनें' : 'Listen in Voice'}
+              label={t.listenScheme}
             />
           </div>
           <h1 className="text-3xl md:text-4xl font-bold mb-4">{scheme.name}</h1>
@@ -1293,31 +1418,31 @@ const SchemeDetails = ({ lang }) => {
             </section>
 
             <section className="bg-surface-container-highest p-6 rounded-xl border border-outline-variant/30 mt-8">
-              <h3 className="text-lg font-bold text-on-surface mb-4">Application & Provenance</h3>
+              <h3 className="text-lg font-bold text-on-surface mb-4">{t.appProvenance}</h3>
               <div className="space-y-4">
                 <div className="flex flex-col gap-1">
-                  <span className="text-sm font-bold text-on-surface-variant uppercase tracking-wider">Application Route</span>
+                  <span className="text-sm font-bold text-on-surface-variant uppercase tracking-wider">{t.appRoute}</span>
                   <span className="text-on-surface">{scheme.application_method}</span>
                 </div>
                 {scheme.online_application_available ? (
                   <div className="flex flex-col gap-1">
-                    <span className="text-sm font-bold text-on-surface-variant uppercase tracking-wider">Official Portal</span>
+                    <span className="text-sm font-bold text-on-surface-variant uppercase tracking-wider">{t.officialPortal}</span>
                     <a href={scheme.official_application_portal} target="_blank" rel="noopener noreferrer" className="text-secondary hover:underline break-all">
                       {scheme.official_application_portal}
                     </a>
                   </div>
                 ) : (
                   <div className="flex flex-col gap-1">
-                    <span className="text-sm font-bold text-on-surface-variant uppercase tracking-wider">Offline Application</span>
-                    <span className="text-on-surface">Must apply via authorized channel partners: <span className="font-bold">{uniquePartnerNames || scheme.implementing_agency}</span></span>
+                    <span className="text-sm font-bold text-on-surface-variant uppercase tracking-wider">{t.offlineApp}</span>
+                    <span className="text-on-surface">{t.mustApplyChannel} <span className="font-bold">{uniquePartnerNames || scheme.implementing_agency}</span></span>
                   </div>
                 )}
                 <div className="flex flex-col gap-1 pt-4 border-t border-outline-variant/30">
-                  <span className="text-sm font-bold text-on-surface-variant uppercase tracking-wider">Data Source (Provenance)</span>
+                  <span className="text-sm font-bold text-on-surface-variant uppercase tracking-wider">{t.dataSource}</span>
                   <a href={scheme.source_url} target="_blank" rel="noopener noreferrer" className="text-secondary hover:underline break-all">
                     {scheme.source_url}
                   </a>
-                  <span className="text-xs text-on-surface-variant mt-1">Status: {scheme.verification_status} | Last Verified: {new Date(scheme.last_verified_at).toLocaleDateString()}</span>
+                  <span className="text-xs text-on-surface-variant mt-1">{t.statusVerified} | {t.lastVerified}: {new Date(scheme.last_verified_at).toLocaleDateString()}</span>
                 </div>
               </div>
             </section>
@@ -1329,7 +1454,7 @@ const SchemeDetails = ({ lang }) => {
                onClick={() => setShowDossier(true)}
                className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-on-primary font-bold px-6 py-3 rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer"
              >
-               <FileText size={18} /> {lang === 'hi' ? 'बैंक आवेदन डॉसियर (प्रिंट स्लिप)' : 'Download Application Dossier (Print Slip)'}
+               <FileText size={18} /> {t.downloadDossier}
              </button>
              <button onClick={() => navigate('/partners')} className="w-full sm:w-auto bg-secondary text-white font-bold px-8 py-3 rounded-xl hover:bg-opacity-90 transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer">
                {t.findPartnerBtn} <MapPin size={18} />
@@ -1353,6 +1478,7 @@ const SchemeDetails = ({ lang }) => {
 
 // --- PARTNERS MAP PAGE ---
 const PartnersPage = ({ lang }) => {
+  const t = translations[lang] || translations.en;
   const [searchTerm, setSearchTerm] = useState('');
   const [userLoc] = useState(null);
   const [eligibleOnly, setEligibleOnly] = useState(true);
@@ -1440,10 +1566,10 @@ const PartnersPage = ({ lang }) => {
               />
             </div>
             <select value={partnerType} onChange={(e) => setPartnerType(e.target.value)} className="bg-surface px-4 py-2.5 rounded-lg shadow-md text-sm font-bold text-on-surface-variant flex items-center border-none focus:outline-none focus:ring-2 focus:ring-secondary cursor-pointer">
-                <option value="">{lang === 'hi' ? 'सभी' : lang === 'as' ? 'সকলো' : 'All Banks'}</option>
-                <option value="Public Sector Bank">Public Sector</option>
-                <option value="Private Sector Bank">Private Sector</option>
-                <option value="Regional Rural Bank">Rural Banks</option>
+                <option value="">{t.bankAll}</option>
+                <option value="Public Sector Bank">{t.bankPublic}</option>
+                <option value="Private Sector Bank">{t.bankPrivate}</option>
+                <option value="Regional Rural Bank">{t.bankRural}</option>
               </select>
           </div>
 
@@ -1758,7 +1884,7 @@ function App() {
               <NavLink to="/find" className={({ isActive }) => `hidden sm:block font-semibold transition-colors ${isActive ? 'text-secondary underline underline-offset-8 decoration-2' : 'text-on-surface hover:text-secondary'}`}>{t.navFind}</NavLink>
               <NavLink to="/calculator" className={({ isActive }) => `hidden sm:block font-semibold transition-colors ${isActive ? 'text-secondary underline underline-offset-8 decoration-2' : 'text-on-surface hover:text-secondary'}`}>{t.emiBtn}</NavLink>
               <NavLink to="/contact" className={({ isActive }) => `hidden lg:block font-semibold transition-colors ${isActive ? 'text-secondary underline underline-offset-8 decoration-2' : 'text-on-surface hover:text-secondary'}`}>{lang === 'hi' ? 'संपर्क करें' : lang === 'as' ? 'যোগাযোগ' : 'Contact'}</NavLink>
-              <NavLink to="/admin" className={({ isActive }) => `hidden xl:flex items-center gap-1 font-semibold transition-colors ${isActive ? 'text-secondary underline underline-offset-8 decoration-2' : 'text-on-surface hover:text-secondary'}`} title="Ministry of Social Justice & Empowerment Nodal Administration"><ShieldAlert size={16} className="text-secondary" /> {lang === 'hi' ? 'नोडल पोर्टल' : 'MoSJE Portal'}</NavLink>
+              <NavLink to="/admin" className={({ isActive }) => `hidden xl:flex items-center gap-1 font-semibold transition-colors ${isActive ? 'text-secondary underline underline-offset-8 decoration-2' : 'text-on-surface hover:text-secondary'}`} title="Ministry of Social Justice & Empowerment Nodal Administration"><ShieldAlert size={16} className="text-secondary" /> {t.navAdmin}</NavLink>
               <NavLink to="/partners" className={({ isActive }) => `hidden sm:flex font-semibold items-center px-4 py-2 rounded-lg transition-colors text-on-secondary-fixed bg-secondary-fixed hover:bg-secondary-fixed-dim ${isActive ? 'ring-2 ring-primary ring-offset-2' : ''}`}><MapPin className="mr-1.5" size={18} /> {t.navLocate}</NavLink>
               
               {/* Dropdown to change language later */}

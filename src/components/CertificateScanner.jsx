@@ -2,7 +2,77 @@ import { useState } from 'react';
 import { FileUp, ShieldCheck, CheckCircle2, Sparkles, RefreshCw, FileText, ArrowRight } from 'lucide-react';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
+const scannerTexts = {
+  en: {
+    badge: "AI Document Eligibility & Certificate OCR",
+    title: "Scan Caste / Income Certificate",
+    desc: "Upload your Caste Certificate or Income Declaration. Gemini Vision automatically reads the official seal, verifies your SC category status, and pre-fills your profile.",
+    dragTitle: "Drag and drop your certificate here",
+    dragSub: "Supports JPEG, PNG, or PDF certificate images",
+    browseDoc: "Browse Document",
+    btnScanAi: "Scan Document with AI",
+    demoBadge: "Instant Demo Mode (For Evaluators)",
+    demoDesc: "Don't have a physical certificate on hand? Click below to test the AI extractor with a verified MoSJE Assam SC Revenue Certificate.",
+    btnReadingStamp: "Reading Official Stamp with AI...",
+    btnTestSample: "Test with Verified Sample Certificate",
+    validatedTitle: "Certificate Validated for Concessional Schemes",
+    verifiedBadge: "100% Verified",
+    lblApplicant: "Applicant Name",
+    lblCaste: "Caste Status",
+    lblIncome: "Annual Income",
+    lblEligible: "Eligible",
+    lblCertNo: "Certificate No.",
+    lblIssuingOffice: "Issuing Office:",
+    btnAutoFill: "Auto-Fill Scheme Match Profile"
+  },
+  hi: {
+    badge: "एआई दस्तावेज़ पात्रता एवं प्रमाण पत्र ओसीआर",
+    title: "जाति / आय प्रमाण पत्र स्कैन करें",
+    desc: "अपना जाति प्रमाण पत्र या आय घोषणा पत्र अपलोड करें। जेमिनी विज़न आधिकारिक मुहर को पढ़कर आपकी एससी श्रेणी सत्यापित करेगा और प्रोफ़ाइल स्वतः भरेगा।",
+    dragTitle: "अपना प्रमाण पत्र यहाँ खींचें और छोड़ें",
+    dragSub: "JPEG, PNG, या PDF प्रमाण पत्र छवियां समर्थित हैं",
+    browseDoc: "दस्तावेज़ चुनें",
+    btnScanAi: "एआई से दस्तावेज़ स्कैन करें",
+    demoBadge: "त्वरित डेमो मोड (परीक्षण हेतु)",
+    demoDesc: "क्या आपके पास अभी प्रमाण पत्र नहीं है? असम राजस्व विभाग के सत्यापित एससी प्रमाण पत्र के साथ परीक्षण करने के लिए नीचे क्लिक करें।",
+    btnReadingStamp: "एआई द्वारा आधिकारिक मुहर पढ़ी जा रही है...",
+    btnTestSample: "सत्यापित नमूना प्रमाण पत्र से परीक्षण करें",
+    validatedTitle: "रियायती योजनाओं के लिए प्रमाण पत्र मान्य",
+    verifiedBadge: "100% सत्यापित",
+    lblApplicant: "आवेदक का नाम",
+    lblCaste: "जाति श्रेणी",
+    lblIncome: "वार्षिक आय",
+    lblEligible: "पात्र",
+    lblCertNo: "प्रमाण पत्र संख्या",
+    lblIssuingOffice: "जारीकर्ता कार्यालय:",
+    btnAutoFill: "प्रोफ़ाइल में स्वतः भरें"
+  },
+  as: {
+    badge: "এআই নথি যোগ্যতা আৰু প্ৰমাণপত্ৰ OCR",
+    title: "জাতি / আয়ৰ প্ৰমাণপত্ৰ স্কেন কৰক",
+    desc: "আপোনাৰ জাতিগত প্ৰমাণপত্ৰ বা আয়ৰ ঘোষণা আপল'ড কৰক। Gemini Vision-এ স্বয়ংক্ৰিয়ভাৱে চৰকাৰী মোহৰ পৰীক্ষা কৰি আপোনাৰ অনুসূচীত জাতিৰ স্থিতি সত্যাাপিত কৰিব।",
+    dragTitle: "আপোনাৰ প্ৰমাণপত্ৰ ইয়াত ড্ৰেগ আৰু ড্ৰপ কৰক",
+    dragSub: "JPEG, PNG, বা PDF প্ৰমাণপত্ৰ সমৰ্থিত",
+    browseDoc: "নথি বাছক",
+    btnScanAi: "AI ৰ দ্বাৰা নথি স্কেন কৰক",
+    demoBadge: "তাৎক্ষণিক ডেমো মোড (পৰীক্ষকৰ বাবে)",
+    demoDesc: "আপোনাৰ হাতত প্ৰমাণপত্ৰ নাই নেকি? অসম ৰাজহ বিভাগৰ প্ৰমাণিত SC প্ৰমাণপত্ৰৰে পৰীক্ষা কৰিবলৈ তলত ক্লিক কৰক।",
+    btnReadingStamp: "AI ৰ দ্বাৰা চৰকাৰী মোহৰ পঢ়ি থকা হৈছে...",
+    btnTestSample: "প্ৰমাণিত নমুনা প্ৰমাণপত্ৰৰে পৰীক্ষা কৰক",
+    validatedTitle: "ৰেহাই আঁচনিৰ বাবে প্ৰমাণপত্ৰ বৈধ",
+    verifiedBadge: "১০০% সত্যাাপিত",
+    lblApplicant: "আবেদনকাৰীৰ নাম",
+    lblCaste: "জাতিৰ স্থিতি",
+    lblIncome: "বাৰ্ষিক আয়",
+    lblEligible: "যোগ্য",
+    lblCertNo: "প্ৰমাণপত্ৰ নং",
+    lblIssuingOffice: "প্ৰদানকাৰী কাৰ্যালয়:",
+    btnAutoFill: "প্ৰফাইলত স্বয়ংক্ৰিয়ভাৱে পূৰণ কৰক"
+  }
+};
+
 export default function CertificateScanner({ lang = 'en', onApplyExtractedData }) {
+  const t = scannerTexts[lang] || scannerTexts.en;
   const [selectedFile, setSelectedFile] = useState(null);
   const [filePreview, setFilePreview] = useState(null);
   const [isScanning, setIsScanning] = useState(false);
@@ -108,13 +178,13 @@ Analyze this uploaded certificate and extract the key details in valid JSON:
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
           <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 text-emerald-700 text-xs font-bold rounded-full mb-2">
-            <ShieldCheck size={14} /> AI Document Eligibility & Certificate OCR
+            <ShieldCheck size={14} /> {t.badge}
           </div>
           <h2 className="text-2xl font-bold text-on-surface">
-            {lang === 'hi' ? 'प्रमाण पत्र स्कैन कर पात्रता जांचें' : 'Scan Caste / Income Certificate'}
+            {t.title}
           </h2>
           <p className="text-sm text-on-surface-variant max-w-2xl">
-            Upload your Caste Certificate or Income Declaration. Gemini Vision automatically reads the official seal, verifies your SC category status, and pre-fills your profile.
+            {t.desc}
           </p>
         </div>
       </div>
@@ -129,8 +199,8 @@ Analyze this uploaded certificate and extract the key details in valid JSON:
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div className="border-2 border-dashed border-outline-variant rounded-2xl p-6 flex flex-col items-center justify-center text-center bg-surface hover:bg-surface-container-low transition-all">
           <FileUp size={36} className="text-primary mb-2" />
-          <p className="text-xs font-bold text-on-surface mb-1">Drag and drop your certificate here</p>
-          <p className="text-[11px] text-on-surface-variant mb-4">Supports JPEG, PNG, or PDF certificate images</p>
+          <p className="text-xs font-bold text-on-surface mb-1">{t.dragTitle}</p>
+          <p className="text-[11px] text-on-surface-variant mb-4">{t.dragSub}</p>
           
           <input
             type="file"
@@ -143,7 +213,7 @@ Analyze this uploaded certificate and extract the key details in valid JSON:
             htmlFor="certificate-upload"
             className="bg-surface-container hover:bg-surface-container-high text-primary text-xs font-bold px-4 py-2 rounded-lg border border-surface-container-highest cursor-pointer transition-all"
           >
-            Browse Document
+            {t.browseDoc}
           </label>
 
           {selectedFile && (
@@ -156,7 +226,7 @@ Analyze this uploaded certificate and extract the key details in valid JSON:
                 className="mt-2 bg-secondary hover:bg-secondary-dim text-white text-xs font-bold px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer shadow-sm transition-all"
               >
                 {isScanning ? <RefreshCw size={13} className="animate-spin" /> : <ShieldCheck size={13} />}
-                <span>Scan Document with AI</span>
+                <span>{t.btnScanAi}</span>
               </button>
             </div>
           )}
@@ -167,10 +237,10 @@ Analyze this uploaded certificate and extract the key details in valid JSON:
           <div>
             <div className="flex items-center gap-2 text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">
               <Sparkles size={14} className="text-amber-500" />
-              <span>Instant Demo Mode (For Evaluators)</span>
+              <span>{t.demoBadge}</span>
             </div>
             <p className="text-xs text-slate-600 mb-4 leading-relaxed">
-              Don't have a physical certificate on hand? Click below to test the AI extractor with a verified MoSJE Assam SC Revenue Certificate.
+              {t.demoDesc}
             </p>
           </div>
 
@@ -183,12 +253,12 @@ Analyze this uploaded certificate and extract the key details in valid JSON:
             {isScanning ? (
               <>
                 <RefreshCw size={14} className="animate-spin" />
-                <span>Reading Official Stamp with AI...</span>
+                <span>{t.btnReadingStamp}</span>
               </>
             ) : (
               <>
                 <FileText size={14} />
-                <span>Test with Verified Sample Certificate</span>
+                <span>{t.btnTestSample}</span>
               </>
             )}
           </button>
@@ -201,35 +271,35 @@ Analyze this uploaded certificate and extract the key details in valid JSON:
           <div className="flex justify-between items-center pb-3 border-b border-emerald-200 mb-4">
             <div className="flex items-center gap-2">
               <CheckCircle2 size={20} className="text-emerald-600" />
-              <h3 className="font-bold text-sm text-slate-900">Certificate Validated for Concessional Schemes</h3>
+              <h3 className="font-bold text-sm text-slate-900">{t.validatedTitle}</h3>
             </div>
             <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full">
-              100% Verified
+              {t.verifiedBadge}
             </span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs mb-6">
             <div className="bg-white p-3 rounded-xl border border-slate-200">
-              <span className="text-[10px] uppercase font-bold text-slate-500 block">Applicant Name</span>
+              <span className="text-[10px] uppercase font-bold text-slate-500 block">{t.lblApplicant}</span>
               <span className="font-bold text-slate-900 text-sm">{extractedData.applicantName}</span>
             </div>
             <div className="bg-white p-3 rounded-xl border border-slate-200">
-              <span className="text-[10px] uppercase font-bold text-slate-500 block">Caste Status</span>
+              <span className="text-[10px] uppercase font-bold text-slate-500 block">{t.lblCaste}</span>
               <span className="font-bold text-blue-900 text-sm">{extractedData.casteCategory}</span>
             </div>
             <div className="bg-white p-3 rounded-xl border border-slate-200">
-              <span className="text-[10px] uppercase font-bold text-slate-500 block">Annual Income</span>
-              <span className="font-bold text-emerald-700 text-sm">₹{Number(extractedData.annualIncome).toLocaleString('en-IN')} (Eligible)</span>
+              <span className="text-[10px] uppercase font-bold text-slate-500 block">{t.lblIncome}</span>
+              <span className="font-bold text-emerald-700 text-sm">₹{Number(extractedData.annualIncome).toLocaleString(lang + '-IN')} ({t.lblEligible})</span>
             </div>
             <div className="bg-white p-3 rounded-xl border border-slate-200">
-              <span className="text-[10px] uppercase font-bold text-slate-500 block">Certificate No.</span>
+              <span className="text-[10px] uppercase font-bold text-slate-500 block">{t.lblCertNo}</span>
               <span className="font-mono font-bold text-slate-800 text-[11px]">{extractedData.certificateNumber}</span>
             </div>
           </div>
 
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-2">
             <p className="text-xs text-slate-600">
-              Issuing Office: <strong>{extractedData.issuingAuthority}</strong>
+              {t.lblIssuingOffice} <strong>{extractedData.issuingAuthority}</strong>
             </p>
 
             {onApplyExtractedData && (
@@ -238,7 +308,7 @@ Analyze this uploaded certificate and extract the key details in valid JSON:
                 onClick={() => onApplyExtractedData(extractedData)}
                 className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl flex items-center gap-2 shadow transition-all cursor-pointer"
               >
-                <span>Auto-Fill Scheme Match Profile</span>
+                <span>{t.btnAutoFill}</span>
                 <ArrowRight size={14} />
               </button>
             )}
@@ -248,4 +318,3 @@ Analyze this uploaded certificate and extract the key details in valid JSON:
     </div>
   );
 }
-

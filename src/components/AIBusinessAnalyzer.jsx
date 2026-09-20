@@ -2,9 +2,104 @@ import { useState } from 'react';
 import { Sparkles, BrainCircuit, CheckCircle2, AlertCircle, Lightbulb, RefreshCw, ChevronRight } from 'lucide-react';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { schemes } from '../data/schemes';
+import { getLocalizedScheme } from '../data/schemeTranslations';
 import { VoiceInputButton, SpeakButton } from './VoiceAssistant';
 
+const analyzerTexts = {
+  en: {
+    badge: "AI-Powered Business Idea Feasibility Engine",
+    title: "Describe Your Enterprise Idea",
+    desc: "Tell us in your own words what business or study you want to finance. Our AI analyzes capital feasibility and maps you to the exact concessional scheme.",
+    placeholder: 'e.g. "I want to start a small poultry farm with 200 chicks and need ₹1.2 Lakhs for shed and feed..."',
+    quickTestLabel: "Or Try a One-Click Test Scenario:",
+    btnAnalyzing: "Analyzing Proposal with Gemini AI...",
+    btnAnalyze: "Analyze Feasibility & Match Scheme",
+    resultHeader: "AI Feasibility & Allocation Assessment",
+    sectorLabel: "Sector",
+    confidenceLabel: "Match Confidence",
+    listenAnalysis: "Listen to Analysis",
+    recommendedBanner: "Recommended Primary Scheme",
+    maxLoan: "Max Loan",
+    interest: "Interest",
+    gracePeriod: "Grace Period",
+    viewDetails: "View Scheme Details",
+    whyFitsHeader: "💡 Why this scheme fits your venture:",
+    roadmapHeader: "📋 Immediate 3-Step Action Roadmap:",
+    monthsUnit: "mo",
+    fallbackSector: "Self-Employment & Micro-Enterprise",
+    fallbackCapital: "As declared in proposal",
+    fallbackRisk: "Viable grassroots enterprise eligible for priority sector refinance.",
+    fallbackWhy: (name) => `Your proposal aligns with ${name}, which provides specialized concessional credit with low interest rates and a moratorium grace period.`,
+    fallbackPlan: [
+      "Step 1: Obtain formal equipment/stock quotation from supplier",
+      "Step 2: Verify valid SC Caste Certificate and family income under ₹3.00 Lakh",
+      "Step 3: Download SchemeSetu Application Dossier and approach nearest PSB branch"
+    ]
+  },
+  hi: {
+    badge: "एआई-संचालित व्यावसायिक व्यवहार्यता इंजन",
+    title: "अपने व्यवसायिक विचार से योजना खोजें",
+    desc: "आप क्या काम शुरू करना चाहते हैं? बोलें या लिखें। हमारा AI आपके बजट और सेक्टर का विश्लेषण कर सबसे उपयुक्त सरकारी योजना का सुझाव देगा।",
+    placeholder: 'उदा. "मैं अपने गाँव में ₹1 लाख के ऋण से छोटी किराना दुकान और आटा चक्की शुरू करना चाहता हूँ..."',
+    quickTestLabel: "या इन उदाहरणों में से चुनें (एक क्लिक):",
+    btnAnalyzing: "जेमिनी एआई से प्रस्ताव का विश्लेषण हो रहा है...",
+    btnAnalyze: "व्यवहार्यता जांचें और योजना खोजें",
+    resultHeader: "एआई व्यवहार्यता एवं आवंटन मूल्यांकन",
+    sectorLabel: "क्षेत्र (सेक्टर)",
+    confidenceLabel: "मिलान सटीकता",
+    listenAnalysis: "विश्लेषण सुनें",
+    recommendedBanner: "अनुशंसित प्राथमिक योजना",
+    maxLoan: "अधिकतम ऋण",
+    interest: "ब्याज दर",
+    gracePeriod: "रियायती अवधि",
+    viewDetails: "योजना विवरण देखें",
+    whyFitsHeader: "💡 यह योजना आपके उद्यम के लिए उपयुक्त क्यों है:",
+    roadmapHeader: "📋 तत्काल 3-चरणीय कार्य योजना:",
+    monthsUnit: "माह",
+    fallbackSector: "स्व-रोजगार एवं सूक्ष्म उद्यम",
+    fallbackCapital: "प्रस्ताव में घोषित अनुसार",
+    fallbackRisk: "प्राथमिकता क्षेत्र के तहत रियायती पुनर्वित्त के लिए पात्र उद्यम।",
+    fallbackWhy: (name) => `आपका प्रस्ताव ${name} के अनुकूल है, जो न्यूनतम ब्याज दर और मोरेटोरियम रियायत के साथ विशेष ऋण प्रदान करता है।`,
+    fallbackPlan: [
+      "चरण 1: विक्रेता/आपूर्तिकर्ता से उपकरणों का औपचारिक कोटेशन प्राप्त करें",
+      "चरण 2: वैध एससी जाति प्रमाण पत्र और ₹3 लाख से कम आय प्रमाण पत्र तैयार रखें",
+      "चरण 3: स्कीमसेतु आवेदन डॉसियर डाउनलोड कर निकटतम बैंक शाखा में जाएं"
+    ]
+  },
+  as: {
+    badge: "এআই-চালিত ব্যৱসায়িক সম্ভাৱনীয়তা ইঞ্জিন",
+    title: "আপোনাৰ ব্যৱসায়িক চিন্তাৰে আঁচনি বিচাৰক",
+    desc: "আপুনি কি কাম আৰম্ভ কৰিব বিচাৰে? কওক বা লিখক। আমাৰ AI-য়ে আপোনাৰ বাজেট আৰু ক্ষেত্ৰ বিশ্লেষণ কৰি সৰ্বোত্তম চৰকাৰী আঁচনিৰ পৰামৰ্শ দিব।",
+    placeholder: 'উদাহৰণস্বৰূপ: "মই গাঁৱত ১ লাখ টকাৰ ঋণেৰে এখন সৰু মুদি দোকান আৰু আটা মিল আৰম্ভ কৰিব বিচাৰোঁ..."',
+    quickTestLabel: "বা এই উদাহৰণসমূহৰ পৰা বাছক (এটা ক্লিক):",
+    btnAnalyzing: "Gemini AI ৰ দ্বাৰা প্ৰস্তাৱ বিশ্লেষণ কৰি থকা হৈছে...",
+    btnAnalyze: "সম্ভাৱনীয়তা পৰীক্ষা আৰু আঁচনি নিৰ্ণয়",
+    resultHeader: "এআই সম্ভাৱনীয়তা আৰু আবণ্টন মূল্যায়ন",
+    sectorLabel: "ক্ষেত্ৰ",
+    confidenceLabel: "মেচৰ সঠিকতা",
+    listenAnalysis: "বিশ্লেষণ শুনক",
+    recommendedBanner: "পৰামৰ্শপ্ৰাপ্ত প্ৰাথমিক আঁচনি",
+    maxLoan: "সৰ্বোচ্চ ঋণ",
+    interest: "সুদৰ হাৰ",
+    gracePeriod: "ৰেহাইৰ ম্যাদ",
+    viewDetails: "আঁচনিৰ বিৱৰণ চাওক",
+    whyFitsHeader: "💡 এই আঁচনিখন আপোনাৰ উদ্যোগৰ বাবে কিয় উপযুক্ত:",
+    roadmapHeader: "📋 তাৎক্ষণিক ৩-পদক্ষেপৰ কৰ্মপৰিকল্পনা:",
+    monthsUnit: "মাহ",
+    fallbackSector: "স্ব-নিয়োজন আৰু ক্ষুদ্ৰ উদ্যোগ",
+    fallbackCapital: "প্ৰস্তাৱত উল্লেখ কৰা অনুসৰি",
+    fallbackRisk: "অগ্রাধিকাৰ খণ্ডৰ অধীনত সাহায্যপ্ৰাপ্ত পুনৰ্বিত্তৰ যোগ্য উদ্যোগ।",
+    fallbackWhy: (name) => `আপোনাৰ প্ৰস্তাৱটো ${name} ৰ সৈতে সংগতিপূৰ্ণ, যিয়ে কম সুদৰ হাৰ আৰু মৰেটৰিয়াম ৰেহাইৰ সৈতে ঋণ প্ৰদান কৰে।`,
+    fallbackPlan: [
+      "পদক্ষেপ ১: সামগ্ৰী যোগানকৰ্তাৰ পৰা সামগ্ৰীৰ আনুষ্ঠানিক কোটেচন লওক",
+      "পদক্ষেপ ২: বৈধ অনুসূচীত জাতিৰ প্ৰমাণপত্ৰ আৰু ৩ লাখৰ তলৰ আয়ৰ প্ৰমাণ সংগ্ৰহ কৰক",
+      "পদক্ষেপ ৩: SchemeSetu আবেদন ডচিয়েৰ ডাউনল'ড কৰি নিকটতম বেংক শাখাত জমা দিয়ক"
+    ]
+  }
+};
+
 export default function AIBusinessAnalyzer({ lang = 'en', onSelectScheme }) {
+  const t = analyzerTexts[lang] || analyzerTexts.en;
   const [ideaText, setIdeaText] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState(null);
@@ -37,6 +132,8 @@ export default function AIBusinessAnalyzer({ lang = 'en', onSelectScheme }) {
     setError(null);
     setAnalysisResult(null);
 
+    const langName = lang === 'hi' ? 'Hindi (हिन्दी)' : lang === 'as' ? 'Assamese (অসমীয়া)' : 'English';
+
     try {
       const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
       if (!apiKey) {
@@ -44,13 +141,12 @@ export default function AIBusinessAnalyzer({ lang = 'en', onSelectScheme }) {
       }
 
       const genAI = new GoogleGenerativeAI(apiKey);
-      // Using gemini-2.5-flash for fast reasoning and JSON extraction
       const model = genAI.getGenerativeModel({
         model: 'gemini-2.5-flash',
         generationConfig: { responseMimeType: "application/json" },
         systemInstruction: `You are the SchemeSetu AI Decision Engine for Ministry of Social Justice & Empowerment (MoSJE) schemes.
 Analyze the user's business idea and match them to the single best scheme from this verified list:
-- "msy" (Mahila Samriddhi Yojana): For SC women micro-entrepreneurs, project cost up to ₹1.4L, loan up to ₹1.25L at 4% p.a.
+- "mahila-samriddhi" (Mahila Samriddhi Yojana): For SC women micro-entrepreneurs, project cost up to ₹1.4L, loan up to ₹1.25L at 4% p.a.
 - "nsfdc-mcf" (Micro-Credit Finance): For SC micro-entrepreneurs, loan up to ₹1.25L at 6.5% p.a.
 - "nsfdc-suvidha" (Suvidha Loan): For SC small business, loan up to ₹9L at 8% p.a.
 - "nsfdc-utkarsh" (Utkarsh Loan): For medium SC enterprise, loan up to ₹45L at 9% p.a.
@@ -58,18 +154,20 @@ Analyze the user's business idea and match them to the single best scheme from t
 - "mudra-pmmy" (Pradhan Mantri MUDRA): Non-farm micro-units up to ₹10L.
 - "asiim" (Ambedkar Social Innovation): Tech startups and students in higher ed.
 
+IMPORTANT: The requested language is ${langName}. You MUST generate the fields 'businessSector', 'whyThisFits', 'riskAssessment', and all array items in 'actionPlan' in ${langName}.
+
 Return ONLY a valid JSON object matching this schema:
 {
   "matchedSchemeId": "scheme_id_here",
   "matchConfidence": 94,
-  "businessSector": "Retail / Agriculture / Services / Technology / Education",
+  "businessSector": "Sector description in ${langName}",
   "estimatedCapital": "₹80,000",
-  "whyThisFits": "A 2-3 sentence clear explanation of why this scheme provides the best interest rate, moratorium, and loan amount for their specific venture.",
-  "riskAssessment": "Low / Moderate capital requirement with high viability in local rural/semi-urban markets.",
+  "whyThisFits": "A 2-3 sentence clear explanation in ${langName} of why this scheme provides the best interest rate, moratorium, and loan amount for their specific venture.",
+  "riskAssessment": "Assessment in ${langName}",
   "actionPlan": [
-    "Step 1: Obtain invoice quotation from machinery vendor",
-    "Step 2: Collect digital caste and income certificate",
-    "Step 3: Submit application to nearest channel partner bank branch"
+    "Step 1 in ${langName}",
+    "Step 2 in ${langName}",
+    "Step 3 in ${langName}"
   ]
 }`
       });
@@ -77,14 +175,16 @@ Return ONLY a valid JSON object matching this schema:
       const prompt = `Analyze this applicant's business / financial proposal:
 "${input}"
 
-Evaluate sector, loan bracket, and match with the optimal NSFDC/MoSJE scheme. Language requested: ${lang}.`;
+Evaluate sector, loan bracket, and match with the optimal NSFDC/MoSJE scheme. Language requested: ${langName}.`;
 
       const result = await model.generateContent(prompt);
       const text = result.response.text();
       const parsed = JSON.parse(text);
 
-      // Link with local scheme dataset
-      const matchedSchemeObj = schemes.find(s => s.id === parsed.matchedSchemeId) || schemes[0];
+      // Map alias if returned
+      const targetId = parsed.matchedSchemeId === 'msy' ? 'mahila-samriddhi' : parsed.matchedSchemeId;
+      const matchedRawObj = schemes.find(s => s.id === targetId) || schemes[0];
+      const matchedSchemeObj = getLocalizedScheme(matchedRawObj, lang);
 
       setAnalysisResult({
         ...parsed,
@@ -98,27 +198,25 @@ Evaluate sector, loan bracket, and match with the optimal NSFDC/MoSJE scheme. La
       let fallbackId = "nsfdc-mcf";
       if (lower.includes('study') || lower.includes('college') || lower.includes('degree') || lower.includes('education') || lower.includes('fee')) {
         fallbackId = "nsfdc-els-india";
-      } else if (lower.includes('women') || lower.includes('woman') || lower.includes('tailor') || lower.includes('sewing') || lower.includes('boutique')) {
-        fallbackId = "msy";
+      } else if (lower.includes('women') || lower.includes('woman') || lower.includes('tailor') || lower.includes('sewing') || lower.includes('boutique') || lower.includes('सिलाई') || lower.includes('চিলাই')) {
+        fallbackId = "mahila-samriddhi";
       } else if (lower.includes('factory') || lower.includes('manufacturing') || lower.includes('scale') || lower.includes('plant')) {
         fallbackId = "nsfdc-utkarsh";
       } else if (lower.includes('tech') || lower.includes('software') || lower.includes('startup') || lower.includes('ai')) {
         fallbackId = "asiim";
       }
 
-      const matchedSchemeObj = schemes.find(s => s.id === fallbackId) || schemes[0];
+      const matchedRawObj = schemes.find(s => s.id === fallbackId) || schemes[0];
+      const matchedSchemeObj = getLocalizedScheme(matchedRawObj, lang);
+
       setAnalysisResult({
         matchedSchemeId: fallbackId,
         matchConfidence: 92,
-        businessSector: "Self-Employment & Micro-Enterprise",
-        estimatedCapital: "As declared in proposal",
-        whyThisFits: `Your proposal aligns with ${matchedSchemeObj.name}, which provides specialized concessional credit with low interest rates and a moratorium grace period.`,
-        riskAssessment: "Viable grassroots enterprise eligible for priority sector refinance.",
-        actionPlan: [
-          "Step 1: Obtain formal equipment/stock quotation from supplier",
-          "Step 2: Verify valid SC Caste Certificate and family income under ₹3.00 Lakh",
-          "Step 3: Download SchemeSetu Application Dossier and approach nearest PSB branch"
-        ],
+        businessSector: t.fallbackSector,
+        estimatedCapital: t.fallbackCapital,
+        whyThisFits: t.fallbackWhy(matchedSchemeObj.name),
+        riskAssessment: t.fallbackRisk,
+        actionPlan: t.fallbackPlan,
         scheme: matchedSchemeObj
       });
     } finally {
@@ -133,15 +231,13 @@ Evaluate sector, loan bracket, and match with the optimal NSFDC/MoSJE scheme. La
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
           <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-secondary/10 text-secondary text-xs font-bold rounded-full mb-2">
-            <Sparkles size={14} /> AI-Powered Business Idea Feasibility Engine
+            <Sparkles size={14} /> {t.badge}
           </div>
           <h2 className="text-2xl font-bold text-on-surface">
-            {lang === 'hi' ? 'अपने व्यवसायिक विचार से योजना खोजें' : lang === 'as' ? 'আপোনাৰ ব্যৱসায়িক চিন্তাৰে আঁচনি বিচাৰক' : 'Describe Your Enterprise Idea'}
+            {t.title}
           </h2>
           <p className="text-sm text-on-surface-variant max-w-2xl">
-            {lang === 'hi' 
-              ? 'आप क्या काम शुरू करना चाहते हैं? बोलें या लिखें। हमारा AI आपके बजट और सेक्टर का विश्लेषण कर सबसे उपयुक्त सरकारी योजना का सुझाव देगा।' 
-              : 'Tell us in your own words what business or study you want to finance. Our AI analyzes capital feasibility and maps you to the exact concessional scheme.'}
+            {t.desc}
           </p>
         </div>
       </div>
@@ -152,7 +248,7 @@ Evaluate sector, loan bracket, and match with the optimal NSFDC/MoSJE scheme. La
           rows={3}
           value={ideaText}
           onChange={(e) => setIdeaText(e.target.value)}
-          placeholder={lang === 'hi' ? 'उदा. "मैं अपने गाँव में ₹1 लाख के ऋण से छोटी किराना दुकान और आटा चक्की शुरू करना चाहता हूँ..."' : 'e.g. "I want to start a small poultry farm with 200 chicks and need ₹1.2 Lakhs for shed and feed..."'}
+          placeholder={t.placeholder}
           className="w-full p-4 pr-12 rounded-xl bg-surface border border-outline-variant text-on-surface text-sm focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all placeholder:text-on-surface-variant/60"
         />
         <div className="absolute right-3 top-3">
@@ -169,7 +265,7 @@ Evaluate sector, loan bracket, and match with the optimal NSFDC/MoSJE scheme. La
       <div className="mb-6">
         <div className="flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-2">
           <Lightbulb size={14} className="text-amber-500" />
-          <span>{lang === 'hi' ? 'या इन उदाहरणों में से चुनें (एक क्लिक):' : 'Or Try a One-Click Test Scenario:'}</span>
+          <span>{t.quickTestLabel}</span>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
           {sampleIdeas.map((sample, idx) => (
@@ -200,12 +296,12 @@ Evaluate sector, loan bracket, and match with the optimal NSFDC/MoSJE scheme. La
           {isAnalyzing ? (
             <>
               <RefreshCw size={16} className="animate-spin" />
-              <span>Analyzing Proposal with Gemini AI...</span>
+              <span>{t.btnAnalyzing}</span>
             </>
           ) : (
             <>
               <BrainCircuit size={16} />
-              <span>Analyze Feasibility & Match Scheme</span>
+              <span>{t.btnAnalyze}</span>
             </>
           )}
         </button>
@@ -228,8 +324,8 @@ Evaluate sector, loan bracket, and match with the optimal NSFDC/MoSJE scheme. La
                 AI
               </span>
               <div>
-                <h3 className="font-bold text-base text-on-surface">AI Feasibility & Allocation Assessment</h3>
-                <p className="text-xs text-on-surface-variant">Sector: <span className="font-semibold text-primary">{analysisResult.businessSector}</span> | Match Confidence: <span className="font-bold text-emerald-600">{analysisResult.matchConfidence}%</span></p>
+                <h3 className="font-bold text-base text-on-surface">{t.resultHeader}</h3>
+                <p className="text-xs text-on-surface-variant">{t.sectorLabel}: <span className="font-semibold text-primary">{analysisResult.businessSector}</span> | {t.confidenceLabel}: <span className="font-bold text-emerald-600">{analysisResult.matchConfidence}%</span></p>
               </div>
             </div>
 
@@ -237,7 +333,7 @@ Evaluate sector, loan bracket, and match with the optimal NSFDC/MoSJE scheme. La
               <SpeakButton 
                 lang={lang} 
                 text={`${analysisResult.scheme.name}. ${analysisResult.whyThisFits}`}
-                label="Listen to Analysis"
+                label={t.listenAnalysis}
               />
             </div>
           </div>
@@ -246,15 +342,15 @@ Evaluate sector, loan bracket, and match with the optimal NSFDC/MoSJE scheme. La
           <div className="bg-surface border border-surface-container rounded-xl p-4 mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-sm">
             <div>
               <span className="text-[10px] font-bold uppercase tracking-wider text-secondary bg-secondary/10 px-2 py-0.5 rounded">
-                Recommended Primary Scheme
+                {t.recommendedBanner}
               </span>
               <h4 className="text-lg font-bold text-primary mt-1">{analysisResult.scheme.name}</h4>
               <p className="text-xs text-on-surface-variant mt-0.5">{analysisResult.scheme.shortDesc}</p>
               
               <div className="flex flex-wrap gap-4 mt-2 text-xs font-semibold">
-                <span className="text-slate-700">Max Loan: <strong>{analysisResult.scheme.maxAmount}</strong></span>
-                <span className="text-blue-900">Interest: <strong>{analysisResult.scheme.interest}</strong></span>
-                <span className="text-slate-700">Grace Period: <strong>{analysisResult.scheme.moratorium_period ? `${analysisResult.scheme.moratorium_period} mo` : '3 mo'}</strong></span>
+                <span className="text-slate-700">{t.maxLoan}: <strong>{analysisResult.scheme.maxAmount}</strong></span>
+                <span className="text-blue-900">{t.interest}: <strong>{analysisResult.scheme.interest}</strong></span>
+                <span className="text-slate-700">{t.gracePeriod}: <strong>{analysisResult.scheme.moratorium_period ? `${analysisResult.scheme.moratorium_period} ${t.monthsUnit}` : `3 ${t.monthsUnit}`}</strong></span>
               </div>
             </div>
 
@@ -263,14 +359,14 @@ Evaluate sector, loan bracket, and match with the optimal NSFDC/MoSJE scheme. La
               onClick={() => onSelectScheme(analysisResult.scheme)}
               className="shrink-0 bg-secondary hover:bg-secondary-dim text-white text-xs font-bold px-4 py-2.5 rounded-lg flex items-center gap-1.5 shadow transition-all cursor-pointer"
             >
-              View Scheme Details <ChevronRight size={14} />
+              {t.viewDetails} <ChevronRight size={14} />
             </button>
           </div>
 
           {/* AI Fit Explanation */}
           <div className="space-y-3 text-xs text-on-surface mb-4">
             <div>
-              <strong className="text-primary block mb-1">💡 Why this scheme fits your venture:</strong>
+              <strong className="text-primary block mb-1">{t.whyFitsHeader}</strong>
               <p className="leading-relaxed bg-white/80 p-3 rounded-lg border border-outline-variant/30 text-slate-700">
                 {analysisResult.whyThisFits}
               </p>
@@ -278,7 +374,7 @@ Evaluate sector, loan bracket, and match with the optimal NSFDC/MoSJE scheme. La
 
             {/* Action Roadmap */}
             <div>
-              <strong className="text-primary block mb-1">📋 Immediate 3-Step Action Roadmap:</strong>
+              <strong className="text-primary block mb-1">{t.roadmapHeader}</strong>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 {analysisResult.actionPlan.map((step, sIdx) => (
                   <div key={sIdx} className="bg-white/80 p-2.5 rounded-lg border border-outline-variant/30 flex items-start gap-2">
@@ -296,4 +392,3 @@ Evaluate sector, loan bracket, and match with the optimal NSFDC/MoSJE scheme. La
     </div>
   );
 }
-
