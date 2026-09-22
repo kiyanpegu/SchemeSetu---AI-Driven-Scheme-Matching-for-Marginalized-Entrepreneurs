@@ -107,7 +107,7 @@ export default function CertificateScanner({ lang = 'en', onApplyExtractedData }
   const handleScanSample = () => {
     setIsScanning(true);
     setError(null);
-    setFilePreview('https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=400&q=80');
+    setFilePreview(null);
 
     setTimeout(() => {
       setExtractedData(sampleCertificate);

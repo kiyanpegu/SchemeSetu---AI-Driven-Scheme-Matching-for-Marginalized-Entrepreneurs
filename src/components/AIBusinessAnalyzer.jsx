@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Sparkles, BrainCircuit, CheckCircle2, AlertCircle, Lightbulb, RefreshCw, ChevronRight } from 'lucide-react';
+import { Lightbulb, BrainCircuit, CheckCircle2, AlertCircle, RefreshCw, ChevronRight } from 'lucide-react';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { schemes } from '../data/schemes';
 import { getLocalizedScheme } from '../data/schemeTranslations';
@@ -267,7 +267,7 @@ Evaluate sector, loan bracket, and match with the optimal NSFDC/MoSJE scheme. La
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
           <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-secondary/10 text-secondary text-xs font-bold rounded-full mb-2">
-            <Sparkles size={14} /> {t.badge}
+            <Lightbulb size={14} /> {t.badge}
           </div>
           <h2 className="text-2xl font-bold text-on-surface">
             {t.title}

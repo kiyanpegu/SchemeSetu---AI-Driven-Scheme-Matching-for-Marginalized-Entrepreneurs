@@ -8,9 +8,10 @@ import { apiService } from '../services/api';
 
 const dashboardTexts = {
   en: {
-    portalBadge: "Official MoSJE & Channel Partner Nodal Administration Portal",
-    title: "SchemeSetu National Analytics & Delivery Oversight",
-    desc: "Real-time telemetry tracking grassroots scheme discovery, caste certificate qualification rates, and partner branch loan absorption.",
+    portalBadge: "SchemeSetu Analytics Dashboard (Prototype)",
+    title: "SchemeSetu Analytics & Delivery Overview",
+    desc: "Sample telemetry data demonstrating grassroots scheme discovery, caste certificate qualification rates, and partner branch loan absorption tracking.",
+    demoNotice: "Sample Data for Demonstration",
     exportReport: "Export Report",
     statBeneficiarySearches: "Total Beneficiary Searches",
     statVerifiedApplicants: "Verified Eligible SC Applicants",
@@ -36,9 +37,9 @@ const dashboardTexts = {
     scaLabel: "State Channelizing Agencies (SCAs)",
     rrbLabel: "Regional Rural Banks (RRBs)",
     policyInsightTitle: "Nodal Officer Policy Insight",
-    policyInsightDesc: "Rural uptake in Assam increased by 32% following the deployment of vernacular audio narration and downloadable branch readiness slips.",
+    policyInsightDesc: "In a production deployment, rural uptake analytics and vernacular audio narration metrics would appear here.",
     apiHealthLabel: "Intermediary API Health",
-    apiHealthValue: "99.8% Online",
+    apiHealthValue: "Prototype Mode",
     auditTrailTitle: "Generated Beneficiary Dossiers (Audit Trail)",
     auditTrailDesc: "Live log of validated applicant readiness slips generated for branch submission",
     colDossierId: "Dossier ID",
@@ -56,9 +57,10 @@ const dashboardTexts = {
     demandActive: "Active"
   },
   hi: {
-    portalBadge: "आधिकारिक सामाजिक न्याय एवं अधिकारिता मंत्रालय व नोडल प्रशासन पोर्टल",
-    title: "स्कीमसेतु राष्ट्रीय विश्लेषण एवं वितरण निगरानी",
-    desc: "जमीनी स्तर पर योजना खोज, जाति प्रमाण पत्र सत्यापन दर और बैंक शाखाओं द्वारा ऋण वितरण की रीयल-टाइम ट्रैकिंग।",
+    portalBadge: "स्कीमसेतु विश्लेषण डैशबोर्ड (प्रोटोटाइप)",
+    title: "स्कीमसेतु विश्लेषण एवं वितरण अवलोकन",
+    desc: "ज़मीनी स्तर पर योजना खोज, जाति प्रमाण पत्र पात्रता दर और पार्टनर शाखा ऋण अवशोषण ट्रैकिंग का प्रदर्शन करने वाला नमूना टेलीमेट्री डेटा।",
+    demoNotice: "प्रदर्शन के लिए नमूना डेटा",
     exportReport: "रिपोर्ट निर्यात करें",
     statBeneficiarySearches: "कुल लाभार्थी खोजें",
     statVerifiedApplicants: "सत्यापित पात्र एससी आवेदक",
@@ -84,9 +86,9 @@ const dashboardTexts = {
     scaLabel: "राज्य चैनलाइजिंग एजेंसियां (SCAs)",
     rrbLabel: "क्षेत्रीय ग्रामीण बैंक (RRBs)",
     policyInsightTitle: "नोडल अधिकारी नीतिगत अंतर्दृष्टि",
-    policyInsightDesc: "स्थानीय भाषा ऑडियो और डाउनलोड करने योग्य बैंक स्लिप के बाद असम में ग्रामीण स्वीकृति में 32% की वृद्धि दर्ज की गई।",
+    policyInsightDesc: "उत्पादन परिनियोजन में, ग्रामीण उपयोग विश्लेषण और स्थानीय भाषा ऑडियो नैरेशन मेट्रिक्स यहाँ प्रदर्शित होंगे।",
     apiHealthLabel: "मध्यस्थ एपीआई स्थिति",
-    apiHealthValue: "99.8% सक्रिय",
+    apiHealthValue: "प्रोटोटाइप मोड",
     auditTrailTitle: "निर्मित लाभार्थी डॉसियर (ऑडिट ट्रेल)",
     auditTrailDesc: "बैंक शाखा में जमा करने हेतु तैयार सत्यापित लाभार्थी स्लिप का लाइव रिकॉर्ड",
     colDossierId: "डॉसियर आईडी",
@@ -104,9 +106,10 @@ const dashboardTexts = {
     demandActive: "सक्रिय"
   },
   as: {
-    portalBadge: "আনুষ্ঠানিক MoSJE আৰু অংশীদাৰ ন'ডেল প্ৰশাসন প'ৰ্টেল",
-    title: "SchemeSetu ৰাষ্ট্ৰীয় বিশ্লেষণ আৰু প্ৰদান তদাৰকী",
-    desc: "তৃণমূল পৰ্যায়ত আঁচনি অনুসন্ধান, জাতিগত প্ৰমাণপত্ৰৰ যোগ্যতাৰ হাৰ আৰু বেংক শাখাৰ ঋণ বিতৰণৰ ৰিয়েল-টাইম অনুসৰণ।",
+    portalBadge: "স্কিমসেতু বিশ্লেষণ ডেশ্ব'ৰ্ড (প্ৰ'ট'টাইপ)",
+    title: "স্কিমসেতু বিশ্লেষণ আৰু বিতৰণ অৱলোকন",
+    desc: "তৃণমূল পৰ্যায়ত আঁচনি আৱিষ্কাৰ, জাতি প্ৰমাণপত্ৰ যোগ্যতাৰ হাৰ আৰু অংশীদাৰ শাখা ঋণ শোষণ ট্ৰেকিঙৰ নমুনা টেলিমেট্ৰি তথ্য।",
+    demoNotice: "প্ৰদৰ্শনৰ বাবে নমুনা তথ্য",
     exportReport: "প্ৰতিবেদন ৰপ্তানি কৰক",
     statBeneficiarySearches: "মুঠ হিতাধিকাৰী অনুসন্ধান",
     statVerifiedApplicants: "সত্যাাপিত যোগ্য অনুসূচীত জাতিৰ আবেদনকাৰী",
@@ -132,9 +135,9 @@ const dashboardTexts = {
     scaLabel: "ৰাজ্যিক চেনেলিং এজেন্সী (SCAs)",
     rrbLabel: "আঞ্চলিক গ্ৰাম্য বেংক (RRBs)",
     policyInsightTitle: "ন'ডেল বিষয়াৰ নীতিগত অন্তৰ্দৃষ্টি",
-    policyInsightDesc: "স্থানীয় কণ্ঠ স্বৰবৰ্ণন আৰু শাখা প্ৰস্তুতি শ্লিপ মুকলি কৰাৰ পাছত অসমত গ্ৰাম্য গ্ৰহণযোগ্যতা ৩২% বৃদ্ধি পাইছে।",
+    policyInsightDesc: "প্ৰকৃত স্থাপনত, গ্ৰাম্য ব্যৱহাৰ বিশ্লেষণ আৰু স্থানীয় ভাষাৰ অডিঅ' নেৰেচন মেট্ৰিক্স ইয়াত প্ৰদৰ্শিত হ'ব।",
     apiHealthLabel: "মধ্যস্থতাকাৰী API স্বাস্থ্য",
-    apiHealthValue: "৯৯.৮% অনলাইন",
+    apiHealthValue: "প্ৰ'ট'টাইপ ম'ড",
     auditTrailTitle: "উৎপাদিত হিতাধিকাৰী ডচিয়েৰ (অডিট ট্ৰেইল)",
     auditTrailDesc: "শাখা দাখিলৰ বাবে প্ৰস্তুত কৰা সত্যাাপিত আবেদনকাৰীৰ শ্লিপৰ পোনপটীয়া তালিকা",
     colDossierId: "ডচিয়েৰ আইডি",
@@ -232,6 +235,9 @@ export default function AdminDashboard({ lang = 'en' }) {
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-semibold mb-3 border border-blue-400/30">
             <ShieldAlert size={14} /> {t.portalBadge}
+          </div>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-semibold mb-2 border border-amber-400/30">
+            ⚠️ {t.demoNotice}
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
             {t.title}

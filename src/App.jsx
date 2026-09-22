@@ -3,7 +3,7 @@ import { Routes, Route, Link, NavLink, useNavigate, useLocation, useParams } fro
 import { schemes as allSchemesData } from './data/schemes';
 import { getLocalizedScheme } from './data/schemeTranslations';
 import { partners } from './data/partners';
-import { Landmark, Calculator, MapPin, Search, BrainCircuit, ShieldCheck, ChevronRight, ChevronLeft, MessageCircle, Globe, Bot, X, Send, FileText, Sparkles, ShieldAlert } from 'lucide-react';
+import { Landmark, Calculator, MapPin, Search, BrainCircuit, ShieldCheck, ChevronRight, ChevronLeft, MessageCircle, Globe, Bot, X, Send, FileText, ShieldAlert, Menu } from 'lucide-react';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import ApplicationDossier from './components/ApplicationDossier';
 import { SpeakButton, VoiceInputButton } from './components/VoiceAssistant';
@@ -97,7 +97,7 @@ const translations = {
     of: "OF",
     tellUs: "Tell us what you need",
     smartMatchBoxTitle: "Smart Matching",
-    smartMatchBoxDesc: "Your answers help us find the exact scheme you qualify for. We cross-reference over 400 local and federal grants based on these parameters.",
+    smartMatchBoxDesc: "Your answers help us find the exact scheme you qualify for. We match against 27 verified MoSJE government schemes based on these parameters.",
     matchString: "MATCH",
     whyMatch: "WHY IT'S A MATCH",
     maxLoanAmt: "MAX LOAN AMOUNT",
@@ -113,7 +113,7 @@ const translations = {
     hwNeeds: "Your Needs",
     hwNeedsDesc: "Tell us about your business profile.",
     hwMatch: "Smart Matching",
-    hwMatchDesc: "AI cross-references hundreds of schemes.",
+    hwMatchDesc: "AI matches your profile against 27 verified schemes.",
     hwBest: "Best Scheme",
     hwBestDesc: "Review tailored financing options.",
     hwPartner: "Nearest Partner",
@@ -240,7 +240,7 @@ const translations = {
     of: "/",
     tellUs: "हमें बताएं कि आपको क्या चाहिए",
     smartMatchBoxTitle: "स्मार्ट मिलान",
-    smartMatchBoxDesc: "आपके उत्तर हमें उस सटीक योजना को खोजने में मदद करते हैं जिसके लिए आप योग्य हैं। हम इन मापदंडों के आधार पर 400 से अधिक स्थानीय और संघीय अनुदानों को क्रॉस-रेफरेंस करते हैं।",
+    smartMatchBoxDesc: "आपके उत्तर हमें उस सटीक योजना को खोजने में मदद करते हैं जिसके लिए आप योग्य हैं। हम इन मापदंडों के आधार पर 27 सत्यापित MoSJE सरकारी योजनाओं से मिलान करते हैं।",
     matchString: "मिलान",
     whyMatch: "यह एक मिलान क्यों है",
     maxLoanAmt: "अधिकतम ऋण राशि",
@@ -256,7 +256,7 @@ const translations = {
     hwNeeds: "आपकी ज़रूरतें",
     hwNeedsDesc: "हमें अपने व्यावसायिक प्रोफ़ाइल के बारे में बताएं।",
     hwMatch: "स्मार्ट मिलान",
-    hwMatchDesc: "एआई सैकड़ों योजनाओं का क्रॉस-रेफरेंस करता है।",
+    hwMatchDesc: "एआई आपकी प्रोफ़ाइल को 27 सत्यापित योजनाओं से मिलाता है।",
     hwBest: "सर्वश्रेष्ठ योजना",
     hwBestDesc: "अनुकूलित वित्तपोषण विकल्पों की समीक्षा करें।",
     hwPartner: "निकटतम पार्टनर",
@@ -383,7 +383,7 @@ const translations = {
     of: "/",
     tellUs: "আপোনাক কি প্ৰয়োজন আমাক জনাওক",
     smartMatchBoxTitle: "স্মাৰ্ট মেচিং",
-    smartMatchBoxDesc: "আপোনাৰ উত্তৰসমূহে আপুনি যোগ্য হোৱা সঠিক আঁচনিখন বিচাৰি উলিওৱাত আমাক সহায় কৰে। আমি এই পেৰামিটাৰসমূহৰ ওপৰত ভিত্তি কৰি ৪০০ ৰো অধিক স্থানীয় আৰু ফেডাৰেল অনুদান ক্ৰছ-ৰেফাৰেন্স কৰো।",
+    smartMatchBoxDesc: "আপোনাৰ উত্তৰসমূহে আপুনি যোগ্য হোৱা সঠিক আঁচনিখন বিচাৰি উলিওৱাত আমাক সহায় কৰে। আমি এই পেৰামিটাৰসমূহৰ ওপৰত ভিত্তি কৰি ২৭ খন সত্যাপিত MoSJE চৰকাৰী আঁচনিৰ সৈতে মিলান কৰোঁ।",
     matchString: "মেচ",
     whyMatch: "এয়া কিয় এটা মেচ",
     maxLoanAmt: "সৰ্বোচ্চ ঋণৰ পৰিমাণ",
@@ -399,7 +399,7 @@ const translations = {
     hwNeeds: "আপোনাৰ প্ৰয়োজনসমূহ",
     hwNeedsDesc: "আপোনাৰ ব্যৱসায়িক প্ৰফাইলৰ বিষয়ে আমাক জনাওক।",
     hwMatch: "স্মাৰ্ট মেচিং",
-    hwMatchDesc: "এআইয়ে শ শ আঁচনিৰ ক্ৰছ-ৰেফাৰেন্স কৰে।",
+    hwMatchDesc: "এআইয়ে আপোনাৰ প্ৰফাইলক ২৭ খন সত্যাপিত আঁচনিৰ সৈতে মিলান কৰে।",
     hwBest: "শ্ৰেষ্ঠ আঁচনি",
     hwBestDesc: "অনুকূলিত বিত্তীয় বিকল্পসমূহ পৰ্যালোচনা কৰক।",
     hwPartner: "নিকটতম অংশীদাৰ",
@@ -457,7 +457,7 @@ const translations = {
 
 // --- INITIAL LANGUAGE MODAL ---
 const LanguageModal = ({ setLang }) => (
-  <div className="fixed inset-0 bg-surface/90 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-in fade-in duration-300">
+  <div role="dialog" aria-modal="true" aria-label="Select Language" className="fixed inset-0 bg-surface/90 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-in fade-in duration-300">
     <div className="card-ambient max-w-md w-full text-center border border-surface-container">
       <div className="w-16 h-16 bg-surface-container-highest text-primary rounded-full flex items-center justify-center mx-auto mb-6">
         <Globe size={32} />
@@ -693,7 +693,7 @@ const FindScheme = ({ lang }) => {
               : 'text-on-surface-variant hover:text-on-surface'
           }`}
         >
-          <Sparkles size={16} className="text-secondary" />
+          <BrainCircuit size={16} className="text-secondary" />
           <span>{t.tabAiIdea}</span>
         </button>
 
@@ -1216,7 +1216,6 @@ const ResultsPage = ({ lang }) => {
           
           {/* Dark EMI Calculator Card */}
           <div className="bg-primary text-on-primary rounded-xl p-6 shadow-sm relative overflow-hidden">
-            <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '20px 20px' }}></div>
             <div className="relative z-10 flex flex-col gap-4">
               <div className="flex items-center gap-2">
                 <Calculator size={24} className="text-secondary-fixed" />
@@ -1293,7 +1292,7 @@ const ExploreSchemes = ({ lang }) => {
         {allSchemesData.map((rawScheme) => {
           const scheme = getLocalizedScheme(rawScheme, lang);
           return (
-          <div key={scheme.id} className="card-ambient border border-surface-container bg-surface-container-lowest rounded-xl p-6 flex flex-col hover:-translate-y-1 hover:shadow-md transition-all duration-300">
+          <div key={scheme.id} className="card-ambient border border-surface-container bg-surface-container-lowest rounded-xl p-6 flex flex-col hover:shadow-md transition-all duration-300">
             <div className="mb-4">
               <div className="flex flex-wrap gap-2 mb-3">
                 <span className="px-3 py-1 bg-secondary-fixed text-secondary text-xs font-bold rounded-full">
@@ -1515,6 +1514,9 @@ const PartnersPage = ({ lang }) => {
                 <ShieldCheck size={16} className="text-secondary" /> {lang === 'hi' ? 'मेरी योजना के लिए योग्य' : lang === 'as' ? 'মোৰ আঁচনিৰ বাবে যোগ্য' : 'Eligible for my scheme'}
               </span>
               <button 
+                role="switch"
+                aria-checked={eligibleOnly}
+                aria-label={lang === 'hi' ? 'केवल मेरी योजना के लिए योग्य दिखाएं' : lang === 'as' ? 'কেৱল মোৰ আঁচনিৰ বাবে যোগ্য দেখুৱাওক' : 'Show only eligible for my scheme'}
                 onClick={() => setEligibleOnly(!eligibleOnly)}
                 className={`w-12 h-6 rounded-full transition-colors relative flex items-center ${eligibleOnly ? 'bg-secondary' : 'bg-surface-container-high'}`}
               >
@@ -1621,10 +1623,17 @@ const AboutPage = ({ lang }) => {
           {lang === 'hi' ? 'सामाजिक न्याय और अधिकारिता मंत्रालय (MoSJE) के तहत, हम ऋण, अनुदान और माइक्रो-क्रेडिट विकल्पों की खोज और आवेदन प्रक्रिया को सरल बनाते हैं, विशेष रूप से एससी समुदायों के लिए।' : lang === 'as' ? 'সামাজিক ন্যায় আৰু সৱলীকৰণ মন্ত্ৰালয় (MoSJE) ৰ অধীনত, আমি বিশেষকৈ অনুসূচিত জাতিৰ সম্প্ৰদায়সমূহৰ বাবে ঋণ, অনুদান আৰু মাইক্ৰ\'-ক্ৰেডিট বিকল্পসমূহৰ সন্ধান আৰু আবেদন প্ৰক্ৰিয়া সৰল কৰোঁ।' : 'Under the Ministry of Social Justice and Empowerment (MoSJE), we simplify the discovery and application process for loans, grants, and micro-credit options, particularly for SC communities.'}
         </p>
         <div className="mt-8 pt-8 border-t border-surface-container">
-          <h3 className="headline-sm text-secondary mb-4">{lang === 'hi' ? 'हमारा मिशन' : lang === 'as' ? 'আমাৰ লক্ষ্য' : 'Our Mission'}</h3>
-          <p className="body-md text-on-surface-variant">
-            {lang === 'hi' ? 'स्मार्ट स्वचालन और व्यक्तिगत अनुशंसाओं के माध्यम से सुलभ, पारदर्शी और कुशल वित्तीय सहायता सुनिश्चित करके समुदायों को सशक्त बनाना।' : lang === 'as' ? 'স্মাৰ্ট স্বয়ংক্ৰিয়কৰণ আৰু ব্যক্তিগতকৃত পৰামৰ্শৰ জৰিয়তে সুলভ, স্বচ্ছ আৰু দক্ষ বিত্তীয় সাহায্য নিশ্চিত কৰি সম্প্ৰদায়সমূহক সৱলীকৰণ কৰা।' : 'To empower communities by ensuring accessible, transparent, and efficient financial assistance through smart automation and personalized recommendations.'}
+          <h3 className="headline-sm text-secondary mb-4">{lang === 'hi' ? 'हमारा मिशन' : lang === 'as' ? 'আমাৰ মিছন' : 'Our Mission'}</h3>
+          <p className="body-md text-on-surface-variant mb-6">
+            {lang === 'hi' ? 'स्मार्ट ऑटोमेशन के माध्यम से सुलभ वित्तीय सहायता सुनिश्चित करना।' : lang === 'as' ? 'স্মাৰ্ট অট\'মেচনৰ জৰিয়তে সুলভ বিত্তীয় সাহায্য নিশ্চিত কৰা।' : 'To empower communities by ensuring accessible, transparent, and efficient financial assistance through smart automation and personalized recommendations.'}
           </p>
+          
+          <div className="bg-primary-container/20 border border-primary-container/30 p-4 rounded-lg">
+            <h4 className="font-bold text-primary mb-2">Smart India Hackathon 2024</h4>
+            <p className="text-sm text-on-surface-variant">
+              {lang === 'hi' ? 'डिस्क्लेमर: यह एक SIH प्रोटोटाइप परियोजना है और इसे एक आधिकारिक सरकारी सेवा के रूप में उपयोग नहीं किया जाना चाहिए।' : lang === 'as' ? 'অস্বীকাৰ: এইটো এটা SIH প্ৰ\'ট\'টাইপ প্ৰকল্প আৰু ইয়াক চৰকাৰী সেৱা হিচাপে ব্যৱহাৰ কৰিব নালাগে।' : 'Disclaimer: This platform is a prototype built for the Smart India Hackathon. It is not an officially deployed or maintained government service, and data provided is for demonstration purposes.'}
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -1643,15 +1652,17 @@ const ContactPage = ({ lang }) => {
             <div className="flex items-start gap-4">
               <div className="p-3 bg-primary-container text-on-primary-container rounded-full"><MapPin size={24}/></div>
               <div>
-                <h4 className="font-bold text-on-surface">{lang === 'hi' ? 'मुख्यालय' : lang === 'as' ? 'মুখ্য কাৰ্যালয়' : 'Headquarters'}</h4>
+                <h4 className="font-bold text-on-surface">{lang === 'hi' ? 'संदर्भ कार्यालय' : lang === 'as' ? 'সন্দৰ্ভ কাৰ্যালয়' : 'Reference Office'}</h4>
                 <p className="text-on-surface-variant mt-1">Ministry of Social Justice & Empowerment<br/>Shastri Bhawan, New Delhi - 110001</p>
+                <p className="text-xs text-on-surface-variant mt-1 italic">{lang === 'hi' ? '(यह MoSJE का सार्वजनिक पता है, SchemeSetu का नहीं)' : lang === 'as' ? '(এইটো MoSJE ৰ ৰাজহুৱা ঠিকনা, SchemeSetu ৰ নহয়)' : '(This is the public MoSJE address, not SchemeSetu\'s office)'}</p>
               </div>
             </div>
             <div className="flex items-start gap-4">
               <div className="p-3 bg-secondary-container text-on-secondary-container rounded-full"><MessageCircle size={24}/></div>
               <div>
-                <h4 className="font-bold text-on-surface">{lang === 'hi' ? 'ईमेल और फ़ोन' : lang === 'as' ? 'ইমেইল আৰু ফোন' : 'Email & Phone'}</h4>
-                <p className="text-on-surface-variant mt-1">support@schemesetu.gov.in<br/>+91-11-2338XXXX</p>
+                <h4 className="font-bold text-on-surface">{lang === 'hi' ? 'संपर्क' : lang === 'as' ? 'যোগাযোগ' : 'Contact'}</h4>
+                <p className="text-on-surface-variant mt-1">{lang === 'hi' ? 'ईमेल: (जल्द ही उपलब्ध)' : lang === 'as' ? 'ইমেইল: (সোনকালে উপলব্ধ)' : 'Email: (coming soon)'}</p>
+                <p className="text-xs text-on-surface-variant mt-1 italic">{lang === 'hi' ? 'SchemeSetu एक SIH प्रोटोटाइप परियोजना है' : lang === 'as' ? 'SchemeSetu এটা SIH প্ৰ\'ট\'টাইপ প্ৰকল্প' : 'SchemeSetu is a Smart India Hackathon prototype project'}</p>
               </div>
             </div>
           </div>
@@ -1776,7 +1787,7 @@ const AIChatbot = ({ lang }) => {
               <Bot size={20} />
               <span className="font-bold">SchemeSetu AI</span>
             </div>
-            <button onClick={() => setIsOpen(false)} className="hover:bg-primary-container/20 p-1 rounded-full transition-colors">
+            <button onClick={() => setIsOpen(false)} aria-label="Close chat" className="hover:bg-primary-container/20 p-1 rounded-full transition-colors">
               <X size={20} />
             </button>
           </div>
@@ -1834,9 +1845,46 @@ const AIChatbot = ({ lang }) => {
   );
 };
 
+// --- PRIVACY NOTICE PAGE ---
+const PrivacyPage = ({ lang }) => {
+  return (
+    <div className="max-w-4xl mx-auto py-12 px-4 animate-in fade-in duration-500">
+      <h2 className="display-md text-primary mb-6">{lang === 'hi' ? 'गोपनीयता सूचना' : lang === 'as' ? 'গোপনীয়তা জাননী' : 'Privacy Notice'}</h2>
+      <div className="bg-surface-container-lowest p-8 rounded-2xl shadow-sm border border-surface-container space-y-6">
+        <p className="body-lg text-on-surface">
+          {lang === 'hi' ? 'SchemeSetu एक स्मार्ट इंडिया हैकाथॉन (SIH) प्रोटोटाइप है। यह सूचना बताती है कि हम आपकी जानकारी का उपयोग कैसे करते हैं।' : lang === 'as' ? 'SchemeSetu এটা স্মাৰ্ট ইণ্ডিয়া হেকাথন (SIH) প্ৰ\'ট\'টাইপ। এই জাননীয়ে আপোনাৰ তথ্য কেনেদৰে ব্যৱহাৰ কৰা হয় সেয়া বৰ্ণনা কৰে।' : 'SchemeSetu is a Smart India Hackathon (SIH) prototype. This notice describes how your information is used.'}
+        </p>
+        <div>
+          <h3 className="headline-sm text-on-surface mb-3">{lang === 'hi' ? 'हम क्या एकत्र करते हैं' : lang === 'as' ? 'আমি কি সংগ্ৰহ কৰোঁ' : 'What We Collect'}</h3>
+          <ul className="list-disc list-inside space-y-2 text-on-surface-variant body-md">
+            <li>{lang === 'hi' ? 'योजना मिलान प्रश्नावली: आयु, लिंग, राज्य, आय, जाति स्थिति, शिक्षा, कौशल स्तर' : lang === 'as' ? 'আঁচনি মিলান প্ৰশ্নাৱলী: বয়স, লিংগ, ৰাজ্য, আয়, জাতি স্থিতি, শিক্ষা, দক্ষতাৰ স্তৰ' : 'Scheme matching questionnaire: age, gender, state, income, caste status, education, skill level'}</li>
+            <li>{lang === 'hi' ? 'AI व्यापार विश्लेषक: आपका व्यापार विवरण पाठ' : lang === 'as' ? 'AI ব্যৱসায়িক বিশ্লেষক: আপোনাৰ ব্যৱসায়িক বিৱৰণ পাঠ' : 'AI Business Analyzer: your business description text'}</li>
+            <li>{lang === 'hi' ? 'AI चैटबॉट: चैट संदेश' : lang === 'as' ? 'AI চেটবট: চেট বাৰ্তা' : 'AI Chatbot: chat messages'}</li>
+          </ul>
+        </div>
+        <div>
+          <h3 className="headline-sm text-on-surface mb-3">{lang === 'hi' ? 'डेटा भंडारण' : lang === 'as' ? 'তথ্য সংৰক্ষণ' : 'Data Storage'}</h3>
+          <p className="body-md text-on-surface-variant">
+            {lang === 'hi' ? 'इस प्रोटोटाइप में कोई स्थायी डेटा संग्रहण नहीं है। सर्वर फ़ंक्शन अस्थायी मेमोरी का उपयोग करते हैं जो प्रत्येक सत्र के बाद साफ़ हो जाती है। कोई कुकीज़ या ट्रैकिंग का उपयोग नहीं किया जाता है।' : lang === 'as' ? 'এই প্ৰ\'ট\'টাইপত কোনো স্থায়ী তথ্য সংৰক্ষণ নাই। চাৰ্ভাৰ ফাংচনে ক্ষণস্থায়ী মেম\'ৰি ব্যৱহাৰ কৰে যিটো প্ৰতিটো অধিৱেশনৰ পিছত পৰিষ্কাৰ হয়। কোনো কুকিজ বা ট্ৰেকিং ব্যৱহাৰ কৰা নহয়।' : 'This prototype has no persistent data storage. Server functions use ephemeral memory that clears after each session. No cookies or tracking are used.'}
+          </p>
+        </div>
+        <div>
+          <h3 className="headline-sm text-on-surface mb-3">{lang === 'hi' ? 'तृतीय-पक्ष सेवाएँ' : lang === 'as' ? 'তৃতীয়-পক্ষৰ সেৱা' : 'Third-Party Services'}</h3>
+          <ul className="list-disc list-inside space-y-2 text-on-surface-variant body-md">
+            <li>{lang === 'hi' ? 'Google Gemini API: व्यापार विचार AI विश्लेषण और चैटबॉट के लिए उपयोग किया जाता है। आपके द्वारा दर्ज किया गया पाठ Google को भेजा जाता है।' : lang === 'as' ? 'Google Gemini API: ব্যৱসায়িক ধাৰণা AI বিশ্লেষণ আৰু চেটবটৰ বাবে ব্যৱহাৰ কৰা হয়। আপুনি প্ৰৱেশ কৰোৱা পাঠ Google লৈ পঠিওৱা হয়।' : 'Google Gemini API: used for business idea AI analysis and chatbot. Text you enter is sent to Google for processing.'}</li>
+            <li>{lang === 'hi' ? 'OpenStreetMap: मानचित्र टाइल्स लोड करने के लिए।' : lang === 'as' ? 'OpenStreetMap: মানচিত্ৰৰ টাইলছ ল\'ড কৰিবলৈ।' : 'OpenStreetMap: for loading map tiles on the partner locator.'}</li>
+            <li>{lang === 'hi' ? 'Google Fonts: Inter फ़ॉन्ट लोड करने के लिए।' : lang === 'as' ? 'Google Fonts: Inter ফণ্ট ল\'ড কৰিবলৈ।' : 'Google Fonts: for loading the Inter typeface.'}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // --- APP SHELL ---
 function App() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [lang, setLang] = useState(() => {
     try {
       return sessionStorage.getItem('schemeSetuLang') || 'en';
@@ -1852,6 +1900,14 @@ function App() {
       return false;
     }
   });
+
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
 
   useEffect(() => {
     if (lang) {
@@ -1877,10 +1933,10 @@ function App() {
       )}
       <nav className="bg-surface/80 backdrop-blur-md shadow-sm border-b border-surface-container sticky top-0 z-50 transition-all">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-20">
+          <div className="flex justify-between h-16 sm:h-20">
             <div className="flex items-center">
-              <Link to="/" className="flex items-center text-primary font-extrabold text-3xl tracking-tight">
-                <Landmark className="mr-2 text-primary" size={32} />
+              <Link to="/" className="flex items-center text-primary font-extrabold text-2xl sm:text-3xl tracking-tight">
+                <Landmark className="mr-2 text-primary" size={28} />
                 SchemeSetu
               </Link>
             </div>
@@ -1890,18 +1946,43 @@ function App() {
               <NavLink to="/find" className={({ isActive }) => `hidden sm:block font-semibold transition-colors ${isActive ? 'text-secondary underline underline-offset-8 decoration-2' : 'text-on-surface hover:text-secondary'}`}>{t.navFind}</NavLink>
               <NavLink to="/calculator" className={({ isActive }) => `hidden sm:block font-semibold transition-colors ${isActive ? 'text-secondary underline underline-offset-8 decoration-2' : 'text-on-surface hover:text-secondary'}`}>{t.emiBtn}</NavLink>
               <NavLink to="/contact" className={({ isActive }) => `hidden lg:block font-semibold transition-colors ${isActive ? 'text-secondary underline underline-offset-8 decoration-2' : 'text-on-surface hover:text-secondary'}`}>{lang === 'hi' ? 'संपर्क करें' : lang === 'as' ? 'যোগাযোগ' : 'Contact'}</NavLink>
-              <NavLink to="/admin" className={({ isActive }) => `hidden xl:flex items-center gap-1 font-semibold transition-colors ${isActive ? 'text-secondary underline underline-offset-8 decoration-2' : 'text-on-surface hover:text-secondary'}`} title="Ministry of Social Justice & Empowerment Nodal Administration"><ShieldAlert size={16} className="text-secondary" /> {t.navAdmin}</NavLink>
+              <NavLink to="/admin" className={({ isActive }) => `hidden xl:flex items-center gap-1 font-semibold transition-colors ${isActive ? 'text-secondary underline underline-offset-8 decoration-2' : 'text-on-surface hover:text-secondary'}`} title="SchemeSetu Analytics Dashboard"><ShieldAlert size={16} className="text-secondary" /> {t.navAdmin}</NavLink>
               <NavLink to="/partners" className={({ isActive }) => `hidden sm:flex font-semibold items-center px-4 py-2 rounded-lg transition-colors text-on-secondary-fixed bg-secondary-fixed hover:bg-secondary-fixed-dim ${isActive ? 'ring-2 ring-primary ring-offset-2' : ''}`}><MapPin className="mr-1.5" size={18} /> {t.navLocate}</NavLink>
               
-              {/* Dropdown to change language later */}
-              <select value={lang} onChange={(e) => setLang(e.target.value)} className="ml-2 sm:ml-4 bg-surface border border-surface-container text-on-surface font-bold py-2 px-2 sm:px-3 rounded-lg focus:outline-none focus:border-secondary">
-                <option value="en">🇺🇸 English</option>
-                <option value="hi">🇮🇳 हिन्दी</option>
-                <option value="as">🦏 অসমীয়া</option>
+              <select value={lang} onChange={(e) => setLang(e.target.value)} aria-label="Select language" className="ml-2 sm:ml-4 bg-surface border border-surface-container text-on-surface font-bold py-2 px-2 sm:px-3 rounded-lg focus:outline-none focus:border-secondary">
+                <option value="en">EN</option>
+                <option value="hi">हि</option>
+                <option value="as">অস</option>
               </select>
+
+              {/* Mobile hamburger button */}
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="sm:hidden p-2 rounded-lg text-on-surface hover:bg-surface-container transition-colors"
+                aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+                aria-expanded={mobileMenuOpen}
+              >
+                {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              </button>
             </div>
           </div>
         </div>
+
+        {/* Mobile navigation panel */}
+        {mobileMenuOpen && (
+          <div className="sm:hidden border-t border-surface-container bg-surface animate-in slide-in-from-top-2 duration-200">
+            <div className="px-4 py-3 space-y-1">
+              <NavLink to="/" className={({ isActive }) => `block px-3 py-2.5 rounded-lg font-semibold text-sm ${isActive ? 'bg-secondary-fixed text-secondary' : 'text-on-surface hover:bg-surface-container'}`}>{lang === 'hi' ? 'होम' : lang === 'as' ? 'হোম' : 'Home'}</NavLink>
+              <NavLink to="/find" className={({ isActive }) => `block px-3 py-2.5 rounded-lg font-semibold text-sm ${isActive ? 'bg-secondary-fixed text-secondary' : 'text-on-surface hover:bg-surface-container'}`}>{t.navFind}</NavLink>
+              <NavLink to="/explore" className={({ isActive }) => `block px-3 py-2.5 rounded-lg font-semibold text-sm ${isActive ? 'bg-secondary-fixed text-secondary' : 'text-on-surface hover:bg-surface-container'}`}>{t.exploreSchemes}</NavLink>
+              <NavLink to="/calculator" className={({ isActive }) => `block px-3 py-2.5 rounded-lg font-semibold text-sm ${isActive ? 'bg-secondary-fixed text-secondary' : 'text-on-surface hover:bg-surface-container'}`}>{t.emiBtn}</NavLink>
+              <NavLink to="/partners" className={({ isActive }) => `block px-3 py-2.5 rounded-lg font-semibold text-sm ${isActive ? 'bg-secondary-fixed text-secondary' : 'text-on-surface hover:bg-surface-container'}`}>{t.navLocate}</NavLink>
+              <NavLink to="/about" className={({ isActive }) => `block px-3 py-2.5 rounded-lg font-semibold text-sm ${isActive ? 'bg-secondary-fixed text-secondary' : 'text-on-surface hover:bg-surface-container'}`}>{lang === 'hi' ? 'हमारे बारे में' : lang === 'as' ? 'আমাৰ বিষয়ে' : 'About'}</NavLink>
+              <NavLink to="/contact" className={({ isActive }) => `block px-3 py-2.5 rounded-lg font-semibold text-sm ${isActive ? 'bg-secondary-fixed text-secondary' : 'text-on-surface hover:bg-surface-container'}`}>{lang === 'hi' ? 'संपर्क करें' : lang === 'as' ? 'যোগাযোগ' : 'Contact'}</NavLink>
+              <NavLink to="/admin" className={({ isActive }) => `block px-3 py-2.5 rounded-lg font-semibold text-sm ${isActive ? 'bg-secondary-fixed text-secondary' : 'text-on-surface hover:bg-surface-container'}`}>{t.navAdmin}</NavLink>
+            </div>
+          </div>
+        )}
       </nav>
 
       <main className="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -1916,10 +1997,56 @@ function App() {
           <Route path="/calculator" element={<CalculatorPage lang={lang} />} />
           <Route path="/partners" element={<PartnersPage lang={lang} />} />
           <Route path="/admin" element={<AdminDashboard lang={lang} />} />
+          <Route path="/privacy" element={<PrivacyPage lang={lang} />} />
           <Route path="/ai-analyzer" element={<div className="max-w-4xl mx-auto py-4"><AIBusinessAnalyzer lang={lang} onSelectScheme={(s) => navigate('/scheme/' + s.id)} /></div>} />
-          <Route path="*" element={<div className="min-h-[70vh] flex flex-col items-center justify-center p-8 text-center animate-in fade-in"><h1 className="display-lg text-primary mb-4">404</h1><p className="body-lg text-on-surface-variant mb-8">Page Not Found</p><Link to="/" className="btn-primary">Return Home</Link></div>} />
+          <Route path="*" element={<div className="min-h-[70vh] flex flex-col items-center justify-center p-8 text-center animate-in fade-in"><h1 className="display-lg text-primary mb-4">404</h1><p className="body-lg text-on-surface-variant mb-8">Page Not Found</p><Link to="/" className="btn-primary px-6 py-3">Return Home</Link></div>} />
         </Routes>
       </main>
+
+      {/* Footer */}
+      <footer className="bg-primary text-on-primary mt-auto">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <Landmark size={22} />
+                <span className="font-bold text-lg">SchemeSetu</span>
+              </div>
+              <p className="text-sm text-primary-container opacity-80 leading-relaxed">
+                {lang === 'hi' ? 'एससी/ओबीसी/सफाई कर्मचारी उद्यमियों के लिए AI-संचालित सरकारी योजना मिलान।' : lang === 'as' ? 'SC/OBC/চাফাই কৰ্মচাৰী উদ্যোগীসকলৰ বাবে AI-চালিত চৰকাৰী আঁচনি মিলান।' : 'AI-driven government scheme matching for SC/OBC/Safai Karamchari entrepreneurs.'}
+              </p>
+              <p className="text-xs text-primary-container opacity-60 mt-2">Smart India Hackathon 2024 Project</p>
+            </div>
+            <div>
+              <h4 className="font-bold text-sm uppercase tracking-wider mb-3 text-primary-container">{lang === 'hi' ? 'लिंक' : lang === 'as' ? 'লিংক' : 'Links'}</h4>
+              <div className="flex flex-col gap-2">
+                <Link to="/find" className="text-sm text-primary-container opacity-80 hover:opacity-100 transition-opacity">{t.navFind}</Link>
+                <Link to="/explore" className="text-sm text-primary-container opacity-80 hover:opacity-100 transition-opacity">{t.exploreSchemes}</Link>
+                <Link to="/calculator" className="text-sm text-primary-container opacity-80 hover:opacity-100 transition-opacity">{t.emiBtn}</Link>
+                <Link to="/partners" className="text-sm text-primary-container opacity-80 hover:opacity-100 transition-opacity">{t.navLocate}</Link>
+              </div>
+            </div>
+            <div>
+              <h4 className="font-bold text-sm uppercase tracking-wider mb-3 text-primary-container">{lang === 'hi' ? 'जानकारी' : lang === 'as' ? 'তথ্য' : 'Info'}</h4>
+              <div className="flex flex-col gap-2">
+                <Link to="/about" className="text-sm text-primary-container opacity-80 hover:opacity-100 transition-opacity">{lang === 'hi' ? 'हमारे बारे में' : lang === 'as' ? 'আমাৰ বিষয়ে' : 'About'}</Link>
+                <Link to="/contact" className="text-sm text-primary-container opacity-80 hover:opacity-100 transition-opacity">{lang === 'hi' ? 'संपर्क करें' : lang === 'as' ? 'যোগাযোগ' : 'Contact'}</Link>
+                <Link to="/privacy" className="text-sm text-primary-container opacity-80 hover:opacity-100 transition-opacity">{lang === 'hi' ? 'गोपनीयता सूचना' : lang === 'as' ? 'গোপনীয়তা জাননী' : 'Privacy Notice'}</Link>
+              </div>
+            </div>
+            <div>
+              <h4 className="font-bold text-sm uppercase tracking-wider mb-3 text-primary-container">{lang === 'hi' ? 'मंत्रालय' : lang === 'as' ? 'মন্ত্ৰালয়' : 'Ministry'}</h4>
+              <p className="text-sm text-primary-container opacity-80 leading-relaxed">
+                {lang === 'hi' ? 'सामाजिक न्याय और अधिकारिता मंत्रालय (MoSJE)' : lang === 'as' ? 'সামাজিক ন্যায় আৰু সৱলীকৰণ মন্ত্ৰালয় (MoSJE)' : 'Ministry of Social Justice & Empowerment (MoSJE)'}
+              </p>
+              <p className="text-xs text-primary-container opacity-60 mt-2">Problem Statement: 26092</p>
+            </div>
+          </div>
+          <div className="border-t border-primary-container/30 mt-8 pt-6 text-center">
+            <p className="text-xs text-primary-container opacity-60">© 2024 SchemeSetu · Smart India Hackathon Prototype · {lang === 'hi' ? 'यह एक प्रतियोगिता परियोजना है, आधिकारिक सरकारी सेवा नहीं।' : lang === 'as' ? 'এইটো এটা প্ৰতিযোগিতা প্ৰকল্প, চৰকাৰী সেৱা নহয়।' : 'This is a competition project, not an official government service.'}</p>
+          </div>
+        </div>
+      </footer>
       
       <AIChatbot lang={lang} />
     </div>

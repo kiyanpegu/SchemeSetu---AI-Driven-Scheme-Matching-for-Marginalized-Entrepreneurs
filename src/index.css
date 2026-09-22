@@ -116,10 +116,9 @@ body {
   border-radius: 16px;
   box-shadow: 0 4px 30px rgba(26, 54, 93, 0.04), 0 10px 30px rgba(26, 54, 93, 0.08);
   border: none;
-  transition: all 0.3s ease;
+  transition: box-shadow 0.3s ease;
 }
 .card-ambient:hover {
-  transform: translateY(-2px);
   box-shadow: 0 10px 40px rgba(26, 54, 93, 0.08), 0 15px 40px rgba(26, 54, 93, 0.12);
 }
 .card-smart {
@@ -176,3 +175,4 @@ body {
   display: inline-flex;
   align-items: center;
 }
+@media (prefers-reduced-motion: reduce) { * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; } }

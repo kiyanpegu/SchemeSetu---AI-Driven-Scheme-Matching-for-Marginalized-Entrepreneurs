@@ -47,7 +47,7 @@ export default function ApplicationDossier({ scheme: rawScheme, userData, lang =
       dossierSub: "National Scheduled Castes Finance & Development Corporation (NSFDC) Assistance Slip",
       dateLabel: "Date:",
       matchedBadge: "Matched Financial Scheme",
-      guaranteeBadge: "Verification Guaranteed",
+      guaranteeBadge: "Application Readiness Checklist",
       maxLoan: "Max Scheme Loan",
       interest: "Interest Rate",
       grace: "Grace Period",
@@ -85,7 +85,7 @@ export default function ApplicationDossier({ scheme: rawScheme, userData, lang =
       dossierSub: "राष्ट्रीय अनुसूचित जाति वित्त एवं विकास निगम (NSFDC) सहायता पर्ची",
       dateLabel: "दिनांक:",
       matchedBadge: "अनुशंसित वित्तीय योजना",
-      guaranteeBadge: "सत्यापन सुनिश्चित",
+      guaranteeBadge: "आवेदन तैयारी चेकलिस्ट",
       maxLoan: "अधिकतम ऋण सीमा",
       interest: "ब्याज दर",
       grace: "रियायती अवधि (मोरेटोरियम)",
@@ -123,7 +123,7 @@ export default function ApplicationDossier({ scheme: rawScheme, userData, lang =
       dossierSub: "ৰাষ্ট্ৰীয় অনুসূচীত জাতি বিত্ত আৰু উন্নয়ন নিগম (NSFDC) সাহায্য শ্লিপ",
       dateLabel: "তাৰিখ:",
       matchedBadge: "উপযুক্ত বিত্তীয় আঁচনি",
-      guaranteeBadge: "প্ৰমাণীকৰণ নিশ্চিত",
+      guaranteeBadge: "আবেদন প্ৰস্তুতি চেকলিষ্ট",
       maxLoan: "সৰ্বোচ্চ ঋণৰ পৰিমাণ",
       interest: "সুদৰ হাৰ",
       grace: "ৰেহাই ম্যাদ (মৰেটৰিয়াম)",
@@ -167,7 +167,7 @@ export default function ApplicationDossier({ scheme: rawScheme, userData, lang =
   ];
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 print:p-0 print:bg-white print:fixed print:inset-0">
+    <div role="dialog" aria-modal="true" aria-label="Application Dossier" className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 print:p-0 print:bg-white print:fixed print:inset-0">
       
       {/* Container */}
       <div className="bg-surface text-on-surface w-full max-w-3xl rounded-2xl shadow-2xl border border-surface-container overflow-hidden print:border-none print:shadow-none print:rounded-none print:max-w-none print:w-full">
