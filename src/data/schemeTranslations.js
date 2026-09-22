@@ -3,7 +3,7 @@
  * Provides complete official Hindi and Assamese translations for all 27 MoSJE/NSFDC/NBCFDC/NSKFDC schemes.
  */
 
-export const schemeTranslations = {
+const schemeTranslations = {
   "hi": {
     "nsfdc-term-loan": {
       "name": "एनएसएफडीसी टर्म लोन योजना",

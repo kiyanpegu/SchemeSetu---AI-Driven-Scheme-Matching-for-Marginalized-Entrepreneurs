@@ -21,14 +21,18 @@ export default async function handler(req, res) {
   } = req.body || {};
 
   const input = (businessIdea || '').trim();
-  const langName = language === 'hi' ? 'Hindi (हिन्दी)' : language === 'as' ? 'Assamese (অসমীয়া)' : 'English';
+  const languageNames = {
+    hi: 'Hindi (हिन्दी)',
+    as: 'Assamese (অসমীয়া)'
+  };
+  const langName = languageNames[language] || 'English';
 
   // Base smart evaluation (guaranteed gender-safe and domain-accurate)
   const baseEvaluation = evaluateBusinessIdea(input, language);
 
   const apiKey = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY;
 
-  if (apiKey && apiKey.startsWith('AIzaSy')) {
+  if (apiKey?.startsWith('AIzaSy')) {
     try {
       const genAI = new GoogleGenerativeAI(apiKey);
       const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
