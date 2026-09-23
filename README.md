@@ -3,6 +3,7 @@
 A web app that helps marginalized entrepreneurs figure out which government-backed financial scheme fits their situation and where they actually need to apply.
 
 ## 🚀 Live Demo
+
 **[Check out the live deployment here!](https://schemesetuai.vercel.app/)**
 
 ## About
@@ -37,6 +38,7 @@ The main flow works like this:
 SchemeSetu operates as a **Full-Stack Application** featuring an integrated Vercel Serverless REST API layer with resilient offline fallback:
 
 ### Serverless REST Endpoints (`/api/*`)
+
 - `GET /api/health` — System status, scheme database count, and uptime metrics.
 - `GET /api/schemes` — Filter schemes by `category`, `max_income`, `type`, `search`, and `lang`.
 - `POST /api/match` — Server-side deterministic scheme matching with capital subsidy calculations.
@@ -56,6 +58,7 @@ SchemeSetu operates as a **Full-Stack Application** featuring an integrated Verc
 ## Data & Verified Sources
 
 SchemeSetu indexes **27 verified government financial assistance schemes** transcribed directly from official gazettes and statutory corporations:
+
 - **Ministry of Social Justice and Empowerment (MoSJE):** [https://socialjustice.gov.in/](https://socialjustice.gov.in/)
 - **National Scheduled Castes Finance and Development Corporation (NSFDC):** [https://nsfdc.nic.in/](https://nsfdc.nic.in/)
 - **National Backward Classes Finance & Development Corporation (NBCFDC):** [https://nbcfdc.gov.in/](https://nbcfdc.gov.in/)
@@ -65,6 +68,7 @@ SchemeSetu indexes **27 verified government financial assistance schemes** trans
 ## Application Process
 
 The app doesn't collect or submit loan applications itself. Instead, it acts as a bridge:
+
 - If a scheme has an official online application portal, we provide the direct link.
 - If it requires an offline application, we map the user to the nearest authorized Public Sector Bank (PSB) or State Channelizing Agency (SCA) and list the documents they need to bring.
 
@@ -78,9 +82,11 @@ The app doesn't collect or submit loan applications itself. Instead, it acts as 
 ## Running Locally
 
 ### Prerequisites
+
 - Node.js installed
 
 ### Installation
+
 1. Clone the repository:
    ```bash
    git clone <your-repo-url>
@@ -92,6 +98,7 @@ The app doesn't collect or submit loan applications itself. Instead, it acts as 
    ```
 
 ### Environment Setup
+
 3. Create a `.env` file in the root directory (you can copy `.env.example`).
 4. Add your Gemini API key (needed for the chatbot):
    ```env
@@ -99,6 +106,7 @@ The app doesn't collect or submit loan applications itself. Instead, it acts as 
    ```
 
 ### Running the App
+
 5. Start the Vite development server:
    ```bash
    npm run dev
@@ -121,6 +129,7 @@ Built for the Smart India Hackathon.
 ## Roadmap
 
 **Implemented:**
+
 - Core deterministic rule-based matching engine for 100% legal compliance
 - Multi-lingual UI implementation (English, Hindi, Assamese)
 - Multilingual Voice Accessibility (Web Speech API STT voice input and TTS scheme narration)
@@ -133,6 +142,7 @@ Built for the Smart India Hackathon.
 - Gemini-powered Conversational Assistant with voice input and audio readout
 
 **Planned (Production Scale):**
+
 - Centralized PostgreSQL/Supabase database for live scheme updates without redeploying code
 - DigiLocker API integration for automated government credential fetching
 - Aadhaar-based e-KYC and direct SCA application forwarding

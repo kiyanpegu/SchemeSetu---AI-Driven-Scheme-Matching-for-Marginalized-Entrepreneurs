@@ -1,5 +1,5 @@
-import React from 'react';
-import { ShieldAlert, RefreshCw, Home } from 'lucide-react';
+import React from "react";
+import { ShieldAlert, RefreshCw, Home } from "lucide-react";
 
 export default class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -12,17 +12,21 @@ export default class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error('SchemeSetu ErrorBoundary caught an error:', error, errorInfo);
+    console.error(
+      "SchemeSetu ErrorBoundary caught an error:",
+      error,
+      errorInfo,
+    );
   }
 
   handleReset = () => {
     try {
       sessionStorage.clear();
-      localStorage.removeItem('schemeSetuLang');
+      localStorage.removeItem("schemeSetuLang");
     } catch (e) {
-      console.warn('Storage clear error:', e);
+      console.warn("Storage clear error:", e);
     }
-    window.location.href = '/';
+    window.location.href = "/";
   };
 
   render() {
@@ -33,13 +37,15 @@ export default class ErrorBoundary extends React.Component {
             <div className="w-16 h-16 bg-rose-100 text-rose-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
               <ShieldAlert size={36} />
             </div>
-            
+
             <h1 className="text-xl font-bold text-slate-900 mb-2">
               Something went wrong
             </h1>
-            
+
             <p className="text-sm text-slate-600 mb-6 leading-relaxed">
-              SchemeSetu encountered an unexpected issue while rendering this page. You can safely reload the portal or return to the home screen.
+              SchemeSetu encountered an unexpected issue while rendering this
+              page. You can safely reload the portal or return to the home
+              screen.
             </p>
 
             {this.state.error?.message && (
@@ -70,4 +76,3 @@ export default class ErrorBoundary extends React.Component {
     return this.props.children;
   }
 }
-

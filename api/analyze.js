@@ -1,41 +1,40 @@
 /* global process */
-import { GoogleGenerativeAI } from '@google/generative-ai';
-import { evaluateBusinessIdea } from '../src/data/ideaMatcher.js';
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { evaluateBusinessIdea } from "../src/data/ideaMatcher.js";
 
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST,OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "POST,OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
-  if (req.method === 'OPTIONS') {
+  if (req.method === "OPTIONS") {
     return res.status(200).end();
   }
 
-  if (req.method !== 'POST') {
-    return res.status(405).json({ success: false, error: 'Method not allowed. Use POST.' });
+  if (req.method !== "POST") {
+    return res
+      .status(405)
+      .json({ success: false, error: "Method not allowed. Use POST." });
   }
 
-  const {
-    businessIdea = '',
-    language = 'en'
-  } = req.body || {};
+  const { businessIdea = "", language = "en" } = req.body || {};
 
-  const input = (businessIdea || '').trim();
+  const input = (businessIdea || "").trim();
   const languageNames = {
-    hi: 'Hindi (हिन्दी)',
-    as: 'Assamese (অসমীয়া)'
+    hi: "Hindi (हिन्दी)",
+    as: "Assamese (অসমীয়া)",
   };
-  const langName = languageNames[language] || 'English';
+  const langName = languageNames[language] || "English";
 
   // Base smart evaluation (guaranteed gender-safe and domain-accurate)
   const baseEvaluation = evaluateBusinessIdea(input, language);
 
   const apiKey = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY;
 
-  if (apiKey?.startsWith('AIzaSy')) {
+  if (apiKey?.startsWith("AIzaSy")) {
     try {
       const genAI = new GoogleGenerativeAI(apiKey);
-      const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
       const prompt = `You are the Official Government Business Feasibility and Scheme Advisor for the Ministry of Social Justice and Empowerment (MoSJE), Government of India.
 Analyze this applicant's business proposal:
@@ -64,8 +63,8 @@ Respond STRICTLY in JSON with these exact keys:
 }`;
 
       const result = await model.generateContent({
-        contents: [{ role: 'user', parts: [{ text: prompt }] }],
-        generationConfig: { responseMimeType: 'application/json' }
+        contents: [{ role: "user", parts: [{ text: prompt }] }],
+        generationConfig: { responseMimeType: "application/json" },
       });
 
       const responseText = result.response.text();
@@ -73,8 +72,15 @@ Respond STRICTLY in JSON with these exact keys:
 
       // Gender safety post-validation
       const lower = input.toLowerCase();
-      const isMale = /\b(man|male|boy|men|father|brother|husband|son|guy|mr)\b/i.test(lower) && !/\b(woman|female|girl|women)\b/i.test(lower);
-      if (isMale && (parsed.matchedSchemeId === 'mahila-samriddhi' || parsed.matchedSchemeId === 'nbcfdc-new-swarnima')) {
+      const isMale =
+        /\b(man|male|boy|men|father|brother|husband|son|guy|mr)\b/i.test(
+          lower,
+        ) && !/\b(woman|female|girl|women)\b/i.test(lower);
+      if (
+        isMale &&
+        (parsed.matchedSchemeId === "mahila-samriddhi" ||
+          parsed.matchedSchemeId === "nbcfdc-new-swarnima")
+      ) {
         parsed.matchedSchemeId = baseEvaluation.matchedSchemeId;
         parsed.businessSector = baseEvaluation.businessSector;
         parsed.whyThisFits = baseEvaluation.whyThisFits;
@@ -83,21 +89,25 @@ Respond STRICTLY in JSON with these exact keys:
 
       return res.status(200).json({
         success: true,
-        source: 'gemini-2.5-flash',
+        source: "gemini-2.5-flash",
         analysis: {
           ...parsed,
-          matchConfidence: Number(parsed.matchConfidence) || baseEvaluation.matchConfidence
-        }
+          matchConfidence:
+            Number(parsed.matchConfidence) || baseEvaluation.matchConfidence,
+        },
       });
     } catch (aiErr) {
-      console.warn('Gemini API call failed on backend, using smart domain heuristic engine:', aiErr.message);
+      console.warn(
+        "Gemini API call failed on backend, using smart domain heuristic engine:",
+        aiErr.message,
+      );
     }
   }
 
   // Guaranteed intelligent domain & gender-safe heuristic evaluation
   return res.status(200).json({
     success: true,
-    source: 'domain-heuristic-engine',
-    analysis: baseEvaluation
+    source: "domain-heuristic-engine",
+    analysis: baseEvaluation,
   });
 }
