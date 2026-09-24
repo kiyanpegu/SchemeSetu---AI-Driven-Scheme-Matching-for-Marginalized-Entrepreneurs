@@ -1,6 +1,6 @@
 /* global process */
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { evaluateBusinessIdea } from "../src/data/ideaMatcher.js";
+import { evaluateBusinessIdea, isMaleApplicant } from "../src/data/ideaMatcher.js";
 
 export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -71,13 +71,8 @@ Respond STRICTLY in JSON with these exact keys:
       const parsed = JSON.parse(responseText);
 
       // Gender safety post-validation
-      const lower = input.toLowerCase();
-      const isMale =
-        /\b(man|male|boy|men|father|brother|husband|son|guy|mr)\b/i.test(
-          lower,
-        ) && !/\b(woman|female|girl|women)\b/i.test(lower);
       if (
-        isMale &&
+        isMaleApplicant(input) &&
         (parsed.matchedSchemeId === "mahila-samriddhi" ||
           parsed.matchedSchemeId === "nbcfdc-new-swarnima")
       ) {

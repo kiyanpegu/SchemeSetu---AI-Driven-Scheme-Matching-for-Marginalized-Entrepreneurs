@@ -3,10 +3,8 @@
  * Performs deep semantic, domain-aware, and gender-safe matching for small business proposals.
  */
 
-export function evaluateBusinessIdea(text = "", lang = "en") {
+export function isMaleApplicant(text = "") {
   const lower = text.toLowerCase();
-
-  // 1. Precise Gender Detection
   const hasMaleKeywords =
     /\b(man|male|boy|men|father|brother|husband|son|guy|gentleman|mr)\b/i.test(
       lower,
@@ -23,9 +21,15 @@ export function evaluateBusinessIdea(text = "", lang = "en") {
     text.includes("स्त्री") ||
     text.includes("মহিলা") ||
     text.includes("ছোৱালী");
+  return hasMaleKeywords && !hasFemaleKeywords;
+}
 
-  const isExplicitlyMale = hasMaleKeywords && !hasFemaleKeywords;
-  const isExplicitlyFemale = hasFemaleKeywords;
+export function evaluateBusinessIdea(text = "", lang = "en") {
+  const lower = text.toLowerCase();
+
+  // 1. Precise Gender Detection
+  const isExplicitlyMale = isMaleApplicant(text);
+  const isExplicitlyFemale = !isExplicitlyMale && /\b(woman|female|girl|women|mother|sister|wife|daughter|lady|madam|ms|mrs)\b/i.test(lower);
 
   // 2. Domain & Sector Pattern Matching
 

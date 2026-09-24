@@ -10,7 +10,7 @@ export default defineConfig({
       name: "api-serverless-dev-middleware",
       configureServer(server) {
         server.middlewares.use(async (req, res, next) => {
-          if (req.url && req.url.startsWith("/api/")) {
+          if (req.url?.startsWith("/api/")) {
             const url = new URL(req.url, "http://localhost");
             const endpoint = url.pathname.replace("/api/", "").split("?")[0];
             try {

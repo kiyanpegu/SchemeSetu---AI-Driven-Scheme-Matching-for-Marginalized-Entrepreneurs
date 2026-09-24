@@ -7,7 +7,6 @@ import {
   RefreshCw,
   ChevronRight,
 } from "lucide-react";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import { schemes } from "../data/schemes";
 import { getLocalizedScheme } from "../data/schemeTranslations";
 import { VoiceInputButton, SpeakButton } from "./VoiceAssistant";
@@ -190,13 +189,6 @@ export default function AIBusinessAnalyzer({ lang = "en", onSelectScheme }) {
     setError(null);
     setAnalysisResult(null);
 
-    const langName =
-      lang === "hi"
-        ? "Hindi (हिन्दी)"
-        : lang === "as"
-          ? "Assamese (অসমীয়া)"
-          : "English";
-
     try {
       // 1. Attempt serverless backend analysis first (protects API keys)
       const backendRes = await apiService.analyzeBusiness({
@@ -248,98 +240,7 @@ export default function AIBusinessAnalyzer({ lang = "en", onSelectScheme }) {
         return;
       }
 
-      const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-      if (!apiKey || !apiKey.startsWith("AIzaSy")) {
-        throw new Error(
-          "Invalid or unconfigured client Gemini key. Using smart domain engine.",
-        );
-      }
-
-      const genAI = new GoogleGenerativeAI(apiKey);
-      const model = genAI.getGenerativeModel({
-        model: "gemini-2.5-flash",
-        generationConfig: { responseMimeType: "application/json" },
-        systemInstruction: `You are the SchemeSetu AI Decision Engine for Ministry of Social Justice & Empowerment (MoSJE) schemes.
-Analyze the user's business idea and match them to the single best scheme from this verified list:
-- "nsfdc-term-loan" (NSFDC Term Loan): Piggery, poultry, dairy, livestock, cattle, manufacturing, services up to ₹150 Lakh at 6-8% p.a.
-- "pm-vishwakarma" (PM Vishwakarma): Traditional artisans (carpenters, blacksmiths, cobblers, tailors, potters) up to ₹3L at 5% p.a. with ₹15,000 toolkit grant.
-- "pm-svanidhi" (PM SVANidhi): Urban street vendors, chai kiosks, fruit sellers up to ₹50,000 with 7% subsidy.
-- "nsfdc-green-business" (NSFDC Green Business): E-rickshaws, solar rooftops, clean energy up to ₹30L at 4-6% p.a.
-- "nsfdc-lvy" (Laghu Vyavasay Yojana): Small shops, tailoring, repair up to ₹5L at 6% p.a.
-- "mahila-samriddhi" (Mahila Samriddhi Yojana): EXCLUSIVELY for SC women micro-entrepreneurs up to ₹1.4L at 4% p.a.
-- "stand-up-india" (Stand-Up India): Greenfield SC/ST/Women business from ₹10L to ₹1 Crore.
-- "pmegp" (PMEGP): Micro-enterprises with 35% capital subsidy up to ₹50L.
-- "nbcfdc-new-swarnima" (New Swarnima): EXCLUSIVELY for OBC women entrepreneurs up to ₹2L at 5% p.a.
-- "nskfdc-suy" (Swachhta Udyami): Sanitation and sewer cleaning mechanization up to ₹50L with ₹3.25L subsidy.
-- "nsfdc-mcf" (Micro-Credit Finance): For SC micro-entrepreneurs, loan up to ₹1.25L at 6.5% p.a.
-- "nsfdc-suvidha" (Suvidha Loan): For SC small business, loan up to ₹9L at 8% p.a.
-- "nsfdc-utkarsh" (Utkarsh Loan): For medium SC enterprise, loan up to ₹45L at 9% p.a.
-- "nsfdc-els-india" (Educational Loan Scheme): For SC students admitted to professional courses in India up to ₹30L at 6% p.a.
-- "mudra-pmmy" (Pradhan Mantri MUDRA): Non-farm micro-units up to ₹10L.
-- "asiim" (Ambedkar Social Innovation): Tech startups and students in higher ed.
-
-CRITICAL GENDER AND DOMAIN RULES:
-1. GENDER SAFETY: If the applicant states or implies they are male (e.g. "man", "male", "boy", "guy", "पुरुष", "পুৰুষ"), YOU MUST NEVER recommend "mahila-samriddhi" or "nbcfdc-new-swarnima". It is strictly reserved for women.
-2. For livestock, pig farming, piggery, poultry, dairy: Choose "nsfdc-term-loan" or "pmegp".
-
-IMPORTANT: The requested language is ${langName}. You MUST generate the fields 'businessSector', 'whyThisFits', 'riskAssessment', and all array items in 'actionPlan' in ${langName}.
-
-Return ONLY a valid JSON object matching this schema:
-{
-  "matchedSchemeId": "scheme_id_here",
-  "matchConfidence": 95,
-  "businessSector": "Sector description in ${langName}",
-  "estimatedCapital": "₹80,000",
-  "whyThisFits": "A 2-3 sentence clear explanation in ${langName} of why this scheme provides the best interest rate, moratorium, and loan amount for their specific venture.",
-  "riskAssessment": "Assessment in ${langName}",
-  "actionPlan": [
-    "Step 1 in ${langName}",
-    "Step 2 in ${langName}",
-    "Step 3 in ${langName}"
-  ]
-}`,
-      });
-
-      const prompt = `Analyze this applicant's business / financial proposal:
-"${input}"
-
-Evaluate sector, loan bracket, and match with the optimal NSFDC/MoSJE scheme. Language requested: ${langName}.`;
-
-      const result = await model.generateContent(prompt);
-      const text = result.response.text();
-      const parsed = JSON.parse(text);
-
-      let targetId =
-        parsed.matchedSchemeId === "msy"
-          ? "mahila-samriddhi"
-          : parsed.matchedSchemeId;
-
-      // Post-Gemini gender check
-      const lower = input.toLowerCase();
-      const isMale =
-        /\b(man|male|boy|men|father|brother|husband|son|guy|mr)\b/i.test(
-          lower,
-        ) && !/\b(woman|female|girl|women)\b/i.test(lower);
-      if (
-        isMale &&
-        (targetId === "mahila-samriddhi" || targetId === "nbcfdc-new-swarnima")
-      ) {
-        const safeEval = evaluateBusinessIdea(input, lang);
-        targetId = safeEval.matchedSchemeId;
-        parsed.businessSector = safeEval.businessSector;
-        parsed.whyThisFits = safeEval.whyThisFits;
-        parsed.actionPlan = safeEval.actionPlan;
-      }
-
-      const matchedRawObj =
-        schemes.find((s) => s.id === targetId) || schemes[0];
-      const matchedSchemeObj = getLocalizedScheme(matchedRawObj, lang);
-
-      setAnalysisResult({
-        ...parsed,
-        matchConfidence: Number(parsed.matchConfidence) || 95,
-        scheme: matchedSchemeObj,
-      });
+      throw new Error("Backend analysis failed or returned invalid data");
     } catch (err) {
       console.warn(
         "AI Analysis client fallback, invoking domain heuristic engine:",

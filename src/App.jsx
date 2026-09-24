@@ -10,6 +10,7 @@ import {
 } from "react-router-dom";
 import { schemes as allSchemesData } from "./data/schemes";
 import { getLocalizedScheme } from "./data/schemeTranslations";
+import { matchSchemes } from "./data/schemeMatcher";
 import { partners } from "./data/partners";
 import {
   Landmark,
@@ -537,9 +538,8 @@ const translations = {
 
 // --- INITIAL LANGUAGE MODAL ---
 const LanguageModal = ({ setLang }) => (
-  <div
-    role="dialog"
-    aria-modal="true"
+  <dialog
+    open
     aria-label="Select Language"
     className="fixed inset-0 bg-surface/90 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-in fade-in duration-300"
   >
@@ -582,7 +582,7 @@ const LanguageModal = ({ setLang }) => (
         </button>
       </div>
     </div>
-  </div>
+  </dialog>
 );
 
 // --- HOME COMPONENT ---
@@ -632,9 +632,9 @@ const Home = ({ lang }) => {
         {/* Hero Visual / Journey Graphic */}
         <div className="lg:col-span-6 relative flex justify-center lg:justify-end">
           <div className="card-ambient w-full max-w-md rounded-2xl p-8 shadow-ambient relative z-10 border-l-2 border-secondary-container hover:-translate-y-1 transition-all duration-300">
-            <h3 className="text-2xl font-bold text-primary mb-6">
+            <h2 className="text-2xl font-bold text-primary mb-6">
               {t.howItWorks}
-            </h3>
+            </h2>
 
             <div className="space-y-6 relative before:absolute before:inset-y-0 before:left-[19px] before:w-[2px] before:bg-surface-variant">
               {/* Step 1 */}
@@ -1334,119 +1334,9 @@ const ResultsPage = ({ lang }) => {
   const navigate = useNavigate();
 
   // SMART MATCHING ENGINE (AI / Rules-based)
-  let engineMatches = [];
-  let isEligible = true;
-  let ineligibilityReason = "";
-
-  if (formData) {
-    allSchemesData.forEach((scheme) => {
-      let score = 0;
-      let reasons = [];
-
-      let isMatch = true;
-      const userAmt = Number(formData.amount);
-      const userInc = Number(formData.income);
-      const userAge = Number(formData.age);
-      const purpose = formData.purpose;
-
-      // Caste Requirement Check
-      if (formData.hasCaste === "no") {
-        const isWomenStandUp =
-          scheme.id === "stand-up-india" && formData.gender === "female";
-        const isUniversalTrade =
-          scheme.id === "pm-svanidhi" ||
-          scheme.id === "pm-vishwakarma" ||
-          scheme.id === "mudra-pmmy";
-        if (!isWomenStandUp && !isUniversalTrade) {
-          isMatch = false;
-        }
-      }
-
-      // Purpose Matching
-      if (purpose === "edu" && !scheme.education_eligibility) {
-        isMatch = false;
-      }
-      if (purpose !== "edu" && !scheme.business_eligibility) {
-        isMatch = false;
-      }
-
-      // Income Matching
-      if (
-        scheme.annual_family_income_limit &&
-        userInc > scheme.annual_family_income_limit
-      ) {
-        isMatch = false;
-      }
-
-      if (isMatch) {
-        score += 50; // base match
-        reasons.push(t.reasonBase);
-
-        // Amount matching
-        if (scheme.loan_amount_max && userAmt <= scheme.loan_amount_max) {
-          score += 15;
-          reasons.push(t.reasonAmountWithin(userAmt, scheme.loan_amount_max));
-        } else if (scheme.loan_amount_max) {
-          reasons.push(t.reasonAmountExceed(scheme.loan_amount_max));
-        }
-
-        if (scheme.loan_amount_min && userAmt >= scheme.loan_amount_min) {
-          score += 5;
-        }
-
-        // Gender specific targeting
-        if (
-          scheme.beneficiary_category?.includes("Women") ||
-          scheme.target_groups?.includes("Women")
-        ) {
-          if (formData.gender === "female") {
-            score += 25;
-            reasons.push(t.reasonWomen);
-          } else {
-            // Scheme is strictly for women, disqualify men
-            isMatch = false;
-          }
-        }
-
-        // Age targeting
-        if (
-          scheme.minimum_age &&
-          userAge >= scheme.minimum_age &&
-          scheme.maximum_age &&
-          userAge <= scheme.maximum_age
-        ) {
-          score += 5;
-        }
-      }
-
-      if (isMatch && score > 0) {
-        // Cap score at 99
-        score = Math.min(score, 99);
-
-        // use verified interest rate if available
-        let intVal = scheme.interest_rate_min || 4;
-
-        engineMatches.push({
-          ...scheme,
-          matchScore: score,
-          match: `${score}%`,
-          desc: scheme.shortDesc,
-          why: reasons.join(" "),
-          amount: scheme.maxAmount,
-          calcInterest: intVal,
-        });
-      }
-    });
-    engineMatches.sort((a, b) => b.matchScore - a.matchScore);
-
-    if (engineMatches.length === 0) {
-      isEligible = false;
-      ineligibilityReason =
-        formData.hasCaste === "no" ? t.ineligNoCaste : t.ineligHighIncome;
-    } else {
-      isEligible = true;
-    }
-  }
+  let engineMatches = formData ? matchSchemes(formData, allSchemesData, lang, t) : [];
+  let isEligible = engineMatches.length > 0;
+  let ineligibilityReason = !isEligible && formData ? (formData.hasCaste === "no" ? t.ineligNoCaste : t.ineligHighIncome) : "";
 
   const matchedSchemes = engineMatches;
   const topRawScheme = matchedSchemes[0];
@@ -2609,6 +2499,7 @@ const AIChatbot = ({ lang }) => {
     <>
       <button
         onClick={() => setIsOpen(true)}
+        aria-label="Open AI Assistant"
         className={`fixed bottom-6 right-6 w-14 h-14 bg-primary text-on-primary rounded-full shadow-lg flex items-center justify-center hover:scale-105 transition-transform z-50 ${isOpen ? "hidden" : "block"}`}
       >
         <Bot size={28} />
@@ -3102,56 +2993,56 @@ function App() {
                 <Landmark size={22} />
                 <span className="font-bold text-lg">SchemeSetu</span>
               </div>
-              <p className="text-sm text-primary-container opacity-80 leading-relaxed">
+              <p className="text-sm opacity-80 leading-relaxed">
                 {lang === "hi"
                   ? "एससी/ओबीसी/सफाई कर्मचारी उद्यमियों के लिए AI-संचालित सरकारी योजना मिलान।"
                   : lang === "as"
                     ? "SC/OBC/চাফাই কৰ্মচাৰী উদ্যোগীসকলৰ বাবে AI-চালিত চৰকাৰী আঁচনি মিলান।"
                     : "AI-driven government scheme matching for SC/OBC/Safai Karamchari entrepreneurs."}
               </p>
-              <p className="text-xs text-primary-container opacity-60 mt-2">
+              <p className="text-xs opacity-60 mt-2">
                 Smart India Hackathon 2024 Project
               </p>
             </div>
             <div>
-              <h4 className="font-bold text-sm uppercase tracking-wider mb-3 text-primary-container">
+              <h4 className="font-bold text-sm uppercase tracking-wider mb-3 ">
                 {lang === "hi" ? "लिंक" : lang === "as" ? "লিংক" : "Links"}
               </h4>
               <div className="flex flex-col gap-2">
                 <Link
                   to="/find"
-                  className="text-sm text-primary-container opacity-80 hover:opacity-100 transition-opacity"
+                  className="text-sm opacity-80 hover:opacity-100 transition-opacity"
                 >
                   {t.navFind}
                 </Link>
                 <Link
                   to="/explore"
-                  className="text-sm text-primary-container opacity-80 hover:opacity-100 transition-opacity"
+                  className="text-sm opacity-80 hover:opacity-100 transition-opacity"
                 >
                   {t.exploreSchemes}
                 </Link>
                 <Link
                   to="/calculator"
-                  className="text-sm text-primary-container opacity-80 hover:opacity-100 transition-opacity"
+                  className="text-sm opacity-80 hover:opacity-100 transition-opacity"
                 >
                   {t.emiBtn}
                 </Link>
                 <Link
                   to="/partners"
-                  className="text-sm text-primary-container opacity-80 hover:opacity-100 transition-opacity"
+                  className="text-sm opacity-80 hover:opacity-100 transition-opacity"
                 >
                   {t.navLocate}
                 </Link>
               </div>
             </div>
             <div>
-              <h4 className="font-bold text-sm uppercase tracking-wider mb-3 text-primary-container">
+              <h4 className="font-bold text-sm uppercase tracking-wider mb-3 ">
                 {lang === "hi" ? "जानकारी" : lang === "as" ? "তথ্য" : "Info"}
               </h4>
               <div className="flex flex-col gap-2">
                 <Link
                   to="/about"
-                  className="text-sm text-primary-container opacity-80 hover:opacity-100 transition-opacity"
+                  className="text-sm opacity-80 hover:opacity-100 transition-opacity"
                 >
                   {lang === "hi"
                     ? "हमारे बारे में"
@@ -3161,7 +3052,7 @@ function App() {
                 </Link>
                 <Link
                   to="/contact"
-                  className="text-sm text-primary-container opacity-80 hover:opacity-100 transition-opacity"
+                  className="text-sm opacity-80 hover:opacity-100 transition-opacity"
                 >
                   {lang === "hi"
                     ? "संपर्क करें"
@@ -3171,7 +3062,7 @@ function App() {
                 </Link>
                 <Link
                   to="/privacy"
-                  className="text-sm text-primary-container opacity-80 hover:opacity-100 transition-opacity"
+                  className="text-sm opacity-80 hover:opacity-100 transition-opacity"
                 >
                   {lang === "hi"
                     ? "गोपनीयता सूचना"
@@ -3182,27 +3073,27 @@ function App() {
               </div>
             </div>
             <div>
-              <h4 className="font-bold text-sm uppercase tracking-wider mb-3 text-primary-container">
+              <h4 className="font-bold text-sm uppercase tracking-wider mb-3 ">
                 {lang === "hi"
                   ? "मंत्रालय"
                   : lang === "as"
                     ? "মন্ত্ৰালয়"
                     : "Ministry"}
               </h4>
-              <p className="text-sm text-primary-container opacity-80 leading-relaxed">
+              <p className="text-sm opacity-80 leading-relaxed">
                 {lang === "hi"
                   ? "सामाजिक न्याय और अधिकारिता मंत्रालय (MoSJE)"
                   : lang === "as"
                     ? "সামাজিক ন্যায় আৰু সৱলীকৰণ মন্ত্ৰালয় (MoSJE)"
                     : "Ministry of Social Justice & Empowerment (MoSJE)"}
               </p>
-              <p className="text-xs text-primary-container opacity-60 mt-2">
+              <p className="text-xs opacity-60 mt-2">
                 Problem Statement: 26092
               </p>
             </div>
           </div>
           <div className="border-t border-primary-container/30 mt-8 pt-6 text-center">
-            <p className="text-xs text-primary-container opacity-60">
+            <p className="text-xs opacity-60">
               © 2024 SchemeSetu · Smart India Hackathon Prototype ·{" "}
               {lang === "hi"
                 ? "यह एक प्रतियोगिता परियोजना है, आधिकारिक सरकारी सेवा नहीं।"
