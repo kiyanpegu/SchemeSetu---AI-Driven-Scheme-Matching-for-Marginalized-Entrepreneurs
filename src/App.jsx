@@ -224,6 +224,7 @@ const translations = {
     eligibleForScheme: "Eligible for my scheme",
     showOnlyEligible: "Show only eligible for my scheme",
     eligiblePartnersNear: "ELIGIBLE PARTNERS FOUND NEAR YOU",
+    noPartnersFound: "No authorized financial partners match your filter or search criteria.",
     offlineApplyAlert: (name) => `Please visit ${name} branch with your KYC, SC Certificate, and Business Plan to apply offline.`,
     offlineApplicationBtn: "Offline Application",
     getDirections: "Get Directions",
@@ -442,6 +443,7 @@ const translations = {
     eligibleForScheme: "मेरी योजना के लिए योग्य",
     showOnlyEligible: "केवल मेरी योजना के लिए योग्य दिखाएं",
     eligiblePartnersNear: "योग्य पार्टनर आस-पास मिले",
+    noPartnersFound: "आपके खोज या फ़िल्टर से मेल खाने वाला कोई अधिकृत वित्तीय संस्थान नहीं मिला।",
     offlineApplyAlert: () => "कृपया अपनी केवाईसी, जाति प्रमाण पत्र और व्यवसाय योजना के साथ इस शाखा पर जाएं।",
     offlineApplicationBtn: "ऑफ़लाइन आवेदन",
     getDirections: "दिशा-निर्देश",
@@ -660,6 +662,7 @@ const translations = {
     eligibleForScheme: "মোৰ আঁচনিৰ বাবে যোগ্য",
     showOnlyEligible: "কেৱল মোৰ আঁচনিৰ বাবে যোগ্য দেখুৱাওক",
     eligiblePartnersNear: "ওচৰত পোৱা যোগ্য অংশীদাৰ",
+    noPartnersFound: "আপোনাৰ সন্ধান বা ফিল্টাৰৰ সৈতে মিল থকা কোনো কৰ্তৃত্বপ্ৰাপ্ত বিত্তীয় প্ৰতিষ্ঠান পোৱা নগ'ল।",
     offlineApplyAlert: () => "অনুগ্ৰহ কৰি আপোনাৰ কেৱাইচি, জাতিগত প্ৰমাণপত্ৰ আৰু ব্যৱসায়িক পৰিকল্পনাৰ সৈতে এই শাখাত উপস্থিত হওক।",
     offlineApplicationBtn: "অফলাইন আৱেদন",
     getDirections: "নিৰ্দেশনা",
@@ -1081,14 +1084,17 @@ const FindScheme = ({ lang }) => {
         </div>
       )}
 
-      {discoveryMode === "ai-idea" ? (
+      {(() => {
+        if (discoveryMode === "ai-idea") return (
         <div className="w-full max-w-4xl">
           <AIBusinessAnalyzer
             lang={lang}
             onSelectScheme={(s) => navigate("/scheme/" + s.id)}
           />
         </div>
-      ) : discoveryMode === "scan" ? (
+        );
+
+        if (discoveryMode === "scan") return (
         <div className="w-full max-w-4xl">
           <CertificateScanner
             lang={lang}
@@ -1106,7 +1112,9 @@ const FindScheme = ({ lang }) => {
             }}
           />
         </div>
-      ) : (
+        );
+
+        return (
         <>
           {/* Progress Header */}
           <div className="w-full max-w-3xl mb-8">
@@ -1475,7 +1483,8 @@ const FindScheme = ({ lang }) => {
             </div>
           </div>
         </>
-      )}
+        );
+      })()}
     </div>
   );
 };
@@ -1490,7 +1499,10 @@ const ResultsPage = ({ lang }) => {
   // SMART MATCHING ENGINE (AI / Rules-based)
   let engineMatches = formData ? matchSchemes(formData, allSchemesData, lang, t) : [];
   let isEligible = engineMatches.length > 0;
-  let ineligibilityReason = !isEligible && formData ? (formData.hasCaste === "no" ? t.ineligNoCaste : t.ineligHighIncome) : "";
+  let ineligibilityReason = "";
+  if (!isEligible && formData) {
+    ineligibilityReason = formData.hasCaste === "no" ? t.ineligNoCaste : t.ineligHighIncome;
+  }
 
   const matchedSchemes = engineMatches;
   const topRawScheme = matchedSchemes[0];
@@ -1545,7 +1557,7 @@ const ResultsPage = ({ lang }) => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Left Side: Recommended Schemes */}
         <div className="lg:col-span-8 flex flex-col gap-6">
-          {!isEligible ? (
+          {!isEligible && (
             <div className="p-8 bg-red-50 text-red-900 rounded-xl border border-red-200">
               <h3 className="text-2xl font-bold mb-4 text-red-800">
                 {t.notEligibleTitle}
@@ -1558,7 +1570,8 @@ const ResultsPage = ({ lang }) => {
                 {t.editProfileBtn}
               </button>
             </div>
-          ) : matchedSchemes.length === 0 ? (
+          )}
+          {isEligible && matchedSchemes.length === 0 && (
             <div className="p-8 bg-surface-container rounded-xl border border-outline-variant">
               <h3 className="text-2xl font-bold mb-4">{t.noMatchTitle}</h3>
               <p className="text-lg mb-6">{t.noMatchDesc}</p>
@@ -1577,9 +1590,32 @@ const ResultsPage = ({ lang }) => {
                 </button>
               </div>
             </div>
-          ) : (
+          )}
+          {isEligible && matchedSchemes.length > 0 && (
             matchedSchemes.map((rawS, idx) => {
               const s = getLocalizedScheme(rawS, lang);
+              const applicationAction = s.online_application_available ? (
+                <a
+                  href={s.official_application_portal}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-ghost flex-1 py-2.5 bg-green-50 hover:bg-green-100 text-green-800 border border-green-200 text-center font-bold"
+                >
+                  {t.applyOnlineBtn}
+                </a>
+              ) : (
+                <button
+                  onClick={() =>
+                    navigate("/partners", {
+                      state: { topSchemeId: s.id },
+                    })
+                  }
+                  className="btn-ghost flex-1 py-2.5 bg-surface-container hover:bg-surface-container-high border border-outline-variant font-bold"
+                >
+                  <MapPin size={16} className="mr-2 inline" />{" "}
+                  {t.findPartnerBtn}
+                </button>
+              );
               return (
                 <div
                   key={rawS.id}
@@ -1673,28 +1709,7 @@ const ResultsPage = ({ lang }) => {
                         >
                           <FileText size={16} /> {t.dossierBtn}
                         </button>
-                        {s.online_application_available ? (
-                          <a
-                            href={s.official_application_portal}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="btn-ghost flex-1 py-2.5 bg-green-50 hover:bg-green-100 text-green-800 border border-green-200 text-center font-bold"
-                          >
-                            {t.applyOnlineBtn}
-                          </a>
-                        ) : (
-                          <button
-                            onClick={() =>
-                              navigate("/partners", {
-                                state: { topSchemeId: s.id },
-                              })
-                            }
-                            className="btn-ghost flex-1 py-2.5 bg-surface-container hover:bg-surface-container-high border border-outline-variant font-bold"
-                          >
-                            <MapPin size={16} className="mr-2 inline" />{" "}
-                            {t.findPartnerBtn}
-                          </button>
-                        )}
+                        {applicationAction}
                       </>
                     ) : (
                       <div className="flex items-center justify-between w-full">
@@ -2181,54 +2196,60 @@ const PartnersPage = ({ lang }) => {
               {t.eligiblePartnersNear}
             </h3>
 
-            {filteredPartners.map((p) => (
-              <div
-                key={p.id}
-                className="p-4 rounded-xl border border-surface-container bg-surface shadow-sm hover:border-outline-variant transition-colors"
-              >
-                <div className="flex justify-between items-start mb-1">
-                  <h4 className="font-bold text-on-surface text-lg">
-                    {p.name}
-                  </h4>
-                  <span className="bg-surface-container px-2 py-0.5 rounded text-xs font-medium text-on-surface-variant flex items-center gap-1">
-                    <MapPin size={10} /> {p.dist}
-                  </span>
-                </div>
-                <p className="text-sm text-on-surface-variant mb-3">{p.type}</p>
-
-                <div className="mb-4">
-                  <span
-                    className={`inline-flex items-center text-xs font-bold px-2 py-1 rounded-md ${p.eligible ? "bg-secondary-fixed text-secondary" : "bg-surface-container-high text-on-surface-variant"}`}
-                  >
-                    {p.eligible ? (
-                      <ShieldCheck size={12} className="mr-1" />
-                    ) : null}
-                    {p.badge}
-                  </span>
-                </div>
-
-                <div className="flex gap-3">
-                  <button
-                    onClick={() =>
-                      alert(
-                        t.offlineApplyAlert(p.name),
-                      )
-                    }
-                    className="btn-primary flex-1 py-2 text-sm text-center"
-                  >
-                    {t.offlineApplicationBtn}
-                  </button>
-                  <a
-                    href={`https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn-ghost flex-1 py-2 text-sm border border-outline-variant hover:bg-surface-container text-center flex items-center justify-center no-underline"
-                  >
-                    {t.getDirections}
-                  </a>
-                </div>
+            {filteredPartners.length === 0 ? (
+              <div className="p-6 text-center text-on-surface-variant bg-surface rounded-xl border border-dashed border-outline-variant my-4">
+                <p className="text-sm font-medium">{t.noPartnersFound}</p>
               </div>
-            ))}
+            ) : (
+              filteredPartners.map((p) => (
+                <div
+                  key={p.id}
+                  className="p-4 rounded-xl border border-surface-container bg-surface shadow-sm hover:border-outline-variant transition-colors"
+                >
+                  <div className="flex justify-between items-start mb-1">
+                    <h4 className="font-bold text-on-surface text-lg">
+                      {p.name}
+                    </h4>
+                    <span className="bg-surface-container px-2 py-0.5 rounded text-xs font-medium text-on-surface-variant flex items-center gap-1">
+                      <MapPin size={10} /> {p.dist}
+                    </span>
+                  </div>
+                  <p className="text-sm text-on-surface-variant mb-3">{p.type}</p>
+
+                  <div className="mb-4">
+                    <span
+                      className={`inline-flex items-center text-xs font-bold px-2 py-1 rounded-md ${p.eligible ? "bg-secondary-fixed text-secondary" : "bg-surface-container-high text-on-surface-variant"}`}
+                    >
+                      {p.eligible ? (
+                        <ShieldCheck size={12} className="mr-1" />
+                      ) : null}
+                      {p.badge}
+                    </span>
+                  </div>
+
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() =>
+                        alert(
+                          t.offlineApplyAlert(p.name),
+                        )
+                      }
+                      className="btn-primary flex-1 py-2 text-sm text-center"
+                    >
+                      {t.offlineApplicationBtn}
+                    </button>
+                    <a
+                      href={`https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-ghost flex-1 py-2 text-sm border border-outline-variant hover:bg-surface-container text-center flex items-center justify-center no-underline"
+                    >
+                      {t.getDirections}
+                    </a>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
 
@@ -2242,15 +2263,15 @@ const PartnersPage = ({ lang }) => {
               />
               <input
                 type="text"
-                placeholder={
-                  t.searchByLocOrName
-                }
+                aria-label={t.searchByLocOrName}
+                placeholder={t.searchByLocOrName}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-2.5 bg-surface rounded-lg border-none focus:ring-2 focus:ring-secondary text-sm font-medium"
               />
             </div>
             <select
+              aria-label={t.bankAll}
               value={partnerType}
               onChange={(e) => setPartnerType(e.target.value)}
               className="bg-surface px-4 py-2.5 rounded-lg shadow-md text-sm font-bold text-on-surface-variant flex items-center border-none focus:outline-none focus:ring-2 focus:ring-secondary cursor-pointer"
@@ -2408,30 +2429,36 @@ const ContactPage = ({ lang }) => {
             }}
           >
             <div>
-              <label className="block label-md text-on-surface mb-1">
+              <label htmlFor="contact-form-name" className="block label-md text-on-surface mb-1">
                 {t.formName}
               </label>
               <input
+                id="contact-form-name"
+                name="name"
                 type="text"
                 required
                 className="w-full p-3 rounded-lg border border-outline-variant bg-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none"
               />
             </div>
             <div>
-              <label className="block label-md text-on-surface mb-1">
+              <label htmlFor="contact-form-email" className="block label-md text-on-surface mb-1">
                 {t.formEmail}
               </label>
               <input
+                id="contact-form-email"
+                name="email"
                 type="email"
                 required
                 className="w-full p-3 rounded-lg border border-outline-variant bg-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none"
               />
             </div>
             <div>
-              <label className="block label-md text-on-surface mb-1">
+              <label htmlFor="contact-form-message" className="block label-md text-on-surface mb-1">
                 {t.formMessage}
               </label>
               <textarea
+                id="contact-form-message"
+                name="message"
                 required
                 rows="4"
                 className="w-full p-3 rounded-lg border border-outline-variant bg-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none"
@@ -2612,11 +2639,10 @@ const AIChatbot = ({ lang }) => {
           >
             <input
               type="text"
+              aria-label={t.botPlaceholder}
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder={
-                t.botPlaceholder
-              }
+              placeholder={t.botPlaceholder}
               className="flex-grow bg-surface-container-lowest border border-outline-variant rounded-full px-4 py-2 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
             />
             <VoiceInputButton
@@ -2629,6 +2655,7 @@ const AIChatbot = ({ lang }) => {
             />
             <button
               type="submit"
+              aria-label="Send message"
               disabled={isLoading || !input.trim()}
               className="w-10 h-10 shrink-0 rounded-full bg-primary text-on-primary flex items-center justify-center disabled:opacity-50 hover:bg-primary/90 transition-colors cursor-pointer"
             >
