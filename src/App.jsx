@@ -214,6 +214,65 @@ const translations = {
     bankPublic: "Public Sector",
     bankPrivate: "Private Sector",
     bankRural: "Rural Banks",
+    numberingSystem: "latn",
+    months: "Months",
+    stateAssam: "Assam",
+    stateDelhi: "Delhi",
+    stateMaharashtra: "Maharashtra",
+    partnerLocatorTitle: "Partner Locator",
+    partnerLocatorSub: "Find authorized financial institutions near you.",
+    eligibleForScheme: "Eligible for my scheme",
+    showOnlyEligible: "Show only eligible for my scheme",
+    eligiblePartnersNear: "ELIGIBLE PARTNERS FOUND NEAR YOU",
+    offlineApplyAlert: (name) => `Please visit ${name} branch with your KYC, SC Certificate, and Business Plan to apply offline.`,
+    offlineApplicationBtn: "Offline Application",
+    getDirections: "Get Directions",
+    searchByLocOrName: "Search by Location or Name",
+    youAreHere: "📍 You are here!",
+    acceptingApps: "✅ Accepting Applications",
+    generalLoansOnly: "❌ General Loans Only",
+    aboutTitle: "About SchemeSetu",
+    aboutDesc1: "SchemeSetu is an innovative AI-driven platform designed to bridge the gap between marginalized entrepreneurs and government financial schemes.",
+    aboutDesc2: "Under the Ministry of Social Justice and Empowerment (MoSJE), we simplify the discovery and application process for loans, grants, and micro-credit options, particularly for SC communities.",
+    ourMissionTitle: "Our Mission",
+    ourMissionDesc: "To empower communities by ensuring accessible, transparent, and efficient financial assistance through smart automation and personalized recommendations.",
+    aboutDisclaimer: "Disclaimer: This platform is a prototype built for the Smart India Hackathon. It is not an officially deployed or maintained government service, and data provided is for demonstration purposes.",
+    reachOutTitle: "Reach Out to Us",
+    contactInfoTitle: "Contact Information",
+    refOfficeTitle: "Reference Office",
+    refOfficeNote: "(This is the public MoSJE address, not SchemeSetu's office)",
+    navContact: "Contact",
+    contactEmail: "Email: (coming soon)",
+    contactSihProto: "SchemeSetu is a Smart India Hackathon prototype project",
+    sendUsMessage: "Send us a message",
+    messageSentAlert: "Message Sent!",
+    formName: "Name",
+    formEmail: "Email",
+    formMessage: "Message",
+    formSubmit: "Submit",
+    botGreeting: "Hello! I am SchemeSetu AI. How can I help you understand government financial schemes today?",
+    botError: "Sorry, I am having trouble connecting right now. Please ensure the API key is configured in your .env file.",
+    botPlaceholder: "Ask or speak a question...",
+    privacyTitle: "Privacy Notice",
+    privacyIntro: "SchemeSetu is a Smart India Hackathon (SIH) prototype. This notice describes how your information is used.",
+    privacyCollectTitle: "What We Collect",
+    privacyCollect1: "Scheme matching questionnaire: age, gender, state, income, caste status, education, skill level",
+    privacyCollect2: "AI Business Analyzer: your business description text",
+    privacyCollect3: "AI Chatbot: chat messages",
+    privacyStorageTitle: "Data Storage",
+    privacyStorageDesc: "This prototype has no persistent data storage. Server functions use ephemeral memory that clears after each session. No cookies or tracking are used.",
+    privacyThirdTitle: "Third-Party Services",
+    privacyThird1: "Google Gemini API: used for business idea AI analysis and chatbot. Text you enter is sent to Google for processing.",
+    privacyThird2: "OpenStreetMap: for loading map tiles on the partner locator.",
+    privacyThird3: "Google Fonts: for loading the Inter typeface.",
+    navHome: "Home",
+    navAbout: "About",
+    footerTagline: "AI-driven government scheme matching for SC/OBC/Safai Karamchari entrepreneurs.",
+    footerLinks: "Links",
+    footerInfo: "Info",
+    footerMinistry: "Ministry",
+    footerMosje: "Ministry of Social Justice & Empowerment (MoSJE)",
+    footerDisclaimer: "This is a competition project, not an official government service.",
     navAdmin: "MoSJE Portal",
   },
   hi: {
@@ -373,6 +432,65 @@ const translations = {
     bankPublic: "सार्वजनिक क्षेत्र",
     bankPrivate: "निजी क्षेत्र",
     bankRural: "ग्रामीण बैंक",
+    numberingSystem: "deva",
+    months: "महीने",
+    stateAssam: "असम",
+    stateDelhi: "दिल्ली",
+    stateMaharashtra: "महाराष्ट्र",
+    partnerLocatorTitle: "पार्टनर लोकेटर",
+    partnerLocatorSub: "अपने आस-पास अधिकृत वित्तीय संस्थान खोजें।",
+    eligibleForScheme: "मेरी योजना के लिए योग्य",
+    showOnlyEligible: "केवल मेरी योजना के लिए योग्य दिखाएं",
+    eligiblePartnersNear: "योग्य पार्टनर आस-पास मिले",
+    offlineApplyAlert: () => "कृपया अपनी केवाईसी, जाति प्रमाण पत्र और व्यवसाय योजना के साथ इस शाखा पर जाएं।",
+    offlineApplicationBtn: "ऑफ़लाइन आवेदन",
+    getDirections: "दिशा-निर्देश",
+    searchByLocOrName: "स्थान या नाम से खोजें",
+    youAreHere: "📍 आप यहाँ हैं!",
+    acceptingApps: "✅ आवेदन स्वीकार कर रहे हैं",
+    generalLoansOnly: "❌ केवल सामान्य ऋण",
+    aboutTitle: "हमारे बारे में",
+    aboutDesc1: "SchemeSetu एक अभिनव AI-संचालित मंच है जिसे हाशिए पर रहने वाले उद्यमियों और सरकारी वित्तीय योजनाओं के बीच की खाई को पाटने के लिए डिज़ाइन किया गया है।",
+    aboutDesc2: "सामाजिक न्याय और अधिकारिता मंत्रालय (MoSJE) के तहत, हम ऋण, अनुदान और माइक्रो-क्रेडिट विकल्पों की खोज और आवेदन प्रक्रिया को सरल बनाते हैं, विशेष रूप से एससी समुदायों के लिए।",
+    ourMissionTitle: "हमारा मिशन",
+    ourMissionDesc: "स्मार्ट ऑटोमेशन के माध्यम से सुलभ वित्तीय सहायता सुनिश्चित करना।",
+    aboutDisclaimer: "डिस्क्लेमर: यह एक SIH प्रोटोटाइप परियोजना है और इसे एक आधिकारिक सरकारी सेवा के रूप में उपयोग नहीं किया जाना चाहिए।",
+    reachOutTitle: "हमसे संपर्क करें",
+    contactInfoTitle: "संपर्क जानकारी",
+    refOfficeTitle: "संदर्भ कार्यालय",
+    refOfficeNote: "(यह MoSJE का सार्वजनिक पता है, SchemeSetu का नहीं)",
+    navContact: "संपर्क करें",
+    contactEmail: "ईमेल: (जल्द ही उपलब्ध)",
+    contactSihProto: "SchemeSetu एक SIH प्रोटोटाइप परियोजना है",
+    sendUsMessage: "हमें एक संदेश भेजें",
+    messageSentAlert: "संदेश भेजा गया!",
+    formName: "नाम",
+    formEmail: "ईमेल",
+    formMessage: "संदेश",
+    formSubmit: "सबमिट करें",
+    botGreeting: "नमस्ते! मैं SchemeSetu AI हूँ। मैं आपको सरकारी योजनाओं को समझने में कैसे मदद कर सकता हूँ?",
+    botError: "क्षमा करें, मुझे इस समय आपसे जुड़ने में परेशानी हो रही है। कृपया सुनिश्चित करें कि API कुंजी कॉन्फ़िगर की गई है।",
+    botPlaceholder: "प्रश्न पूछें या माइक दबाएं...",
+    privacyTitle: "गोपनीयता सूचना",
+    privacyIntro: "SchemeSetu एक स्मार्ट इंडिया हैकाथॉन (SIH) प्रोटोटाइप है। यह सूचना बताती है कि हम आपकी जानकारी का उपयोग कैसे करते हैं।",
+    privacyCollectTitle: "हम क्या एकत्र करते हैं",
+    privacyCollect1: "योजना मिलान प्रश्नावली: आयु, लिंग, राज्य, आय, जाति स्थिति, शिक्षा, कौशल स्तर",
+    privacyCollect2: "AI व्यापार विश्लेषक: आपका व्यापार विवरण पाठ",
+    privacyCollect3: "AI चैटबॉट: चैट संदेश",
+    privacyStorageTitle: "डेटा भंडारण",
+    privacyStorageDesc: "इस प्रोटोटाइप में कोई स्थायी डेटा संग्रहण नहीं है। सर्वर फ़ंक्शन अस्थायी मेमोरी का उपयोग करते हैं जो प्रत्येक सत्र के बाद साफ़ हो जाती है। कोई कुकीज़ या ट्रैकिंग का उपयोग नहीं किया जाता है।",
+    privacyThirdTitle: "तृतीय-पक्ष सेवाएँ",
+    privacyThird1: "Google Gemini API: व्यापार विचार AI विश्लेषण और चैटबॉट के लिए उपयोग किया जाता है। आपके द्वारा दर्ज किया गया पाठ Google को भेजा जाता है।",
+    privacyThird2: "OpenStreetMap: मानचित्र टाइल्स लोड करने के लिए।",
+    privacyThird3: "Google Fonts: Inter फ़ॉन्ट लोड करने के लिए।",
+    navHome: "होम",
+    navAbout: "हमारे बारे में",
+    footerTagline: "एससी/ओबीसी/सफाई कर्मचारी उद्यमियों के लिए AI-संचालित सरकारी योजना मिलान।",
+    footerLinks: "लिंक",
+    footerInfo: "जानकारी",
+    footerMinistry: "मंत्रालय",
+    footerMosje: "सामाजिक न्याय और अधिकारिता मंत्रालय (MoSJE)",
+    footerDisclaimer: "यह एक प्रतियोगिता परियोजना है, आधिकारिक सरकारी सेवा नहीं।",
     navAdmin: "नोडल पोर्टल",
   },
   as: {
@@ -532,6 +650,65 @@ const translations = {
     bankPublic: "ৰাজহুৱা খণ্ড",
     bankPrivate: "ব্যক্তিগত খণ্ড",
     bankRural: "গ্ৰাম্য বেংক",
+    numberingSystem: "beng",
+    months: "মাহ",
+    stateAssam: "অসম",
+    stateDelhi: "দিল্লী",
+    stateMaharashtra: "মহাৰাষ্ট্ৰ",
+    partnerLocatorTitle: "অংশীদাৰ লোকেটৰ",
+    partnerLocatorSub: "আপোনাৰ ওচৰৰ কৰ্তৃত্বপ্ৰাপ্ত বিত্তীয় প্ৰতিষ্ঠানসমূহ বিচাৰক।",
+    eligibleForScheme: "মোৰ আঁচনিৰ বাবে যোগ্য",
+    showOnlyEligible: "কেৱল মোৰ আঁচনিৰ বাবে যোগ্য দেখুৱাওক",
+    eligiblePartnersNear: "ওচৰত পোৱা যোগ্য অংশীদাৰ",
+    offlineApplyAlert: () => "অনুগ্ৰহ কৰি আপোনাৰ কেৱাইচি, জাতিগত প্ৰমাণপত্ৰ আৰু ব্যৱসায়িক পৰিকল্পনাৰ সৈতে এই শাখাত উপস্থিত হওক।",
+    offlineApplicationBtn: "অফলাইন আৱেদন",
+    getDirections: "নিৰ্দেশনা",
+    searchByLocOrName: "স্থান বা নামৰ দ্বাৰা বিচাৰক",
+    youAreHere: "📍 আপুনি ইয়াতে আছে!",
+    acceptingApps: "✅ আবেদন গ্ৰহণ কৰি আছে",
+    generalLoansOnly: "❌ কেৱল সাধাৰণ ঋণ",
+    aboutTitle: "আমাৰ বিষয়ে",
+    aboutDesc1: "SchemeSetu হৈছে এক উদ্ভাৱনীমূলক AI-চালিত মঞ্চ যিটো প্ৰান্তীয় উদ্যোগী আৰু চৰকাৰী বিত্তীয় আঁচনিসমূহৰ মাজৰ ব্যৱধান দূৰ কৰিবলৈ নিৰ্মাণ কৰা হৈছে।",
+    aboutDesc2: "সামাজিক ন্যায় আৰু সৱলীকৰণ মন্ত্ৰালয় (MoSJE) ৰ অধীনত, আমি বিশেষকৈ অনুসূচিত জাতিৰ সম্প্ৰদায়সমূহৰ বাবে ঋণ, অনুদান আৰু মাইক্ৰ'-ক্ৰেডিট বিকল্পসমূহৰ সন্ধান আৰু আবেদন প্ৰক্ৰিয়া সৰল কৰোঁ।",
+    ourMissionTitle: "আমাৰ মিছন",
+    ourMissionDesc: "স্মাৰ্ট অট'মেচনৰ জৰিয়তে সুলভ বিত্তীয় সাহায্য নিশ্চিত কৰা।",
+    aboutDisclaimer: "অস্বীকাৰ: এইটো এটা SIH প্ৰ'ট'টাইপ প্ৰকল্প আৰু ইয়াক চৰকাৰী সেৱা হিচাপে ব্যৱহাৰ কৰিব নালাগে।",
+    reachOutTitle: "আমাৰ সৈতে যোগাযোগ কৰক",
+    contactInfoTitle: "যোগাযোগৰ তথ্য",
+    refOfficeTitle: "সন্দৰ্ভ কাৰ্যালয়",
+    refOfficeNote: "(এইটো MoSJE ৰ ৰাজহুৱা ঠিকনা, SchemeSetu ৰ নহয়)",
+    navContact: "যোগাযোগ",
+    contactEmail: "ইমেইল: (সোনকালে উপলব্ধ)",
+    contactSihProto: "SchemeSetu এটা SIH প্ৰ'ট'টাইপ প্ৰকল্প",
+    sendUsMessage: "আমালৈ বাৰ্তা প্ৰেৰণ কৰক",
+    messageSentAlert: "বাৰ্তা প্ৰেৰণ কৰা হ'ল!",
+    formName: "নাম",
+    formEmail: "ইমেইল",
+    formMessage: "বাৰ্তা",
+    formSubmit: "জমা দিয়ক",
+    botGreeting: "নমস্কাৰ! মই SchemeSetu AI। মই আপোনাক চৰকাৰী আঁচনিসমূহ বুজাত কেনেকৈ সহায় কৰিব পাৰোঁ?",
+    botError: "ক্ষমা কৰিব, এই মুহূৰ্তত আপোনাৰ সৈতে সংযোগ স্থাপন কৰাত মোৰ অসুবিধা হৈছে। অনুগ্ৰহ কৰি নিশ্চিত কৰক যে API চাবিটো কনফিগাৰ কৰা হৈছে।",
+    botPlaceholder: "প্ৰশ্ন সোধক বা মাইক ব্যৱহাৰ কৰক...",
+    privacyTitle: "গোপনীয়তা জাননী",
+    privacyIntro: "SchemeSetu এটা স্মাৰ্ট ইণ্ডিয়া হেকাথন (SIH) প্ৰ'ট'টাইপ। এই জাননীয়ে আপোনাৰ তথ্য কেনেদৰে ব্যৱহাৰ কৰা হয় সেয়া বৰ্ণনা কৰে।",
+    privacyCollectTitle: "আমি কি সংগ্ৰহ কৰোঁ",
+    privacyCollect1: "আঁচনি মিলান প্ৰশ্নাৱলী: বয়স, লিংগ, ৰাজ্য, আয়, জাতি স্থিতি, শিক্ষা, দক্ষতাৰ স্তৰ",
+    privacyCollect2: "AI ব্যৱসায়িক বিশ্লেষক: আপোনাৰ ব্যৱসায়িক বিৱৰণ পাঠ",
+    privacyCollect3: "AI চেটবট: চেট বাৰ্তা",
+    privacyStorageTitle: "তথ্য সংৰক্ষণ",
+    privacyStorageDesc: "এই প্ৰ'ট'টাইপত কোনো স্থায়ী তথ্য সংৰক্ষণ নাই। চাৰ্ভাৰ ফাংচনে ক্ষণস্থায়ী মেম'ৰি ব্যৱহাৰ কৰে যিটো প্ৰতিটো অধিৱেশনৰ পিছত পৰিষ্কাৰ হয়। কোনো কুকিজ বা ট্ৰেকিং ব্যৱহাৰ কৰা নহয়।",
+    privacyThirdTitle: "তৃতীয়-পক্ষৰ সেৱা",
+    privacyThird1: "Google Gemini API: ব্যৱসায়িক ধাৰণা AI বিশ্লেষণ আৰু চেটবটৰ বাবে ব্যৱহাৰ কৰা হয়। আপুনি প্ৰৱেশ কৰোৱা পাঠ Google লৈ পঠিওৱা হয়।",
+    privacyThird2: "OpenStreetMap: মানচিত্ৰৰ টাইলছ ল'ড কৰিবলৈ।",
+    privacyThird3: "Google Fonts: Inter ফণ্ট ল'ড কৰিবলৈ।",
+    navHome: "হোম",
+    navAbout: "আমাৰ বিষয়ে",
+    footerTagline: "SC/OBC/চাফাই কৰ্মচাৰী উদ্যোগীসকলৰ বাবে AI-চালিত চৰকাৰী আঁচনি মিলান।",
+    footerLinks: "লিংক",
+    footerInfo: "তথ্য",
+    footerMinistry: "মন্ত্ৰালয়",
+    footerMosje: "সামাজিক ন্যায় আৰু সৱলীকৰণ মন্ত্ৰালয় (MoSJE)",
+    footerDisclaimer: "এইটো এটা প্ৰতিযোগিতা প্ৰকল্প, চৰকাৰী সেৱা নহয়।",
     navAdmin: "ন'ডেল প'ৰ্টেল",
   },
 };
@@ -723,7 +900,7 @@ const CalculatorPage = ({ lang }) => {
       style: "currency",
       currency: "INR",
       maximumFractionDigits: 0,
-      numberingSystem: lang === "hi" ? "deva" : lang === "as" ? "beng" : "latn",
+      numberingSystem: t.numberingSystem,
     }).format(amount);
 
   return (
@@ -773,8 +950,7 @@ const CalculatorPage = ({ lang }) => {
               <label className="label-md text-on-surface">{t.tenure}</label>
               <span className="font-bold text-primary bg-surface-container px-3 py-1 rounded-md">
                 {tenureYears}{" "}
-                {t.years ||
-                  (lang === "hi" ? "वर्ष" : lang === "as" ? "বছৰ" : "Yrs")}
+                {t.years}
               </span>
             </div>
             <input
@@ -792,7 +968,7 @@ const CalculatorPage = ({ lang }) => {
               <label className="label-md text-on-surface">{t.moratorium}</label>
               <span className="font-bold text-primary bg-surface-container px-3 py-1 rounded-md">
                 {moratorium}{" "}
-                {lang === "hi" ? "महीने" : lang === "as" ? "মাহ" : "Months"}
+                {t.months}
               </span>
             </div>
             <input
@@ -1078,25 +1254,13 @@ const FindScheme = ({ lang }) => {
                       className="form-input w-full p-4 text-on-surface mb-8 bg-surface-container-lowest shadow-sm"
                     >
                       <option value="Assam">
-                        {lang === "hi"
-                          ? "असम"
-                          : lang === "as"
-                            ? "অসম"
-                            : "Assam"}
+                        {t.stateAssam}
                       </option>
                       <option value="Delhi">
-                        {lang === "hi"
-                          ? "दिल्ली"
-                          : lang === "as"
-                            ? "দিল্লী"
-                            : "Delhi"}
+                        {t.stateDelhi}
                       </option>
                       <option value="Maharashtra">
-                        {lang === "hi"
-                          ? "महाराष्ट्र"
-                          : lang === "as"
-                            ? "মহাৰাষ্ট্ৰ"
-                            : "Maharashtra"}
+                        {t.stateMaharashtra}
                       </option>
                     </select>
 
@@ -1128,12 +1292,7 @@ const FindScheme = ({ lang }) => {
                     <div className="mb-4 text-center display-lg text-primary">
                       ₹{" "}
                       {new Intl.NumberFormat(lang + "-IN", {
-                        numberingSystem:
-                          lang === "hi"
-                            ? "deva"
-                            : lang === "as"
-                              ? "beng"
-                              : "latn",
+                        numberingSystem: t.numberingSystem,
                       }).format(formData.amount)}
                     </div>
                     <input
@@ -1159,12 +1318,7 @@ const FindScheme = ({ lang }) => {
                     <div className="mb-4 text-center display-lg text-primary">
                       ₹{" "}
                       {new Intl.NumberFormat(lang + "-IN", {
-                        numberingSystem:
-                          lang === "hi"
-                            ? "deva"
-                            : lang === "as"
-                              ? "beng"
-                              : "latn",
+                        numberingSystem: t.numberingSystem,
                       }).format(formData.income)}
                     </div>
                     <input
@@ -1428,7 +1582,7 @@ const ResultsPage = ({ lang }) => {
               const s = getLocalizedScheme(rawS, lang);
               return (
                 <div
-                  key={idx}
+                  key={rawS.id}
                   className={`card-ambient border bg-surface-container-lowest ${idx === 0 ? "border-secondary shadow-md" : "border-surface-container"}`}
                 >
                   <div className="flex justify-between items-start mb-4">
@@ -1840,9 +1994,9 @@ const SchemeDetails = ({ lang }) => {
                 {t.eligibilityCriteria}
               </h3>
               <ul className="space-y-3">
-                {scheme.eligibility.map((item, i) => (
+                {scheme.eligibility.map((item) => (
                   <li
-                    key={i}
+                    key={item}
                     className="flex items-start gap-3 text-on-surface"
                   >
                     <div className="w-2 h-2 rounded-full bg-secondary mt-2 shrink-0"></div>
@@ -1857,9 +2011,9 @@ const SchemeDetails = ({ lang }) => {
                 <Landmark className="text-secondary" /> {t.keyBenefits}
               </h3>
               <ul className="space-y-3">
-                {scheme.benefits.map((item, i) => (
+                {scheme.benefits.map((item) => (
                   <li
-                    key={i}
+                    key={item}
                     className="flex items-start gap-3 text-on-surface"
                   >
                     <div className="w-2 h-2 rounded-full bg-secondary mt-2 shrink-0"></div>
@@ -1988,18 +2142,10 @@ const PartnersPage = ({ lang }) => {
       <div className="mb-6 flex justify-between items-end">
         <div>
           <h2 className="headline-lg text-primary">
-            {lang === "hi"
-              ? "पार्टनर लोकेटर"
-              : lang === "as"
-                ? "অংশীদাৰ লোকেটৰ"
-                : "Partner Locator"}
+            {t.partnerLocatorTitle}
           </h2>
           <p className="body-lg text-on-surface-variant mt-1">
-            {lang === "hi"
-              ? "अपने आस-पास अधिकृत वित्तीय संस्थान खोजें।"
-              : lang === "as"
-                ? "আপোনাৰ ওচৰৰ কৰ্তৃত্বপ্ৰাপ্ত বিত্তীয় প্ৰতিষ্ঠানসমূহ বিচাৰক।"
-                : "Find authorized financial institutions near you."}
+            {t.partnerLocatorSub}
           </p>
         </div>
       </div>
@@ -2011,21 +2157,13 @@ const PartnersPage = ({ lang }) => {
             <div className="flex justify-between items-center">
               <span className="font-semibold text-on-surface text-sm flex items-center gap-2">
                 <ShieldCheck size={16} className="text-secondary" />{" "}
-                {lang === "hi"
-                  ? "मेरी योजना के लिए योग्य"
-                  : lang === "as"
-                    ? "মোৰ আঁচনিৰ বাবে যোগ্য"
-                    : "Eligible for my scheme"}
+                {t.eligibleForScheme}
               </span>
               <button
                 role="switch"
                 aria-checked={eligibleOnly}
                 aria-label={
-                  lang === "hi"
-                    ? "केवल मेरी योजना के लिए योग्य दिखाएं"
-                    : lang === "as"
-                      ? "কেৱল মোৰ আঁচনিৰ বাবে যোগ্য দেখুৱাওক"
-                      : "Show only eligible for my scheme"
+                  t.showOnlyEligible
                 }
                 onClick={() => setEligibleOnly(!eligibleOnly)}
                 className={`w-12 h-6 rounded-full transition-colors relative flex items-center ${eligibleOnly ? "bg-secondary" : "bg-surface-container-high"}`}
@@ -2040,11 +2178,7 @@ const PartnersPage = ({ lang }) => {
           <div className="overflow-y-auto flex-grow p-4 space-y-4 bg-surface-container-lowest/50">
             <h3 className="text-xs font-bold text-on-surface-variant tracking-wider uppercase mb-2">
               {filteredPartners.length}{" "}
-              {lang === "hi"
-                ? "योग्य पार्टनर आस-पास मिले"
-                : lang === "as"
-                  ? "ওচৰত পোৱা যোগ্য অংশীদাৰ"
-                  : "ELIGIBLE PARTNERS FOUND NEAR YOU"}
+              {t.eligiblePartnersNear}
             </h3>
 
             {filteredPartners.map((p) => (
@@ -2077,20 +2211,12 @@ const PartnersPage = ({ lang }) => {
                   <button
                     onClick={() =>
                       alert(
-                        lang === "hi"
-                          ? "कृपया अपनी केवाईसी, जाति प्रमाण पत्र और व्यवसाय योजना के साथ इस शाखा पर जाएं।"
-                          : lang === "as"
-                            ? "অনুগ্ৰহ কৰি আপোনাৰ কেৱাইচি, জাতিগত প্ৰমাণপত্ৰ আৰু ব্যৱসায়িক পৰিকল্পনাৰ সৈতে এই শাখাত উপস্থিত হওক।"
-                            : `Please visit ${p.name} branch with your KYC, SC Certificate, and Business Plan to apply offline.`,
+                        t.offlineApplyAlert(p.name),
                       )
                     }
                     className="btn-primary flex-1 py-2 text-sm text-center"
                   >
-                    {lang === "hi"
-                      ? "ऑफ़लाइन आवेदन"
-                      : lang === "as"
-                        ? "অফলাইন আৱেদন"
-                        : "Offline Application"}
+                    {t.offlineApplicationBtn}
                   </button>
                   <a
                     href={`https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}`}
@@ -2098,11 +2224,7 @@ const PartnersPage = ({ lang }) => {
                     rel="noopener noreferrer"
                     className="btn-ghost flex-1 py-2 text-sm border border-outline-variant hover:bg-surface-container text-center flex items-center justify-center no-underline"
                   >
-                    {lang === "hi"
-                      ? "दिशा-निर्देश"
-                      : lang === "as"
-                        ? "নিৰ্দেশনা"
-                        : "Get Directions"}
+                    {t.getDirections}
                   </a>
                 </div>
               </div>
@@ -2121,11 +2243,7 @@ const PartnersPage = ({ lang }) => {
               <input
                 type="text"
                 placeholder={
-                  lang === "hi"
-                    ? "स्थान या नाम से खोजें"
-                    : lang === "as"
-                      ? "স্থান বা নামৰ দ্বাৰা বিচাৰক"
-                      : "Search by Location or Name"
+                  t.searchByLocOrName
                 }
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -2160,11 +2278,7 @@ const PartnersPage = ({ lang }) => {
               <Marker position={userLoc}>
                 <Popup>
                   <strong>
-                    {lang === "hi"
-                      ? "📍 आप यहाँ हैं!"
-                      : lang === "as"
-                        ? "📍 আপুনি ইয়াতে আছে!"
-                        : "📍 You are here!"}
+                    {t.youAreHere}
                   </strong>
                 </Popup>
               </Marker>
@@ -2181,17 +2295,7 @@ const PartnersPage = ({ lang }) => {
                   </span>
                   <br />
                   <br />
-                  {p.eligible
-                    ? lang === "hi"
-                      ? "✅ आवेदन स्वीकार कर रहे हैं"
-                      : lang === "as"
-                        ? "✅ আবেদন গ্ৰহণ কৰি আছে"
-                        : "✅ Accepting Applications"
-                    : lang === "hi"
-                      ? "❌ केवल सामान्य ऋण"
-                      : lang === "as"
-                        ? "❌ কেৱল সাধাৰণ ঋণ"
-                        : "❌ General Loans Only"}
+                  {p.eligible ? t.acceptingApps : t.generalLoansOnly}
                 </Popup>
               </Marker>
             ))}
@@ -2204,44 +2308,25 @@ const PartnersPage = ({ lang }) => {
 
 // --- ABOUT PAGE ---
 const AboutPage = ({ lang }) => {
+  const t = translations[lang] || translations.en;
   return (
     <div className="max-w-4xl mx-auto py-12 px-4 animate-in fade-in duration-500">
       <h2 className="display-md text-primary mb-6 text-center">
-        {lang === "hi"
-          ? "हमारे बारे में"
-          : lang === "as"
-            ? "আমাৰ বিষয়ে"
-            : "About SchemeSetu"}
+        {t.aboutTitle}
       </h2>
       <div className="bg-surface-container-lowest p-8 rounded-2xl shadow-sm border border-surface-container space-y-6">
         <p className="body-lg text-on-surface">
-          {lang === "hi"
-            ? "SchemeSetu एक अभिनव AI-संचालित मंच है जिसे हाशिए पर रहने वाले उद्यमियों और सरकारी वित्तीय योजनाओं के बीच की खाई को पाटने के लिए डिज़ाइन किया गया है।"
-            : lang === "as"
-              ? "SchemeSetu হৈছে এক উদ্ভাৱনীমূলক AI-চালিত মঞ্চ যিটো প্ৰান্তীয় উদ্যোগী আৰু চৰকাৰী বিত্তীয় আঁচনিসমূহৰ মাজৰ ব্যৱধান দূৰ কৰিবলৈ নিৰ্মাণ কৰা হৈছে।"
-              : "SchemeSetu is an innovative AI-driven platform designed to bridge the gap between marginalized entrepreneurs and government financial schemes."}
+          {t.aboutDesc1}
         </p>
         <p className="body-lg text-on-surface">
-          {lang === "hi"
-            ? "सामाजिक न्याय और अधिकारिता मंत्रालय (MoSJE) के तहत, हम ऋण, अनुदान और माइक्रो-क्रेडिट विकल्पों की खोज और आवेदन प्रक्रिया को सरल बनाते हैं, विशेष रूप से एससी समुदायों के लिए।"
-            : lang === "as"
-              ? "সামাজিক ন্যায় আৰু সৱলীকৰণ মন্ত্ৰালয় (MoSJE) ৰ অধীনত, আমি বিশেষকৈ অনুসূচিত জাতিৰ সম্প্ৰদায়সমূহৰ বাবে ঋণ, অনুদান আৰু মাইক্ৰ'-ক্ৰেডিট বিকল্পসমূহৰ সন্ধান আৰু আবেদন প্ৰক্ৰিয়া সৰল কৰোঁ।"
-              : "Under the Ministry of Social Justice and Empowerment (MoSJE), we simplify the discovery and application process for loans, grants, and micro-credit options, particularly for SC communities."}
+          {t.aboutDesc2}
         </p>
         <div className="mt-8 pt-8 border-t border-surface-container">
           <h3 className="headline-sm text-secondary mb-4">
-            {lang === "hi"
-              ? "हमारा मिशन"
-              : lang === "as"
-                ? "আমাৰ মিছন"
-                : "Our Mission"}
+            {t.ourMissionTitle}
           </h3>
           <p className="body-md text-on-surface-variant mb-6">
-            {lang === "hi"
-              ? "स्मार्ट ऑटोमेशन के माध्यम से सुलभ वित्तीय सहायता सुनिश्चित करना।"
-              : lang === "as"
-                ? "স্মাৰ্ট অট'মেচনৰ জৰিয়তে সুলভ বিত্তীয় সাহায্য নিশ্চিত কৰা।"
-                : "To empower communities by ensuring accessible, transparent, and efficient financial assistance through smart automation and personalized recommendations."}
+            {t.ourMissionDesc}
           </p>
 
           <div className="bg-primary-container/20 border border-primary-container/30 p-4 rounded-lg">
@@ -2249,11 +2334,7 @@ const AboutPage = ({ lang }) => {
               Smart India Hackathon 2024
             </h4>
             <p className="text-sm text-on-surface-variant">
-              {lang === "hi"
-                ? "डिस्क्लेमर: यह एक SIH प्रोटोटाइप परियोजना है और इसे एक आधिकारिक सरकारी सेवा के रूप में उपयोग नहीं किया जाना चाहिए।"
-                : lang === "as"
-                  ? "অস্বীকাৰ: এইটো এটা SIH প্ৰ'ট'টাইপ প্ৰকল্প আৰু ইয়াক চৰকাৰী সেৱা হিচাপে ব্যৱহাৰ কৰিব নালাগে।"
-                  : "Disclaimer: This platform is a prototype built for the Smart India Hackathon. It is not an officially deployed or maintained government service, and data provided is for demonstration purposes."}
+              {t.aboutDisclaimer}
             </p>
           </div>
         </div>
@@ -2264,23 +2345,16 @@ const AboutPage = ({ lang }) => {
 
 // --- CONTACT PAGE ---
 const ContactPage = ({ lang }) => {
+  const t = translations[lang] || translations.en;
   return (
     <div className="max-w-4xl mx-auto py-12 px-4 animate-in fade-in duration-500">
       <h2 className="display-md text-primary mb-6 text-center">
-        {lang === "hi"
-          ? "हमसे संपर्क करें"
-          : lang === "as"
-            ? "আমাৰ সৈতে যোগাযোগ কৰক"
-            : "Reach Out to Us"}
+        {t.reachOutTitle}
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="bg-surface-container-lowest p-8 rounded-2xl shadow-sm border border-surface-container">
           <h3 className="headline-sm text-on-surface mb-6">
-            {lang === "hi"
-              ? "संपर्क जानकारी"
-              : lang === "as"
-                ? "যোগাযোগৰ তথ্য"
-                : "Contact Information"}
+            {t.contactInfoTitle}
           </h3>
           <div className="space-y-6">
             <div className="flex items-start gap-4">
@@ -2289,11 +2363,7 @@ const ContactPage = ({ lang }) => {
               </div>
               <div>
                 <h4 className="font-bold text-on-surface">
-                  {lang === "hi"
-                    ? "संदर्भ कार्यालय"
-                    : lang === "as"
-                      ? "সন্দৰ্ভ কাৰ্যালয়"
-                      : "Reference Office"}
+                  {t.refOfficeTitle}
                 </h4>
                 <p className="text-on-surface-variant mt-1">
                   Ministry of Social Justice & Empowerment
@@ -2301,11 +2371,7 @@ const ContactPage = ({ lang }) => {
                   Shastri Bhawan, New Delhi - 110001
                 </p>
                 <p className="text-xs text-on-surface-variant mt-1 italic">
-                  {lang === "hi"
-                    ? "(यह MoSJE का सार्वजनिक पता है, SchemeSetu का नहीं)"
-                    : lang === "as"
-                      ? "(এইটো MoSJE ৰ ৰাজহুৱা ঠিকনা, SchemeSetu ৰ নহয়)"
-                      : "(This is the public MoSJE address, not SchemeSetu's office)"}
+                  {t.refOfficeNote}
                 </p>
               </div>
             </div>
@@ -2315,25 +2381,13 @@ const ContactPage = ({ lang }) => {
               </div>
               <div>
                 <h4 className="font-bold text-on-surface">
-                  {lang === "hi"
-                    ? "संपर्क"
-                    : lang === "as"
-                      ? "যোগাযোগ"
-                      : "Contact"}
+                  {t.navContact}
                 </h4>
                 <p className="text-on-surface-variant mt-1">
-                  {lang === "hi"
-                    ? "ईमेल: (जल्द ही उपलब्ध)"
-                    : lang === "as"
-                      ? "ইমেইল: (সোনকালে উপলব্ধ)"
-                      : "Email: (coming soon)"}
+                  {t.contactEmail}
                 </p>
                 <p className="text-xs text-on-surface-variant mt-1 italic">
-                  {lang === "hi"
-                    ? "SchemeSetu एक SIH प्रोटोटाइप परियोजना है"
-                    : lang === "as"
-                      ? "SchemeSetu এটা SIH প্ৰ'ট'টাইপ প্ৰকল্প"
-                      : "SchemeSetu is a Smart India Hackathon prototype project"}
+                  {t.contactSihProto}
                 </p>
               </div>
             </div>
@@ -2342,28 +2396,20 @@ const ContactPage = ({ lang }) => {
 
         <div className="bg-surface-container-lowest p-8 rounded-2xl shadow-sm border border-surface-container">
           <h3 className="headline-sm text-on-surface mb-6">
-            {lang === "hi"
-              ? "हमें एक संदेश भेजें"
-              : lang === "as"
-                ? "আমালৈ বাৰ্তা প্ৰেৰণ কৰক"
-                : "Send us a message"}
+            {t.sendUsMessage}
           </h3>
           <form
             className="space-y-4"
             onSubmit={(e) => {
               e.preventDefault();
               alert(
-                lang === "hi"
-                  ? "संदेश भेजा गया!"
-                  : lang === "as"
-                    ? "বাৰ্তা প্ৰেৰণ কৰা হ'ল!"
-                    : "Message Sent!",
+                t.messageSentAlert,
               );
             }}
           >
             <div>
               <label className="block label-md text-on-surface mb-1">
-                {lang === "hi" ? "नाम" : lang === "as" ? "নাম" : "Name"}
+                {t.formName}
               </label>
               <input
                 type="text"
@@ -2373,7 +2419,7 @@ const ContactPage = ({ lang }) => {
             </div>
             <div>
               <label className="block label-md text-on-surface mb-1">
-                {lang === "hi" ? "ईमेल" : lang === "as" ? "ইমেইল" : "Email"}
+                {t.formEmail}
               </label>
               <input
                 type="email"
@@ -2383,7 +2429,7 @@ const ContactPage = ({ lang }) => {
             </div>
             <div>
               <label className="block label-md text-on-surface mb-1">
-                {lang === "hi" ? "संदेश" : lang === "as" ? "বাৰ্তা" : "Message"}
+                {t.formMessage}
               </label>
               <textarea
                 required
@@ -2392,11 +2438,7 @@ const ContactPage = ({ lang }) => {
               ></textarea>
             </div>
             <button type="submit" className="w-full btn-primary py-3">
-              {lang === "hi"
-                ? "सबमिट करें"
-                : lang === "as"
-                  ? "জমা দিয়ক"
-                  : "Submit"}
+              {t.formSubmit}
             </button>
           </form>
         </div>
@@ -2407,6 +2449,7 @@ const ContactPage = ({ lang }) => {
 
 // --- AI CHATBOT COMPONENT ---
 const AIChatbot = ({ lang }) => {
+  const t = translations[lang] || translations.en;
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -2426,18 +2469,14 @@ const AIChatbot = ({ lang }) => {
       setTimeout(() => {
         setMessages([
           {
+            id: "msg-initial",
             role: "model",
-            content:
-              lang === "hi"
-                ? "नमस्ते! मैं SchemeSetu AI हूँ। मैं आपको सरकारी योजनाओं को समझने में कैसे मदद कर सकता हूँ?"
-                : lang === "as"
-                  ? "নমস্কাৰ! মই SchemeSetu AI। মই আপোনাক চৰকাৰী আঁচনিসমূহ বুজাত কেনেকৈ সহায় কৰিব পাৰোঁ?"
-                  : "Hello! I am SchemeSetu AI. How can I help you understand government financial schemes today?",
+            content: t.botGreeting,
           },
         ]);
       }, 0);
     }
-  }, [isOpen, lang, messages.length]);
+  }, [isOpen, lang, messages.length, t.botGreeting]);
 
   const handleSend = async (e) => {
     e.preventDefault();
@@ -2445,7 +2484,10 @@ const AIChatbot = ({ lang }) => {
 
     const userMessage = input.trim();
     setInput("");
-    setMessages((prev) => [...prev, { role: "user", content: userMessage }]);
+    setMessages((prev) => [
+      ...prev,
+      { id: `msg-user-${Date.now()}`, role: "user", content: userMessage },
+    ]);
     setIsLoading(true);
 
     try {
@@ -2475,19 +2517,18 @@ const AIChatbot = ({ lang }) => {
       const result = await model.generateContent({ contents });
       const text = result.response.text();
 
-      setMessages((prev) => [...prev, { role: "model", content: text }]);
+      setMessages((prev) => [
+        ...prev,
+        { id: `msg-model-${Date.now()}`, role: "model", content: text },
+      ]);
     } catch (error) {
       console.error(error);
       setMessages((prev) => [
         ...prev,
         {
+          id: `msg-err-${Date.now()}`,
           role: "model",
-          content:
-            lang === "hi"
-              ? "क्षमा करें, मुझे इस समय आपसे जुड़ने में परेशानी हो रही है। कृपया सुनिश्चित करें कि API कुंजी कॉन्फ़िगर की गई है।"
-              : lang === "as"
-                ? "ক্ষমা কৰিব, এই মুহূৰ্তত আপোনাৰ সৈতে সংযোগ স্থাপন কৰাত মোৰ অসুবিধা হৈছে। অনুগ্ৰহ কৰি নিশ্চিত কৰক যে API চাবিটো কনফিগাৰ কৰা হৈছে।"
-                : "Sorry, I am having trouble connecting right now. Please ensure the API key is configured in your .env file.",
+          content: t.botError,
         },
       ]);
     } finally {
@@ -2522,9 +2563,9 @@ const AIChatbot = ({ lang }) => {
           </div>
 
           <div className="flex-grow p-4 overflow-y-auto bg-surface-container-lowest space-y-4">
-            {messages.map((m, i) => (
+            {messages.map((m) => (
               <div
-                key={i}
+                key={m.id}
                 className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
               >
                 <div
@@ -2574,11 +2615,7 @@ const AIChatbot = ({ lang }) => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder={
-                lang === "hi"
-                  ? "प्रश्न पूछें या माइक दबाएं..."
-                  : lang === "as"
-                    ? "প্ৰশ্ন সোধক বা মাইক ব্যৱহাৰ কৰক..."
-                    : "Ask or speak a question..."
+                t.botPlaceholder
               }
               className="flex-grow bg-surface-container-lowest border border-outline-variant rounded-full px-4 py-2 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
             />
@@ -2606,100 +2643,53 @@ const AIChatbot = ({ lang }) => {
 
 // --- PRIVACY NOTICE PAGE ---
 const PrivacyPage = ({ lang }) => {
+  const t = translations[lang] || translations.en;
   return (
     <div className="max-w-4xl mx-auto py-12 px-4 animate-in fade-in duration-500">
       <h2 className="display-md text-primary mb-6">
-        {lang === "hi"
-          ? "गोपनीयता सूचना"
-          : lang === "as"
-            ? "গোপনীয়তা জাননী"
-            : "Privacy Notice"}
+        {t.privacyTitle}
       </h2>
       <div className="bg-surface-container-lowest p-8 rounded-2xl shadow-sm border border-surface-container space-y-6">
         <p className="body-lg text-on-surface">
-          {lang === "hi"
-            ? "SchemeSetu एक स्मार्ट इंडिया हैकाथॉन (SIH) प्रोटोटाइप है। यह सूचना बताती है कि हम आपकी जानकारी का उपयोग कैसे करते हैं।"
-            : lang === "as"
-              ? "SchemeSetu এটা স্মাৰ্ট ইণ্ডিয়া হেকাথন (SIH) প্ৰ'ট'টাইপ। এই জাননীয়ে আপোনাৰ তথ্য কেনেদৰে ব্যৱহাৰ কৰা হয় সেয়া বৰ্ণনা কৰে।"
-              : "SchemeSetu is a Smart India Hackathon (SIH) prototype. This notice describes how your information is used."}
+          {t.privacyIntro}
         </p>
         <div>
           <h3 className="headline-sm text-on-surface mb-3">
-            {lang === "hi"
-              ? "हम क्या एकत्र करते हैं"
-              : lang === "as"
-                ? "আমি কি সংগ্ৰহ কৰোঁ"
-                : "What We Collect"}
+            {t.privacyCollectTitle}
           </h3>
           <ul className="list-disc list-inside space-y-2 text-on-surface-variant body-md">
             <li>
-              {lang === "hi"
-                ? "योजना मिलान प्रश्नावली: आयु, लिंग, राज्य, आय, जाति स्थिति, शिक्षा, कौशल स्तर"
-                : lang === "as"
-                  ? "আঁচনি মিলান প্ৰশ্নাৱলী: বয়স, লিংগ, ৰাজ্য, আয়, জাতি স্থিতি, শিক্ষা, দক্ষতাৰ স্তৰ"
-                  : "Scheme matching questionnaire: age, gender, state, income, caste status, education, skill level"}
+              {t.privacyCollect1}
             </li>
             <li>
-              {lang === "hi"
-                ? "AI व्यापार विश्लेषक: आपका व्यापार विवरण पाठ"
-                : lang === "as"
-                  ? "AI ব্যৱসায়িক বিশ্লেষক: আপোনাৰ ব্যৱসায়িক বিৱৰণ পাঠ"
-                  : "AI Business Analyzer: your business description text"}
+              {t.privacyCollect2}
             </li>
             <li>
-              {lang === "hi"
-                ? "AI चैटबॉट: चैट संदेश"
-                : lang === "as"
-                  ? "AI চেটবট: চেট বাৰ্তা"
-                  : "AI Chatbot: chat messages"}
+              {t.privacyCollect3}
             </li>
           </ul>
         </div>
         <div>
           <h3 className="headline-sm text-on-surface mb-3">
-            {lang === "hi"
-              ? "डेटा भंडारण"
-              : lang === "as"
-                ? "তথ্য সংৰক্ষণ"
-                : "Data Storage"}
+            {t.privacyStorageTitle}
           </h3>
           <p className="body-md text-on-surface-variant">
-            {lang === "hi"
-              ? "इस प्रोटोटाइप में कोई स्थायी डेटा संग्रहण नहीं है। सर्वर फ़ंक्शन अस्थायी मेमोरी का उपयोग करते हैं जो प्रत्येक सत्र के बाद साफ़ हो जाती है। कोई कुकीज़ या ट्रैकिंग का उपयोग नहीं किया जाता है।"
-              : lang === "as"
-                ? "এই প্ৰ'ট'টাইপত কোনো স্থায়ী তথ্য সংৰক্ষণ নাই। চাৰ্ভাৰ ফাংচনে ক্ষণস্থায়ী মেম'ৰি ব্যৱহাৰ কৰে যিটো প্ৰতিটো অধিৱেশনৰ পিছত পৰিষ্কাৰ হয়। কোনো কুকিজ বা ট্ৰেকিং ব্যৱহাৰ কৰা নহয়।"
-                : "This prototype has no persistent data storage. Server functions use ephemeral memory that clears after each session. No cookies or tracking are used."}
+            {t.privacyStorageDesc}
           </p>
         </div>
         <div>
           <h3 className="headline-sm text-on-surface mb-3">
-            {lang === "hi"
-              ? "तृतीय-पक्ष सेवाएँ"
-              : lang === "as"
-                ? "তৃতীয়-পক্ষৰ সেৱা"
-                : "Third-Party Services"}
+            {t.privacyThirdTitle}
           </h3>
           <ul className="list-disc list-inside space-y-2 text-on-surface-variant body-md">
             <li>
-              {lang === "hi"
-                ? "Google Gemini API: व्यापार विचार AI विश्लेषण और चैटबॉट के लिए उपयोग किया जाता है। आपके द्वारा दर्ज किया गया पाठ Google को भेजा जाता है।"
-                : lang === "as"
-                  ? "Google Gemini API: ব্যৱসায়িক ধাৰণা AI বিশ্লেষণ আৰু চেটবটৰ বাবে ব্যৱহাৰ কৰা হয়। আপুনি প্ৰৱেশ কৰোৱা পাঠ Google লৈ পঠিওৱা হয়।"
-                  : "Google Gemini API: used for business idea AI analysis and chatbot. Text you enter is sent to Google for processing."}
+              {t.privacyThird1}
             </li>
             <li>
-              {lang === "hi"
-                ? "OpenStreetMap: मानचित्र टाइल्स लोड करने के लिए।"
-                : lang === "as"
-                  ? "OpenStreetMap: মানচিত্ৰৰ টাইলছ ল'ড কৰিবলৈ।"
-                  : "OpenStreetMap: for loading map tiles on the partner locator."}
+              {t.privacyThird2}
             </li>
             <li>
-              {lang === "hi"
-                ? "Google Fonts: Inter फ़ॉन्ट लोड करने के लिए।"
-                : lang === "as"
-                  ? "Google Fonts: Inter ফণ্ট ল'ড কৰিবলৈ।"
-                  : "Google Fonts: for loading the Inter typeface."}
+              {t.privacyThird3}
             </li>
           </ul>
         </div>
@@ -2707,6 +2697,273 @@ const PrivacyPage = ({ lang }) => {
     </div>
   );
 };
+
+// --- NAVBAR COMPONENT ---
+const Navbar = ({ lang, setLang, t, mobileMenuOpen, setMobileMenuOpen }) => (
+  <nav className="bg-surface/80 backdrop-blur-md shadow-sm border-b border-surface-container sticky top-0 z-50 transition-all">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="flex justify-between h-16 sm:h-20">
+        <div className="flex items-center">
+          <Link
+            to="/"
+            className="flex items-center text-primary font-extrabold text-2xl sm:text-3xl tracking-tight"
+          >
+            <Landmark className="mr-2 text-primary" size={28} />
+            SchemeSetu
+          </Link>
+        </div>
+        <div className="flex items-center space-x-2 sm:space-x-6">
+          <NavLink
+            to="/"
+            className={({ isActive }) =>
+              `hidden lg:block font-semibold transition-colors ${isActive ? "text-secondary underline underline-offset-8 decoration-2" : "text-on-surface hover:text-secondary"}`
+            }
+          >
+            {t.navHome}
+          </NavLink>
+          <NavLink
+            to="/about"
+            className={({ isActive }) =>
+              `hidden lg:block font-semibold transition-colors ${isActive ? "text-secondary underline underline-offset-8 decoration-2" : "text-on-surface hover:text-secondary"}`
+            }
+          >
+            {t.navAbout}
+          </NavLink>
+          <NavLink
+            to="/find"
+            className={({ isActive }) =>
+              `hidden sm:block font-semibold transition-colors ${isActive ? "text-secondary underline underline-offset-8 decoration-2" : "text-on-surface hover:text-secondary"}`
+            }
+          >
+            {t.navFind}
+          </NavLink>
+          <NavLink
+            to="/calculator"
+            className={({ isActive }) =>
+              `hidden sm:block font-semibold transition-colors ${isActive ? "text-secondary underline underline-offset-8 decoration-2" : "text-on-surface hover:text-secondary"}`
+            }
+          >
+            {t.emiBtn}
+          </NavLink>
+          <NavLink
+            to="/contact"
+            className={({ isActive }) =>
+              `hidden lg:block font-semibold transition-colors ${isActive ? "text-secondary underline underline-offset-8 decoration-2" : "text-on-surface hover:text-secondary"}`
+            }
+          >
+            {t.navContact}
+          </NavLink>
+          <NavLink
+            to="/admin"
+            className={({ isActive }) =>
+              `hidden xl:flex items-center gap-1 font-semibold transition-colors ${isActive ? "text-secondary underline underline-offset-8 decoration-2" : "text-on-surface hover:text-secondary"}`
+            }
+            title="SchemeSetu Analytics Dashboard"
+          >
+            <ShieldAlert size={16} className="text-secondary" />{" "}
+            {t.navAdmin}
+          </NavLink>
+          <NavLink
+            to="/partners"
+            className={({ isActive }) =>
+              `hidden sm:flex font-semibold items-center px-4 py-2 rounded-lg transition-colors text-on-secondary-fixed bg-secondary-fixed hover:bg-secondary-fixed-dim ${isActive ? "ring-2 ring-primary ring-offset-2" : ""}`
+            }
+          >
+            <MapPin className="mr-1.5" size={18} /> {t.navLocate}
+          </NavLink>
+
+          <select
+            value={lang}
+            onChange={(e) => setLang(e.target.value)}
+            aria-label="Select language"
+            className="ml-2 sm:ml-4 bg-surface border border-surface-container text-on-surface font-bold py-2 px-2 sm:px-3 rounded-lg focus:outline-none focus:border-secondary"
+          >
+            <option value="en">EN</option>
+            <option value="hi">हि</option>
+            <option value="as">অস</option>
+          </select>
+
+          {/* Mobile hamburger button */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="sm:hidden p-2 rounded-lg text-on-surface hover:bg-surface-container transition-colors"
+            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={mobileMenuOpen}
+          >
+            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    {/* Mobile navigation panel */}
+    {mobileMenuOpen && (
+      <div className="sm:hidden border-t border-surface-container bg-surface animate-in slide-in-from-top-2 duration-200">
+        <div className="px-4 py-3 space-y-1">
+          <NavLink
+            to="/"
+            className={({ isActive }) =>
+              `block px-3 py-2.5 rounded-lg font-semibold text-sm ${isActive ? "bg-secondary-fixed text-secondary" : "text-on-surface hover:bg-surface-container"}`
+            }
+          >
+            {t.navHome}
+          </NavLink>
+          <NavLink
+            to="/find"
+            className={({ isActive }) =>
+              `block px-3 py-2.5 rounded-lg font-semibold text-sm ${isActive ? "bg-secondary-fixed text-secondary" : "text-on-surface hover:bg-surface-container"}`
+            }
+          >
+            {t.navFind}
+          </NavLink>
+          <NavLink
+            to="/explore"
+            className={({ isActive }) =>
+              `block px-3 py-2.5 rounded-lg font-semibold text-sm ${isActive ? "bg-secondary-fixed text-secondary" : "text-on-surface hover:bg-surface-container"}`
+            }
+          >
+            {t.exploreSchemes}
+          </NavLink>
+          <NavLink
+            to="/calculator"
+            className={({ isActive }) =>
+              `block px-3 py-2.5 rounded-lg font-semibold text-sm ${isActive ? "bg-secondary-fixed text-secondary" : "text-on-surface hover:bg-surface-container"}`
+            }
+          >
+            {t.emiBtn}
+          </NavLink>
+          <NavLink
+            to="/partners"
+            className={({ isActive }) =>
+              `block px-3 py-2.5 rounded-lg font-semibold text-sm ${isActive ? "bg-secondary-fixed text-secondary" : "text-on-surface hover:bg-surface-container"}`
+            }
+          >
+            {t.navLocate}
+          </NavLink>
+          <NavLink
+            to="/about"
+            className={({ isActive }) =>
+              `block px-3 py-2.5 rounded-lg font-semibold text-sm ${isActive ? "bg-secondary-fixed text-secondary" : "text-on-surface hover:bg-surface-container"}`
+            }
+          >
+            {t.navAbout}
+          </NavLink>
+          <NavLink
+            to="/contact"
+            className={({ isActive }) =>
+              `block px-3 py-2.5 rounded-lg font-semibold text-sm ${isActive ? "bg-secondary-fixed text-secondary" : "text-on-surface hover:bg-surface-container"}`
+            }
+          >
+            {t.navContact}
+          </NavLink>
+          <NavLink
+            to="/admin"
+            className={({ isActive }) =>
+              `block px-3 py-2.5 rounded-lg font-semibold text-sm ${isActive ? "bg-secondary-fixed text-secondary" : "text-on-surface hover:bg-surface-container"}`
+            }
+          >
+            {t.navAdmin}
+          </NavLink>
+        </div>
+      </div>
+    )}
+  </nav>
+);
+
+// --- FOOTER COMPONENT ---
+const Footer = ({ t }) => (
+  <footer className="bg-primary text-on-primary mt-auto">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <Landmark size={22} />
+            <span className="font-bold text-lg">SchemeSetu</span>
+          </div>
+          <p className="text-sm opacity-80 leading-relaxed">
+            {t.footerTagline}
+          </p>
+          <p className="text-xs opacity-60 mt-2">
+            Smart India Hackathon 2024 Project
+          </p>
+        </div>
+        <div>
+          <h4 className="font-bold text-sm uppercase tracking-wider mb-3 ">
+            {t.footerLinks}
+          </h4>
+          <div className="flex flex-col gap-2">
+            <Link
+              to="/find"
+              className="text-sm opacity-80 hover:opacity-100 transition-opacity"
+            >
+              {t.navFind}
+            </Link>
+            <Link
+              to="/explore"
+              className="text-sm opacity-80 hover:opacity-100 transition-opacity"
+            >
+              {t.exploreSchemes}
+            </Link>
+            <Link
+              to="/calculator"
+              className="text-sm opacity-80 hover:opacity-100 transition-opacity"
+            >
+              {t.emiBtn}
+            </Link>
+            <Link
+              to="/partners"
+              className="text-sm opacity-80 hover:opacity-100 transition-opacity"
+            >
+              {t.navLocate}
+            </Link>
+          </div>
+        </div>
+        <div>
+          <h4 className="font-bold text-sm uppercase tracking-wider mb-3 ">
+            {t.footerInfo}
+          </h4>
+          <div className="flex flex-col gap-2">
+            <Link
+              to="/about"
+              className="text-sm opacity-80 hover:opacity-100 transition-opacity"
+            >
+              {t.navAbout}
+            </Link>
+            <Link
+              to="/contact"
+              className="text-sm opacity-80 hover:opacity-100 transition-opacity"
+            >
+              {t.navContact}
+            </Link>
+            <Link
+              to="/privacy"
+              className="text-sm opacity-80 hover:opacity-100 transition-opacity"
+            >
+              {t.privacyTitle}
+            </Link>
+          </div>
+        </div>
+        <div>
+          <h4 className="font-bold text-sm uppercase tracking-wider mb-3 ">
+            {t.footerMinistry}
+          </h4>
+          <p className="text-sm opacity-80 leading-relaxed">
+            {t.footerMosje}
+          </p>
+          <p className="text-xs opacity-60 mt-2">
+            Problem Statement: 26092
+          </p>
+        </div>
+      </div>
+      <div className="border-t border-primary-container/30 mt-8 pt-6 text-center">
+        <p className="text-xs opacity-60">
+          © 2024 SchemeSetu · Smart India Hackathon Prototype ·{" "}
+          {t.footerDisclaimer}
+        </p>
+      </div>
+    </div>
+  </footer>
+);
 
 // --- APP SHELL ---
 function App() {
@@ -2758,190 +3015,13 @@ function App() {
           }}
         />
       )}
-      <nav className="bg-surface/80 backdrop-blur-md shadow-sm border-b border-surface-container sticky top-0 z-50 transition-all">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 sm:h-20">
-            <div className="flex items-center">
-              <Link
-                to="/"
-                className="flex items-center text-primary font-extrabold text-2xl sm:text-3xl tracking-tight"
-              >
-                <Landmark className="mr-2 text-primary" size={28} />
-                SchemeSetu
-              </Link>
-            </div>
-            <div className="flex items-center space-x-2 sm:space-x-6">
-              <NavLink
-                to="/"
-                className={({ isActive }) =>
-                  `hidden lg:block font-semibold transition-colors ${isActive ? "text-secondary underline underline-offset-8 decoration-2" : "text-on-surface hover:text-secondary"}`
-                }
-              >
-                {lang === "hi" ? "होम" : lang === "as" ? "হোম" : "Home"}
-              </NavLink>
-              <NavLink
-                to="/about"
-                className={({ isActive }) =>
-                  `hidden lg:block font-semibold transition-colors ${isActive ? "text-secondary underline underline-offset-8 decoration-2" : "text-on-surface hover:text-secondary"}`
-                }
-              >
-                {lang === "hi"
-                  ? "हमारे बारे में"
-                  : lang === "as"
-                    ? "আমাৰ বিষয়ে"
-                    : "About"}
-              </NavLink>
-              <NavLink
-                to="/find"
-                className={({ isActive }) =>
-                  `hidden sm:block font-semibold transition-colors ${isActive ? "text-secondary underline underline-offset-8 decoration-2" : "text-on-surface hover:text-secondary"}`
-                }
-              >
-                {t.navFind}
-              </NavLink>
-              <NavLink
-                to="/calculator"
-                className={({ isActive }) =>
-                  `hidden sm:block font-semibold transition-colors ${isActive ? "text-secondary underline underline-offset-8 decoration-2" : "text-on-surface hover:text-secondary"}`
-                }
-              >
-                {t.emiBtn}
-              </NavLink>
-              <NavLink
-                to="/contact"
-                className={({ isActive }) =>
-                  `hidden lg:block font-semibold transition-colors ${isActive ? "text-secondary underline underline-offset-8 decoration-2" : "text-on-surface hover:text-secondary"}`
-                }
-              >
-                {lang === "hi"
-                  ? "संपर्क करें"
-                  : lang === "as"
-                    ? "যোগাযোগ"
-                    : "Contact"}
-              </NavLink>
-              <NavLink
-                to="/admin"
-                className={({ isActive }) =>
-                  `hidden xl:flex items-center gap-1 font-semibold transition-colors ${isActive ? "text-secondary underline underline-offset-8 decoration-2" : "text-on-surface hover:text-secondary"}`
-                }
-                title="SchemeSetu Analytics Dashboard"
-              >
-                <ShieldAlert size={16} className="text-secondary" />{" "}
-                {t.navAdmin}
-              </NavLink>
-              <NavLink
-                to="/partners"
-                className={({ isActive }) =>
-                  `hidden sm:flex font-semibold items-center px-4 py-2 rounded-lg transition-colors text-on-secondary-fixed bg-secondary-fixed hover:bg-secondary-fixed-dim ${isActive ? "ring-2 ring-primary ring-offset-2" : ""}`
-                }
-              >
-                <MapPin className="mr-1.5" size={18} /> {t.navLocate}
-              </NavLink>
-
-              <select
-                value={lang}
-                onChange={(e) => setLang(e.target.value)}
-                aria-label="Select language"
-                className="ml-2 sm:ml-4 bg-surface border border-surface-container text-on-surface font-bold py-2 px-2 sm:px-3 rounded-lg focus:outline-none focus:border-secondary"
-              >
-                <option value="en">EN</option>
-                <option value="hi">हि</option>
-                <option value="as">অস</option>
-              </select>
-
-              {/* Mobile hamburger button */}
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="sm:hidden p-2 rounded-lg text-on-surface hover:bg-surface-container transition-colors"
-                aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-                aria-expanded={mobileMenuOpen}
-              >
-                {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Mobile navigation panel */}
-        {mobileMenuOpen && (
-          <div className="sm:hidden border-t border-surface-container bg-surface animate-in slide-in-from-top-2 duration-200">
-            <div className="px-4 py-3 space-y-1">
-              <NavLink
-                to="/"
-                className={({ isActive }) =>
-                  `block px-3 py-2.5 rounded-lg font-semibold text-sm ${isActive ? "bg-secondary-fixed text-secondary" : "text-on-surface hover:bg-surface-container"}`
-                }
-              >
-                {lang === "hi" ? "होम" : lang === "as" ? "হোম" : "Home"}
-              </NavLink>
-              <NavLink
-                to="/find"
-                className={({ isActive }) =>
-                  `block px-3 py-2.5 rounded-lg font-semibold text-sm ${isActive ? "bg-secondary-fixed text-secondary" : "text-on-surface hover:bg-surface-container"}`
-                }
-              >
-                {t.navFind}
-              </NavLink>
-              <NavLink
-                to="/explore"
-                className={({ isActive }) =>
-                  `block px-3 py-2.5 rounded-lg font-semibold text-sm ${isActive ? "bg-secondary-fixed text-secondary" : "text-on-surface hover:bg-surface-container"}`
-                }
-              >
-                {t.exploreSchemes}
-              </NavLink>
-              <NavLink
-                to="/calculator"
-                className={({ isActive }) =>
-                  `block px-3 py-2.5 rounded-lg font-semibold text-sm ${isActive ? "bg-secondary-fixed text-secondary" : "text-on-surface hover:bg-surface-container"}`
-                }
-              >
-                {t.emiBtn}
-              </NavLink>
-              <NavLink
-                to="/partners"
-                className={({ isActive }) =>
-                  `block px-3 py-2.5 rounded-lg font-semibold text-sm ${isActive ? "bg-secondary-fixed text-secondary" : "text-on-surface hover:bg-surface-container"}`
-                }
-              >
-                {t.navLocate}
-              </NavLink>
-              <NavLink
-                to="/about"
-                className={({ isActive }) =>
-                  `block px-3 py-2.5 rounded-lg font-semibold text-sm ${isActive ? "bg-secondary-fixed text-secondary" : "text-on-surface hover:bg-surface-container"}`
-                }
-              >
-                {lang === "hi"
-                  ? "हमारे बारे में"
-                  : lang === "as"
-                    ? "আমাৰ বিষয়ে"
-                    : "About"}
-              </NavLink>
-              <NavLink
-                to="/contact"
-                className={({ isActive }) =>
-                  `block px-3 py-2.5 rounded-lg font-semibold text-sm ${isActive ? "bg-secondary-fixed text-secondary" : "text-on-surface hover:bg-surface-container"}`
-                }
-              >
-                {lang === "hi"
-                  ? "संपर्क करें"
-                  : lang === "as"
-                    ? "যোগাযোগ"
-                    : "Contact"}
-              </NavLink>
-              <NavLink
-                to="/admin"
-                className={({ isActive }) =>
-                  `block px-3 py-2.5 rounded-lg font-semibold text-sm ${isActive ? "bg-secondary-fixed text-secondary" : "text-on-surface hover:bg-surface-container"}`
-                }
-              >
-                {t.navAdmin}
-              </NavLink>
-            </div>
-          </div>
-        )}
-      </nav>
+      <Navbar
+        lang={lang}
+        setLang={setLang}
+        t={t}
+        mobileMenuOpen={mobileMenuOpen}
+        setMobileMenuOpen={setMobileMenuOpen}
+      />
 
       <main className="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Routes>
@@ -2984,126 +3064,7 @@ function App() {
         </Routes>
       </main>
 
-      {/* Footer */}
-      <footer className="bg-primary text-on-primary mt-auto">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div>
-              <div className="flex items-center gap-2 mb-3">
-                <Landmark size={22} />
-                <span className="font-bold text-lg">SchemeSetu</span>
-              </div>
-              <p className="text-sm opacity-80 leading-relaxed">
-                {lang === "hi"
-                  ? "एससी/ओबीसी/सफाई कर्मचारी उद्यमियों के लिए AI-संचालित सरकारी योजना मिलान।"
-                  : lang === "as"
-                    ? "SC/OBC/চাফাই কৰ্মচাৰী উদ্যোগীসকলৰ বাবে AI-চালিত চৰকাৰী আঁচনি মিলান।"
-                    : "AI-driven government scheme matching for SC/OBC/Safai Karamchari entrepreneurs."}
-              </p>
-              <p className="text-xs opacity-60 mt-2">
-                Smart India Hackathon 2024 Project
-              </p>
-            </div>
-            <div>
-              <h4 className="font-bold text-sm uppercase tracking-wider mb-3 ">
-                {lang === "hi" ? "लिंक" : lang === "as" ? "লিংক" : "Links"}
-              </h4>
-              <div className="flex flex-col gap-2">
-                <Link
-                  to="/find"
-                  className="text-sm opacity-80 hover:opacity-100 transition-opacity"
-                >
-                  {t.navFind}
-                </Link>
-                <Link
-                  to="/explore"
-                  className="text-sm opacity-80 hover:opacity-100 transition-opacity"
-                >
-                  {t.exploreSchemes}
-                </Link>
-                <Link
-                  to="/calculator"
-                  className="text-sm opacity-80 hover:opacity-100 transition-opacity"
-                >
-                  {t.emiBtn}
-                </Link>
-                <Link
-                  to="/partners"
-                  className="text-sm opacity-80 hover:opacity-100 transition-opacity"
-                >
-                  {t.navLocate}
-                </Link>
-              </div>
-            </div>
-            <div>
-              <h4 className="font-bold text-sm uppercase tracking-wider mb-3 ">
-                {lang === "hi" ? "जानकारी" : lang === "as" ? "তথ্য" : "Info"}
-              </h4>
-              <div className="flex flex-col gap-2">
-                <Link
-                  to="/about"
-                  className="text-sm opacity-80 hover:opacity-100 transition-opacity"
-                >
-                  {lang === "hi"
-                    ? "हमारे बारे में"
-                    : lang === "as"
-                      ? "আমাৰ বিষয়ে"
-                      : "About"}
-                </Link>
-                <Link
-                  to="/contact"
-                  className="text-sm opacity-80 hover:opacity-100 transition-opacity"
-                >
-                  {lang === "hi"
-                    ? "संपर्क करें"
-                    : lang === "as"
-                      ? "যোগাযোগ"
-                      : "Contact"}
-                </Link>
-                <Link
-                  to="/privacy"
-                  className="text-sm opacity-80 hover:opacity-100 transition-opacity"
-                >
-                  {lang === "hi"
-                    ? "गोपनीयता सूचना"
-                    : lang === "as"
-                      ? "গোপনীয়তা জাননী"
-                      : "Privacy Notice"}
-                </Link>
-              </div>
-            </div>
-            <div>
-              <h4 className="font-bold text-sm uppercase tracking-wider mb-3 ">
-                {lang === "hi"
-                  ? "मंत्रालय"
-                  : lang === "as"
-                    ? "মন্ত্ৰালয়"
-                    : "Ministry"}
-              </h4>
-              <p className="text-sm opacity-80 leading-relaxed">
-                {lang === "hi"
-                  ? "सामाजिक न्याय और अधिकारिता मंत्रालय (MoSJE)"
-                  : lang === "as"
-                    ? "সামাজিক ন্যায় আৰু সৱলীকৰণ মন্ত্ৰালয় (MoSJE)"
-                    : "Ministry of Social Justice & Empowerment (MoSJE)"}
-              </p>
-              <p className="text-xs opacity-60 mt-2">
-                Problem Statement: 26092
-              </p>
-            </div>
-          </div>
-          <div className="border-t border-primary-container/30 mt-8 pt-6 text-center">
-            <p className="text-xs opacity-60">
-              © 2024 SchemeSetu · Smart India Hackathon Prototype ·{" "}
-              {lang === "hi"
-                ? "यह एक प्रतियोगिता परियोजना है, आधिकारिक सरकारी सेवा नहीं।"
-                : lang === "as"
-                  ? "এইটো এটা প্ৰতিযোগিতা প্ৰকল্প, চৰকাৰী সেৱা নহয়।"
-                  : "This is a competition project, not an official government service."}
-            </p>
-          </div>
-        </div>
-      </footer>
+      <Footer t={t} />
 
       <AIChatbot lang={lang} />
     </div>

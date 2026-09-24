@@ -1,1 +1,5 @@
-{ "ignore": ["api/**/*.js"] }
+{
+  "$schema": "https://unpkg.com/knip@5/overview/config.json",
+  "entry": ["src/main.jsx", "index.html", "api/**/*.js", "tests/**/*.spec.js"],
+  "project": ["src/**/*.{js,jsx}"]
+}
